@@ -1,0 +1,38 @@
+page {
+  padding-left: 40rpx;
+  padding-right: 40rpx;
+  box-sizing: border-box;
+}
+
+.cate {
+  display: flex;
+  align-items: center;
+  background-color: #f2f2f2;
+  border: 1px solid #eee;
+  margin-bottom: 1px;
+}
+
+.cate .thumb {
+  width: 160rpx;
+  height: 160rpx;
+  background: #fff;
+  margin-right: 20rpx;
+}
+.cate .title{
+  flex-grow: 1;
+}
+.cate:last-child .title {
+  color: #cdcdcd;
+}
+
+.cate .arrow {
+  width: 70rpx;
+  height: 70rpx;
+  opacity: 0.5;
+}
+
+image {
+  width: 100%;
+  height: 100%;
+  display: block;
+}

@@ -1,0 +1,45 @@
+<template is="categorys" data="{{cates, expandId, swipeLeftId}}" />
+
+<template name="categorys">
+  <view class="categorys">
+    <block wx:for="{{cates}}" wx:key="" wx:for-item="cate">
+      <template is="category" data="{{...cate}}" />
+      <view class="children" wx:if="{{cate.expand}}">
+        <block wx:for="{{cate.children}}" wx:key="">
+          <template is="category" data="{{...item}}" />
+        </block>
+      </view>
+    </block>
+  </view>
+</template>
+
+<template name="category">
+  <view class="category" data-id="{{id}}" data-pid="{{pid}}" bindtouchstart="touchstart" bindtouchmove="touchmove" bindtouchend="touchend">
+    <view class="inner {{swipeLeft?'swipeleft':''}}">
+      <view class="left">
+        <view class="icon" wx:if="{{children}}" catchtap="onExpandTap" data-id="{{id}}">
+          <image src="/images/icon/arrow-up.png" wx:if="{{expand}}" />
+          <image src="/images/icon/arrow-down.png" wx:else />
+        </view>
+        <view class="icon" wx:else></view>
+        <view class="title">
+          <input value="{{title}}" data-id="{{id}}" data-pid="{{pid}}" bindblur="onCateTitleBlur" placeholder="{{pid==0?'新增类目':'新增子类目'}}" />
+        </view>
+        <view class="thumb">
+          <image src="{{thumb || '/images/icon/image_1.png'}}" mode="widthFix" />
+        </view>
+      </view>
+      <view class="right">
+        <view class="editor sort-up" data-id="{{id}}" data-pid="{{pid}}" catchtap="onCateSortUp">
+          <image src="/images/icon/sort-up.png" />
+        </view>
+        <view class="editor sort-down" data-id="{{id}}" data-pid="{{pid}}" catchtap="onCateSortDown">
+          <image src="/images/icon/sort-down.png" />
+        </view>
+        <view class="editor delete" data-id="{{id}}" data-pid="{{pid}}" catchtap="onCateDelete">
+          <image src="/images/icon/close.png" />
+        </view>
+      </view>
+    </view>
+  </view>
+</template>
