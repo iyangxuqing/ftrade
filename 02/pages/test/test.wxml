@@ -1,4 +1,4 @@
-<template is="categorys" data="{{cates, expandId, swipeLeftId, inputValue}}" />
+<template is="categorys" data="{{cates, inputValue}}" />
 
 <template name="categorys">
   <view class="categorys">
@@ -38,8 +38,8 @@
         <view class="title">
           <input value="{{title}}" data-id="{{id}}" data-pid="{{pid}}" bindblur="onCateTitleBlur" placeholder="类目名不可为空" />
         </view>
-        <view class="thumb">
-          <image src="{{thumb || '/images/icon/image_1.png'}}" mode="widthFix" />
+        <view class="thumb" data-id="{{id}}" data-pid="{{pid}}" catchtap="onThumbTap">
+          <image src="{{thumb || '/images/icon/image_1.png'}}" />
         </view>
       </view>
       <view class="right">

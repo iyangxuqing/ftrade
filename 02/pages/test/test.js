@@ -10,8 +10,6 @@ Page({
    * 页面的初始数据
    */
   data: {
-    expandId: '',
-    swipeLeftId: '-1',
     inputValue: '',
     cates: []
   },
@@ -105,19 +103,28 @@ Page({
     })
   },
 
-  onCategoryTap: function (e) {
-    console.log(e)
-  },
-
-  longTap: function (e) {
-    console.log(e)
-  },
-
   onThumbTap: function (e) {
+    let id = e.currentTarget.dataset.id
+    let pid = e.currentTarget.dataset.pid
+    let cates = this.data.cates
     wx.chooseImage({
+      count: 1,
       success: function (res) {
-        console.log(res)
-      },
+        let thumb = res.tempFilePaths[0]
+        Category.set(cates, { id, pid, thumb })
+        this.setData({
+          cates: cates
+        })
+        http.upload({
+          paths: new Array(thumb)
+        }).then(function (res) {
+          thumb = res.uploadedFiles[0].target
+          Category.set(cates, { id, pid, thumb })
+          this.setData({
+            cates: cates
+          })
+        }.bind(this))
+      }.bind(this)
     })
   },
 
@@ -128,16 +135,21 @@ Page({
     let cates = this.data.cates
     if (id == 0) {
       if (title == '') return
-      Category.add(cates, { id, pid, title })
-      this.setData({
-        inputValue: ''
-      })
+      Category.add(cates, {
+        pid: pid,
+        title: title,
+      }).then(function (cates) {
+        this.setData({
+          cates: cates,
+          inputValue: ''
+        })
+      }.bind(this))
     } else {
       Category.set(cates, { id, pid, title })
+      this.setData({
+        cates: cates
+      })
     }
-    this.setData({
-      cates: cates
-    })
   },
 
   /**
@@ -155,9 +167,7 @@ Page({
     let id = e.currentTarget.dataset.id
     let pid = e.currentTarget.dataset.pid
     let cates = this.data.cates
-    console.log(cates)
     Category.sort(cates, { id, pid }, true)
-    console.log(cates)
     this.setData({
       cates: cates
     })

@@ -61,7 +61,7 @@ function post(options) {
 
 /*
     options.paths = []
-    options.uploadDir = 'dongpeng'
+    options.uploadDir = ''
 */
 function upload(options) {
     var uploadedNum = 0
