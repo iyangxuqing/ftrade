@@ -17,8 +17,8 @@
 
 <template name="category-new">
   <view class="category category-new" wx:if="{{dataReady}}">
-    <view class="icon">
-      <image wx:if="{{pid==0}}" src="/images/icon/arrow-down.png" />
+    <view class="thumb">
+      <image wx:if="{{false}}" src="/images/icon/add.png" />
     </view>
     <view class="title">
       <input data-id="{{id}}" data-pid="{{pid}}" bindblur="onTitleEdit" value="{{newValue}}" placeholder="{{pid==0?'新增类目':'新增子类目'}}" />
@@ -27,19 +27,21 @@
 </template>
 
 <template name="category">
-  <view class="category" data-id="{{id}}" data-pid="{{pid}}" bindtouchstart="touchstart" bindtouchmove="touchmove" bindtouchend="touchend">
+  <view class="category {{children?'':'child'}}" data-id="{{id}}" data-pid="{{pid}}" bindtouchstart="touchstart" bindtouchmove="touchmove" bindtouchend="touchend">
     <view class="inner {{swipeLeft?'swipeleft':''}}">
       <view class="left">
+        <view class="thumb" data-id="{{id}}" data-pid="{{pid}}" catchtap="onThumbEdit">
+          <image src="{{thumb || '/images/icon/image_1.png'}}" />
+        </view>
+        <view class="title">
+          <input value="{{title}}" data-id="{{id}}" data-pid="{{pid}}" bindblur="onTitleEdit" placeholder="类目名不可为空" />
+        </view>
         <view class="icon" wx:if="{{children}}" data-id="{{id}}" catchtap="onCateExpand">
           <image src="/images/icon/arrow-up.png" wx:if="{{expand}}" />
           <image src="/images/icon/arrow-down.png" wx:else />
         </view>
-        <view class="icon" wx:else></view>
-        <view class="title">
-          <input value="{{title}}" data-id="{{id}}" data-pid="{{pid}}" bindblur="onTitleEdit" placeholder="类目名不可为空" />
-        </view>
-        <view class="thumb" data-id="{{id}}" data-pid="{{pid}}" catchtap="onThumbEdit">
-          <image src="{{thumb || '/images/icon/image_1.png'}}" />
+        <view class="icon" wx:if="{{!children}}" data-id="{{id}}" data-pid="{{pid}}" catchtap="onNavProducts">
+          <image src="/images/icon/arrow-right.png" />
         </view>
       </view>
       <view class="right">

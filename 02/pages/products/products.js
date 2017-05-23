@@ -1,24 +1,20 @@
-// pages/test-movable/test-movable.js
+// pages/products/products.js
 Page({
 
   /**
    * 页面的初始数据
    */
   data: {
-    x: 0,
-    y: 0
-  },
-  tap: function (e) {
-    this.setData({
-      x: 30,
-      y: 30
-    });
+
   },
 
   /**
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
+    let cid = options.id || 89
+    let cpid = options.pid || 85
+    console.log(options)
 
   },
 

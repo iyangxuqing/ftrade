@@ -98,13 +98,14 @@ image {
 }
 
 .category .icon {
-  width:100rpx;
+  width: 100rpx;
   height: 120rpx;
   padding: 40rpx 30rpx;
   flex-shrink: 0;
 }
 
 .category .title {
+  margin-left: 20rpx;
   flex-grow: 1;
 }
 
@@ -112,6 +113,11 @@ image {
   width: 120rpx;
   height: 120rpx;
   padding: 10rpx;
+  margin-left: -10rpx;
   flex-shrink: 0;
   background-color: transparent;
+}
+
+.category.child .thumb {
+  margin-left: 120rpx;
 }
