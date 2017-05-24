@@ -1,0 +1,58 @@
+<view class="cate">
+  <view class="cate-ptitle">{{cate.ptitle}}</view>
+  <view>-</view>
+  <view class="cate-title">{{cate.title}}</view>
+</view>
+
+<view class="product">
+  <view class="product-images">
+    <block wx:for="{{product.images}}" wx:key="" wx:for-item="image">
+      <view class="product-image">
+        <image src="{{image || '/images/icon/image.png'}}" />
+      </view>
+    </block>
+  </view>
+  <view class="product-title">
+    <view class="product-title-label">商品名称</view>
+    <input value="{{product.title}}" placeholder="输入商品名称" />
+  </view>
+  <view class="head">价格标签</view>
+  <template is="items" data="{{items:product.prices, type:'price'}}" />
+  <template is="item-add" data="{{...product.newPrice, type:'price', labelholder:'新增价格标签', valueholder:'输入价格值'}}" />
+  <view class="head">商品属性</view>
+  <template is="items" data="{{items:product.props, type:'prop'}}" />
+  <template is="item-add" data="{{...product.newProp, type:'prop', labelholder:'新增属性标签', valueholder:'输入属性值'}}" />
+</view>
+
+<view class="foot"></view>
+
+<template name="items">
+  <view class="list">
+    <block wx:for="{{items}}" wx:key="">
+      <view class="item" data-id="{{item.id}}" data-type="{{type}}" bindtouchstart="touchstart" bindtouchmove="touchmove" bindtouchend="touchend">
+        <view class="item-inner {{item.swipeLeft?'swipeleft':''}}">
+          <view class="left">
+            <view class="item-label">{{item.label}}</view>
+            <view class="item-value">{{item.value}}</view>
+          </view>
+          <view class="right">
+            <view class="item-delete" data-id="{{item.id}}">
+              <image src="/images/icon/close.png" />
+            </view>
+          </view>
+        </view>
+      </view>
+    </block>
+  </view>
+</template>
+
+<template name="item-add">
+  <view class="item item-add">
+    <view class="item-label">
+      <input value="{{label}}" placeholder="{{labelholder}}" data-type="{{type}}" bindblur="onItemLabelAdd" />
+    </view>
+    <view class="item-value">
+      <input value="{{value}}" placeholder="{{valueholder}}" data-type="{{type}}" bindblur="onItemValueAdd" />
+    </view>
+  </view>
+</template>

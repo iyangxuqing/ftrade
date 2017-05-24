@@ -243,6 +243,10 @@ function sort(cates, cate, up = false) {
   }
 }
 
+function getCategory(id, pid) {
+
+}
+
 export var Category = {
   get: get,
   add: add,

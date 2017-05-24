@@ -31,7 +31,7 @@
     <view class="inner {{swipeLeft?'swipeleft':''}}">
       <view class="left">
         <view class="thumb" data-id="{{id}}" data-pid="{{pid}}" catchtap="onThumbEdit">
-          <image src="{{thumb || '/images/icon/image_1.png'}}" />
+          <image src="{{thumb || '/images/icon/image.png'}}" />
         </view>
         <view class="title">
           <input value="{{title}}" data-id="{{id}}" data-pid="{{pid}}" bindblur="onTitleEdit" placeholder="类目名不可为空" />

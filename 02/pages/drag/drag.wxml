@@ -1,5 +1,0 @@
-<view class="container">
-  <view bindtap="box" class="box">
-    <view wx:for="{{content}}" wx:for-index="index" wx:key="" catchtouchmove="move" catchtouchstart="movestart" catchtouchend="moveend" data-index="{{index}}" class="main {{moveIndex == index? 'mainmove':'mainend'}}" style="left:{{offset.left}}px; top:{{offset.top}}px">{{item.content}}</view>
-  </view>
-</view>
