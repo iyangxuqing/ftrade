@@ -1,5 +1,6 @@
+import { http } from '../../utils/http.js'
 
-var touch = {}
+var longtap = false
 
 Page({
 
@@ -7,151 +8,167 @@ Page({
    * 页面的初始数据
    */
   data: {
-
+    cata: {
+      id: '',
+      pid: '',
+      title: '',
+      ptitle: '',
+      thumb: '',
+      pthumb: ''
+    },
     product: {
-      images: new Array(5),
+      id: '',
+      cid: '',
+      title: '',
+      images: [],
       prices: [],
       props: [],
       newPrice: {},
       newProp: {},
-    },
-
-  },
-
-  touchstart: function (e) {
-    touch.id = e.currentTarget.dataset.id
-    touch.type = e.currentTarget.dataset.type
-    touch.x1 = e.touches[0].clientX;
-    touch.y1 = e.touches[0].clientY;
-    touch.t1 = e.timeStamp;
-    touch.x2 = e.touches[0].clientX;
-    touch.y2 = e.touches[0].clientY;
-    touch.t2 = e.timeStamp;
-  },
-
-  touchmove: function (e) {
-    touch.x2 = e.touches[0].clientX;
-    touch.y2 = e.touches[0].clientY;
-    touch.t2 = e.timeStamp;
-  },
-
-  touchend: function (e) {
-    touch.t2 = e.timeStamp
-    let dx = touch.x2 - touch.x1
-    let dy = touch.y2 - touch.y1
-    let dt = touch.t2 - touch.t1
-    if ((Math.abs(dy) < Math.abs(dx) && dt < 250)) {
-      if (dx < -20) this.onSwiperLeft(touch.id, touch.type)
-      if (dx > 20) this.onSwiperRight(touch.id, touch.type)
     }
   },
 
-  onSwiperLeft: function (id, type) {
-    let items = []
-    if (type == 'price') {
-      items = this.data.product.prices
-    } else if (type == 'prop') {
-      items = this.data.product.props
-    }
-    for (let i in items) {
-      items[i].swipeLeft = false
-      items[i].swipeRight = false
-      if (items[i].id == id) {
-        items[i].swipeLeft = true
-      }
-    }
-    if (type == 'price') {
-      this.setData({
-        'product.prices': items,
-      })
-    } else if (type == 'prop') {
-      this.setData({
-        'product.props': items
-      })
+  onImageAdd: function (e) {
+    wx.chooseImage({
+      count: 1,
+      sizeType: ['compressed'],
+      success: function (res) {
+        var tempFilePaths = res.tempFilePaths
+        let images = this.data.product.images
+        images.push({
+          client: tempFilePaths[0],
+          remote: '',
+        })
+        this.setData({
+          'product.images': images
+        })
+        http.upload({
+          paths: tempFilePaths
+        }).then(function (res) {
+          for (let i in images) {
+            if (images[i].client == res.uploadedFiles[0].source) {
+              images[i].remote = res.uploadedFiles[0].target
+              this.data.product.images = images
+              break
+            }
+          }
+        }.bind(this))
+      }.bind(this),
+    })
+  },
+
+  onImageTap: function (e) {
+    if (longtap) {
+      longtap = false
+      return
     }
   },
 
-  onSwiperRight: function (id, type) {
-    let items = []
-    if (type == 'price') {
-      items = this.data.product.prices
-    } else if (type == 'prop') {
-      items = this.data.product.props
-    }
-    for (let i in items) {
-      items[i].swipeLeft = false
-      items[i].swipeRight = false
-      if (items[i].id == id) {
-        items[i].swipeRight = true
-      }
-    }
-    if (type == 'price') {
-      this.setData({
-        'product.prices': items,
-      })
-    } else if (type == 'prop') {
-      this.setData({
-        'product.props': items
-      })
-    }
+  onImageLongTap: function (e) {
+    longtap = true
+    let index = e.currentTarget.dataset.index
+    wx.showActionSheet({
+      itemList: ['删除图片'],
+      success: function (res) {
+        if (res.tapIndex == 0) {
+          let images = this.data.product.images
+          images.splice(index, 1)
+          this.setData({
+            'product.images': images
+          })
+        }
+      }.bind(this)
+    })
   },
 
-  onItemLabelAdd: function (e) {
-    let label = e.detail.value
+  onTitleBlur: function (e) {
+    let title = e.detail.value
+    console.log(title)
+    this.setData({
+      'product.title': title
+    })
+  },
+
+  onItemBlur: function (e) {
+    let value = e.detail.value
     let type = e.currentTarget.dataset.type
-    let items = []
-    let newItem = {}
-    if (type == 'prop') {
-      items = this.data.product.props
-      newItem = this.data.product.newProp
-    } else if (type == 'price') {
-      items = this.data.product.prices
-      newItem = this.data.product.newPrice
-    }
-    newItem.id = Date.now()
-    newItem.label = label
-    if (newItem.label && newItem.value) {
-      items.push(newItem)
-      if (type == 'prop') {
-        this.setData({
-          'product.props': items,
-          'product.newProp': { label: '', value: '' },
-        })
-      } else if (type == 'price') {
-        this.setData({
-          'product.prices': items,
-          'product.newPrice': { label: '', value: '' },
-        })
-      }
+    let newPrice = this.data.product.newPrice
+    let newProp = this.data.product.newProp
+    if (type == 'price-label') newPrice.label = value
+    if (type == 'price-value') newPrice.value = value
+    if (type == 'prop-label') newProp.label = value
+    if (type == 'prop-label') newProp.value = value
+    if (newPrice.label && newPrice.value) {
+      let prices = this.data.product.prices
+      prices.push({
+        id: Date.now(),
+        label: newPrice.label,
+        value: newPrice.value
+      })
+      this.setData({
+        'product.prices': prices,
+        'product.newPrice': { label: '', value: '' }
+      })
+    } else if (newProp.label && newProp.value) {
+      let props = this.data.product.props
+      props.push({
+        id: Date.now(),
+        label: newProp.label,
+        value: newProp.value
+      })
+      this.setData({
+        'product.props': props,
+        'product.newprop': { label: '', value: '' }
+      })
     }
   },
 
-  onItemValueAdd: function (e) {
-    let label = e.detail.value
-    let type = e.currentTarget.dataset.type
-    let items = []
-    let newItem = {}
-    if (type == 'prop') {
-      items = this.data.product.props
-      newItem = this.data.product.newProp
-    } else if (type == 'price') {
-      items = this.data.product.prices
-      newItem = this.data.product.newPrice
-    }
-    newItem.value = label
-    if (newItem.label && newItem.value) {
-      items.push(newItem)
-      if (type == 'prop') {
-        this.setData({
-          'product.props': items,
-          'product.newProp': { label: '', value: '' },
-        })
-      } else if (type == 'price') {
-        this.setData({
-          'product.prices': items,
-          'product.newPrice': { label: '', value: '' },
-        })
+  onItemLongTap: function (e) {
+    let id = e.currentTarget.dataset.id
+    let prices = this.data.product.prices
+    let props = this.data.product.props
+    let type = ''
+    let index = -1
+    for (let i in prices) {
+      if (prices[i].id == id) {
+        type = 'price'
+        index = i
+        break
       }
+    }
+    if (type == '') {
+      for (let i in props) {
+        if (props[i].id == id) {
+          type = 'prop'
+          index = i
+          break
+        }
+      }
+    }
+    if (type == 'price') {
+      wx.showActionSheet({
+        itemList: ['删除标签'],
+        success: function (res) {
+          if (res.tapIndex == 0) {
+            prices.splice(index, 1)
+            this.setData({
+              'product.prices': prices
+            })
+          }
+        }.bind(this)
+      })
+    } else if (type == 'prop') {
+      wx.showActionSheet({
+        itemList: ['删除属性'],
+        success: function (res) {
+          if (res.tapIndex == 0) {
+            props.splice(index, 1)
+            this.setData({
+              'product.props': props
+            })
+          }
+        }.bind(this)
+      })
     }
   },
 
@@ -160,6 +177,7 @@ Page({
    */
   onLoad: function (options) {
     let cid = options.cid || 89
+    this.data.product.cid = cid
     let cates = wx.getStorageSync('cates')
     let cate = {}
     for (let i in cates) {
