@@ -21,6 +21,7 @@ Page({
       cid: '',
       title: '',
       images: [],
+      images_remote: [],
       prices: [],
       props: [],
       newPrice: {},
@@ -35,10 +36,8 @@ Page({
       success: function (res) {
         var tempFilePaths = res.tempFilePaths
         let images = this.data.product.images
-        images.push({
-          client: tempFilePaths[0],
-          remote: '',
-        })
+        let images_remote = this.data.product.images_remote
+        images.push(tempFilePaths[0])
         this.setData({
           'product.images': images
         })
@@ -46,9 +45,9 @@ Page({
           paths: tempFilePaths
         }).then(function (res) {
           for (let i in images) {
-            if (images[i].client == res.uploadedFiles[0].source) {
-              images[i].remote = res.uploadedFiles[0].target
-              this.data.product.images = images
+            if (images[i] == res.uploadedFiles[0].source) {
+              images_remote[i] = res.uploadedFiles[0].target
+              this.data.product.images_remote = images_remote
               break
             }
           }
@@ -97,7 +96,7 @@ Page({
     if (type == 'price-label') newPrice.label = value
     if (type == 'price-value') newPrice.value = value
     if (type == 'prop-label') newProp.label = value
-    if (type == 'prop-label') newProp.value = value
+    if (type == 'prop-value') newProp.value = value
     if (newPrice.label && newPrice.value) {
       let prices = this.data.product.prices
       prices.push({
@@ -118,7 +117,7 @@ Page({
       })
       this.setData({
         'product.props': props,
-        'product.newprop': { label: '', value: '' }
+        'product.newProp': { label: '', value: '' }
       })
     }
   },
@@ -216,15 +215,20 @@ Page({
   /**
    * 生命周期函数--监听页面隐藏
    */
-  onHide: function () {
-
+  onHide: function (e) {
+    console.log(e, 'hide')
   },
 
   /**
    * 生命周期函数--监听页面卸载
    */
-  onUnload: function () {
-
+  onUnload: function (e) {
+    let product = this.data.product
+    if (!product.title && product.images.length == 0) return
+    let products = wx.getStorageSync('products') || []
+    product.id = 'p' + Date.now()
+    products.push(product)
+    wx.setStorageSync('products', products)
   },
 
   /**

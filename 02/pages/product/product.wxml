@@ -16,7 +16,7 @@
   <view class="product-images">
     <block wx:for="{{product.images}}" wx:key="" wx:for-item="image">
       <view class="product-image" data-index="{{index}}" catchtap="onImageTap" catchlongtap="onImageLongTap">
-        <image src="{{image.client}}" />
+        <image src="{{image}}" />
       </view>
     </block>
     <view class="product-image" wx:if="{{product.images.length<5}}" catchtap="onImageAdd" style="opacity:0.3">
@@ -48,10 +48,10 @@
 <template name="item-add">
   <view class="item item-add">
     <view class="item-label">
-      <input value="{{label}}" placeholder="{{labelholder}}" data-type="{{type}}" bindblur="onItemLabelAdd" />
+      <input value="{{label}}" placeholder="{{labelholder}}" data-type="{{type}}-label" bindblur="onItemBlur" />
     </view>
     <view class="item-value">
-      <input value="{{value}}" placeholder="{{valueholder}}" data-type="{{type}}" bindblur="onItemValueAdd" />
+      <input value="{{value}}" placeholder="{{valueholder}}" data-type="{{type}}-value" bindblur="onItemBlur" />
     </view>
   </view>
 </template>
