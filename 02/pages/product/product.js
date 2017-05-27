@@ -1,5 +1,6 @@
 import { http } from '../../utils/http.js'
 
+var touch = {}
 var longtap = false
 
 Page({
@@ -27,6 +28,77 @@ Page({
       newPrice: {},
       newProp: {},
     }
+  },
+
+  touchstart: function (e) {
+    touch.index = e.currentTarget.dataset.index
+    touch.type = e.currentTarget.dataset.type
+    touch.x1 = e.touches[0].clientX;
+    touch.y1 = e.touches[0].clientY;
+    touch.t1 = e.timeStamp;
+    touch.x2 = e.touches[0].clientX;
+    touch.y2 = e.touches[0].clientY;
+    touch.t2 = e.timeStamp;
+  },
+
+  touchmove: function (e) {
+    touch.x2 = e.touches[0].clientX;
+    touch.y2 = e.touches[0].clientY;
+    touch.t2 = e.timeStamp;
+  },
+
+  touchend: function (e) {
+    touch.t2 = e.timeStamp
+    let dx = touch.x2 - touch.x1
+    let dy = touch.y2 - touch.y1
+    let dt = touch.t2 - touch.t1
+    if ((Math.abs(dy) < Math.abs(dx) && dt < 250)) {
+      if (dx < -20) this.onSwiperLeft(touch.index, touch.type)
+      if (dx > 20) this.onSwiperRight(touch.index, touch.type)
+    }
+  },
+
+  onSwiperLeft: function (index, type) {
+    let product = this.data.product
+    for (let i in product.prices) {
+      product.prices[i].swipeLeft = false
+      product.prices[i].swipeRight = false
+    }
+    for (let i in product.props) {
+      product.props[i].swipeLeft = false
+      product.props[i].swipeRight = false
+    }
+    if (type == 'price') {
+      product.prices[index].swipeLeft = true
+    } else if (type == 'prop') {
+      product.props[index].swipeLeft = true
+    }
+    this.setData({
+      product: product
+    })
+  },
+
+  onSwiperRight: function (index, type) {
+    let product = this.data.product
+    if (type == 'price' && !product.prices[index].swipeLeft) return
+    if (type == 'prop' && !product.props[index].swipeLeft) return
+
+    for (let i in product.prices) {
+      product.prices[i].swipeLeft = false
+      product.prices[i].swipeRight = false
+    }
+    for (let i in product.props) {
+      product.props[i].swipeLeft = false
+      product.props[i].swipeRight = false
+    }
+    if (type == 'price') {
+      product.prices[index].swipeRight = true
+    } else if (type == 'prop') {
+      product.props[index].swipeRight = true
+    }
+    this.setData({
+      product: product
+    })
   },
 
   onImageAdd: function (e) {
@@ -88,94 +160,57 @@ Page({
     })
   },
 
+  onPriceAdd: function (e) {
+    let prices = this.data.product.prices
+    for (let i in prices) {
+      if (prices[i].label == '') return
+    }
+    prices.push({
+      label: '',
+      value: ''
+    })
+    this.setData({
+      'product.prices': prices
+    })
+  },
+
+  onPropAdd: function (e) {
+    let props = this.data.product.props
+    for (let i in props) {
+      if (props[i].label == '') return
+    }
+    props.push({
+      label: '',
+      value: ''
+    })
+    this.setData({
+      'product.props': props
+    })
+  },
+
   onItemBlur: function (e) {
     let value = e.detail.value
     let type = e.currentTarget.dataset.type
-    let newPrice = this.data.product.newPrice
-    let newProp = this.data.product.newProp
-    if (type == 'price-label') newPrice.label = value
-    if (type == 'price-value') newPrice.value = value
-    if (type == 'prop-label') newProp.label = value
-    if (type == 'prop-value') newProp.value = value
-    if (newPrice.label && newPrice.value) {
-      let prices = this.data.product.prices
-      prices.push({
-        id: Date.now(),
-        label: newPrice.label,
-        value: newPrice.value
-      })
-      this.setData({
-        'product.prices': prices,
-        'product.newPrice': { label: '', value: '' }
-      })
-    } else if (newProp.label && newProp.value) {
-      let props = this.data.product.props
-      props.push({
-        id: Date.now(),
-        label: newProp.label,
-        value: newProp.value
-      })
-      this.setData({
-        'product.props': props,
-        'product.newProp': { label: '', value: '' }
-      })
+    let index = e.currentTarget.dataset.index
+    let product = this.data.product
+    if (index >= 0) {
+      if (type == 'price-label') product.prices[index].label = value
+      if (type == 'price-value') product.prices[index].value = value
+      if (type == 'prop-label') product.props[index].label = value
+      if (type == 'prop-value') product.props[index].value = value
     }
-  },
-
-  onItemLongTap: function (e) {
-    let id = e.currentTarget.dataset.id
-    let prices = this.data.product.prices
-    let props = this.data.product.props
-    let type = ''
-    let index = -1
-    for (let i in prices) {
-      if (prices[i].id == id) {
-        type = 'price'
-        index = i
-        break
-      }
-    }
-    if (type == '') {
-      for (let i in props) {
-        if (props[i].id == id) {
-          type = 'prop'
-          index = i
-          break
-        }
-      }
-    }
-    if (type == 'price') {
-      wx.showActionSheet({
-        itemList: ['删除标签'],
-        success: function (res) {
-          if (res.tapIndex == 0) {
-            prices.splice(index, 1)
-            this.setData({
-              'product.prices': prices
-            })
-          }
-        }.bind(this)
-      })
-    } else if (type == 'prop') {
-      wx.showActionSheet({
-        itemList: ['删除属性'],
-        success: function (res) {
-          if (res.tapIndex == 0) {
-            props.splice(index, 1)
-            this.setData({
-              'product.props': props
-            })
-          }
-        }.bind(this)
-      })
-    }
+    this.setData({
+      product: product
+    })
   },
 
   /**
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
-    let cid = options.cid || 89
+    let id = options.id || 'p1495777209160'
+    let cid = options.cid || '89'
+    console.log(id, cid)
     this.data.product.cid = cid
     let cates = wx.getStorageSync('cates')
     let cate = {}

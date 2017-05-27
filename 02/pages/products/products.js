@@ -1,6 +1,9 @@
 import { Category } from '../../utils/category.js'
 
-var touch = {}
+var touchPositionX = 0
+var touchPositionY = 0
+var productlongtap = false
+var productDeleteTimer = null
 
 Page({
 
@@ -10,11 +13,6 @@ Page({
   cid: '',
 
   data: {
-    moveId: '',
-    offset: {
-      left: -1000,
-      top: -1000
-    },
 
     moving: {
       top: 0,
@@ -28,30 +26,38 @@ Page({
   },
 
   touchstart: function (e) {
+    let x = e.touches[0].clientX;
+    let y = e.touches[0].clientY;
+
     let id = e.currentTarget.dataset.id
     let index = e.currentTarget.dataset.index
+    let row = Math.floor(index / 3)
+    let col = index % 3
+    let offsetLeft = col * 110
+    let offsetTop = row * 140
+    touchPositionX = x - offsetLeft
+    touchPositionY = y - offsetTop
+
     let products = this.data.products
     this.data.moving.sourceIndex = index
     this.data.moving.product = products[index]
-
-    touch.x1 = e.touches[0].clientX;
-    touch.y1 = e.touches[0].clientY;
-    touch.offsetLeft = e.currentTarget.offsetLeft
-    touch.offsetTop = e.currentTarget.offsetTop
   },
 
   touchmove: function (e) {
-    touch.x2 = e.touches[0].clientX;
-    touch.y2 = e.touches[0].clientY;
-    let x = touch.x2 - touch.x1 + touch.offsetLeft
-    let y = touch.y2 - touch.y1 + touch.offsetTop
+    let x = e.touches[0].clientX;
+    let y = e.touches[0].clientY;
+    let left = x - touchPositionX
+    let top = y - touchPositionY
 
-    let i = Math.round(y / 140)
-    let j = Math.round(x / 110)
-    let targetIndex = i * 3 + j
+    let row = Math.round(top / 140)
+    let col = Math.round(left / 110)
+    if (col < 0) col = 0
+    if (col > 2) col = 2
+    let targetIndex = row * 3 + col
+
     let moving = this.data.moving
-    moving.left = x
-    moving.top = y
+    moving.left = left
+    moving.top = top
     moving.display = 'block'
     moving.targetIndex = targetIndex
     this.setData({
@@ -65,8 +71,10 @@ Page({
     let targetIndex = moving.targetIndex
     let products = this.data.products
     let product = products[sourceIndex]
-    products.splice(sourceIndex, 1)
-    products.splice(targetIndex, 0, product)
+    if (targetIndex > 0 && targetIndex < products.length) {
+      products.splice(sourceIndex, 1)
+      products.splice(targetIndex, 0, product)
+    }
     moving.display = 'none'
     moving.sourceIndex = -1
     moving.targetIndex = -1
@@ -74,6 +82,61 @@ Page({
       products: products,
       moving: moving,
     })
+  },
+
+  onProductTap: function (e) {
+    if (productlongtap) {
+      productlongtap = false
+      return
+    }
+    let id = e.currentTarget.dataset.id
+    let products = this.data.products
+    wx.navigateTo({
+      url: '../product/product?id=' + id + '&cid=' + this.cid,
+    })
+  },
+
+  onProductLongTap: function (e) {
+    productlongtap = true
+    let index = e.currentTarget.dataset.index
+    let products = this.data.products
+    for (let i in products) {
+      products[i].editor = false
+    }
+    products[index].editor = true
+    this.setData({
+      products: products
+    })
+
+    clearTimeout(productDeleteTimer)
+    productDeleteTimer = setTimeout(function () {
+      let products = this.data.products
+      for (let i in products) {
+        products[i].editor = false
+      }
+      this.setData({
+        products: products
+      })
+    }.bind(this), 6000)
+  },
+
+  onProductDelete: function (e) {
+    let id = e.currentTarget.dataset.id
+    console.log(id)
+    let products = this.data.products
+    let index = -1
+    for (let i in products) {
+      if (products[i].id == id) {
+        index = i
+        break
+      }
+    }
+    if (index > -1) {
+      products.splice(index, 1)
+      this.setData({
+        products: products
+      })
+    }
   },
 
   onProductAdd: function (e) {

@@ -24,34 +24,56 @@
     </view>
   </view>
 
-  <view class="head">价格标签</view>
-  <template is="items" data="{{items:product.prices}}" />
-  <template is="item-add" data="{{...product.newPrice, type:'price', labelholder:'新增价格标签', valueholder:'输入价格值'}}" />
+  <view class="head">
+    <view class="head-title">价格标签</view>
+    <view class="head-icon" catchtap="onPriceAdd">
+      <image src="/images/icon/plus.png" />
+    </view>
+  </view>
 
-  <view class="head">商品属性</view>
-  <template is="items" data="{{items:product.props}}" />
-  <template is="item-add" data="{{...product.newProp, type:'prop', labelholder:'新增属性标签', valueholder:'输入属性值'}}" />
+  <template is="items" data="{{items:product.prices, type:'price',labelholder:'输入价格标签', valueholder:'输入价格值'}}" />
+
+  <view class="head">
+    <view class="head-title">商品属性</view>
+    <view class="head-icon" catchtap="onPropAdd">
+      <image src="/images/icon/plus.png" />
+    </view>
+  </view>
+
+  <template is="items" data="{{items:product.props, type:'prop',labelholder:'输入商品属性', valueholder:'输入属性值'}}" />
 
 </view>
 
 <template name="items">
   <view class="list">
     <block wx:for="{{items}}" wx:key="">
-      <view class="item" data-id="{{item.id}}" catchlongtap="onItemLongTap">
-        <view class="item-label">{{item.label}}</view>
-        <view class="item-value">{{item.value}}</view>
-      </view>
+      <template is="item" data="{{...item, index, type, labelholder, valueholder}}" />
     </block>
   </view>
 </template>
 
-<template name="item-add">
-  <view class="item item-add">
-    <view class="item-label">
-      <input value="{{label}}" placeholder="{{labelholder}}" data-type="{{type}}-label" bindblur="onItemBlur" />
-    </view>
-    <view class="item-value">
-      <input value="{{value}}" placeholder="{{valueholder}}" data-type="{{type}}-value" bindblur="onItemBlur" />
+<template name="item">
+  <view class="item" data-index="{{index}}" data-type="{{type}}" bindtouchstart="touchstart" bindtouchmove="touchmove" bindtouchend="touchend">
+    <view class="inner {{swipeLeft?'swipeleft':''}}">
+      <view class="left">
+        <view class="item-label">
+          <input value="{{label}}" data-index="{{index}}" data-type="{{type}}-label" bindblur="onItemBlur" placeholder="{{labelholder}}" />
+        </view>
+        <view class="item-value">
+          <input value="{{value}}" data-index="{{index}}" data-type="{{type}}-value" bindblur="onItemBlur" placeholder="{{valueholder}}" />
+        </view>
+      </view>
+      <view class="right">
+        <view class="editor sort-up" data-id="{{id}}" catchtap="onItemSortUp">
+          <image src="/images/icon/sort-up.png" />
+        </view>
+        <view class="editor sort-down" data-id="{{id}}" catchtap="onItemSortDown">
+          <image src="/images/icon/sort-down.png" />
+        </view>
+        <view class="editor delete" data-id="{{id}}" catchtap="onItemDelete">
+          <image src="/images/icon/close.png" />
+        </view>
+      </view>
     </view>
   </view>
 </template>

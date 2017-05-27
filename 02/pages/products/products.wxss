@@ -21,16 +21,13 @@
   display: flex;
   flex-direction: column;
   flex-wrap: wrap;
+  position: relative;
   padding: 10rpx;
 }
 
 .product.moving {
   position: absolute;
   opacity: 0.5;
-}
-
-.product.source .product-image{
-  border: 1px solid #333;
 }
 
 .product.target {
@@ -52,4 +49,17 @@
 
 .product-new .product-image {
   padding: 20rpx;
+}
+
+.product-editor {
+  position: absolute;
+  width: 80rpx;
+  height: 80rpx;
+  top: 0rpx;
+  right: 0rpx;
+  padding: 16rpx;
+  /*background-color: #ccc;*/
+}
+.product-editor image{
+  background-color: rgba(255, 255, 255, 0);
 }
