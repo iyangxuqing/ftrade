@@ -2,12 +2,8 @@ page {
   height: 100%;
 }
 
-scroll-view {
-  height: 100%;
-}
-
 .product {
-  margin-bottom: 40rpx;
+  padding-bottom: 200rpx;
 }
 
 .cate-title, .product-title {
@@ -40,15 +36,6 @@ scroll-view {
   padding-left: 20rpx;
   background-color: #ddd;
   margin-top: 30rpx;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.head-icon {
-  width: 100rpx;
-  height: 100rpx;
-  padding: 20rpx;
 }
 
 .product-images {
@@ -66,6 +53,12 @@ scroll-view {
   min-height: 100rpx;
   overflow: hidden;
   border-bottom: 1px solid #ddd;
+  display: flex;
+  align-items: center;
+}
+
+.item-new{
+  color: #ccc;
 }
 
 .item-label {
@@ -133,9 +126,25 @@ scroll-view {
   box-sizing: border-box;
   width: 334rpx;
   background: #fff;
-  border: 1px solid #ccc;
 }
 
 .edit {
   opacity: 0;
+}
+
+.edit-input{
+  position: fixed;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  /*background-color: rgba(0, 0, 0, 0.8);*/
+  z-index: 1000;
+}
+.edit-input .input{
+  position: absolute;
+  bottom: 20rpx;
+  left: 40rpx;
+  right: 40rpx;
+  width: 670rpx;
 }

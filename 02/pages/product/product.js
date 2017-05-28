@@ -155,16 +155,12 @@ Page({
 
   onTitleBlur: function (e) {
     let title = e.detail.value
-    console.log(title)
     this.setData({
       'product.title': title
     })
   },
 
   onPriceAdd: function (e) {
-    this.setData({
-      scrollTop: e.currentTarget.offsetTop
-    })
     let prices = this.data.product.prices
     for (let i in prices) {
       if (prices[i].label == '') return
@@ -179,9 +175,6 @@ Page({
   },
 
   onPropAdd: function (e) {
-    this.setData({
-      scrollTop: e.currentTarget.offsetTop
-    })
     let props = this.data.product.props
     for (let i in props) {
       if (props[i].label == '') return
@@ -195,7 +188,7 @@ Page({
     })
   },
 
-  onItemLongTap: function (e) {
+  onItemTap: function (e) {
     let index = e.currentTarget.dataset.index
     let type = e.currentTarget.dataset.type
     let offsetLeft = e.currentTarget.offsetLeft
@@ -211,7 +204,7 @@ Page({
       inputShow: true,
       inputValue: value,
       inputLeft: offsetLeft,
-      inputTop: offsetTop + 4
+      inputTop: offsetTop + 5
     })
   },
 
@@ -235,8 +228,8 @@ Page({
     if (index == 0) return
     let product = this.data.product
     let items = []
-    if (type == 'price') items = product.prices
-    if (type == 'prop') items = product.props
+    if (type == 'prices') items = product.prices
+    if (type == 'props') items = product.props
     let temp = items[index]
     items[index] = items[index - 1]
     items[index - 1] = temp
@@ -250,8 +243,8 @@ Page({
     let type = e.currentTarget.dataset.type
     let product = this.data.product
     let items = []
-    if (type == 'price') items = product.prices
-    if (type == 'prop') items = product.props
+    if (type == 'prices') items = product.prices
+    if (type == 'props') items = product.props
     if (index == items.length - 1) return
     let temp = items[index]
     items[index] = items[index + 1]
@@ -266,8 +259,8 @@ Page({
     let type = e.currentTarget.dataset.type
     let product = this.data.product
     let items = []
-    if (type == 'price') items = product.prices
-    if (type == 'prop') items = product.props
+    if (type == 'prices') items = product.prices
+    if (type == 'props') items = product.props
     items.splice(index, 1)
     this.setData({
       product: product
