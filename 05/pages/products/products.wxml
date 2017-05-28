@@ -1,0 +1,32 @@
+<view class="cate">
+  <view class="cate-title">{{cate.ptitle}} > {{cate.title}}</view>
+</view>
+
+<view class="products">
+  <block wx:for="{{products}}" wx:key="" wx:for-item="product">
+    <view class="product {{moving.sourceIndex==index?'source':''}} {{moving.targetIndex==index?'target':''}}" data-id="{{product.id}}" data-index="{{index}}" catchtap="onProductTap" catchlongtap="onProductLongTap">
+      <view class="product-editor" wx:if="{{product.editor}}" data-id="{{product.id}}" catchtap="onProductDelete">
+        <image src="/images/icon/close.png" />
+      </view>
+      <view class="product-image">
+        <image src="{{product.images[0]}}" />
+      </view>
+      <view class="product-title" data-id="{{product.id}}" data-index="{{index}}" catchtouchstart="touchstart" catchtouchmove="touchmove" catchtouchend="touchend">
+        <text>{{product.title}}</text>
+      </view>
+    </view>
+  </block>
+  <view class="product moving" style="left:{{moving.left}}px;top:{{moving.top}}px;display:{{moving.display}}">
+    <view class="product-image">
+      <image src="{{moving.product.images[0]}}" />
+    </view>
+    <view class="product-title">
+      <text>{{moving.product.title}}</text>
+    </view>
+  </view>
+  <view class="product product-new" catchtap="onProductAdd">
+    <view class="product-image">
+      <image src="/images/icon/plus.png" />
+    </view>
+  </view>
+</view>

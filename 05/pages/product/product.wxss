@@ -70,16 +70,16 @@ scroll-view {
 
 .item-label {
   width: 50%;
-  padding: 10rpx 20rpx;
+  padding-left: 20rpx;
 }
 
 .item-value {
   width: 50%;
-  padding: 10rpx 20rpx;
+  padding-left: 20rpx;
 }
 
 .item .inner {
-  width: 1030rpx;
+  position: relative;
   min-height: 100rpx;
   display: flex;
   align-items: center;
@@ -91,12 +91,20 @@ scroll-view {
 }
 
 .left {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
   width: 670rpx;
   display: flex;
   align-items: center;
 }
 
 .right {
+  position: absolute;
+  right: -300rpx;
+  top: 50%;
+  transform: translateY(-50%);
   width: 300rpx;
   display: flex;
   align-items: center;
@@ -118,24 +126,4 @@ scroll-view {
 
 .editor.delete {
   background-color: red;
-}
-
-.empty {
-  color: #ccc;
-}
-
-.input {
-  position: absolute;
-  left: 0;
-  right: 0;
-  padding: 0 20rpx;
-  display: inline-block;
-  box-sizing: border-box;
-  width: 334rpx;
-  background: #fff;
-  border: 1px solid #ccc;
-}
-
-.edit {
-  opacity: 0;
 }

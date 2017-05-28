@@ -23,12 +23,74 @@ Page({
       title: '',
       images: [],
       images_remote: [],
-      prices: [{ label: 123456789, value: '这是一段很长很长的文字，很长很长，应该有20个字符的长度。' }],
-      props: [],
-    },
-    inputLeft: 0,
-    inputTop: 0,
-    inputShow: false,
+      prices: [{
+        label: 1, value: 2
+      },
+      {
+        label: 3, value: 4
+      },
+      {
+        label: 5, value: 6
+      },
+      {
+        label: 3, value: 4
+      },
+      {
+        label: 5, value: 6
+      },
+      {
+        label: 3, value: 4
+      },
+      {
+        label: 5, value: 6
+      },
+      {
+        label: 7, value: 8
+      }],
+      props: [{
+        label: 1, value: 2
+      },
+      {
+        label: 3, value: 4
+      }, {
+        label: 3, value: 4
+      }, {
+        label: 3, value: 4
+      }, {
+        label: 3, value: 4
+      }, {
+        label: 3, value: 4
+      }, {
+        label: 3, value: 4
+      }, {
+        label: 3, value: 4
+      }, {
+        label: 3, value: 4
+      },
+      {
+        label: 3, value: 4
+      }, {
+        label: 3, value: 4
+      }, {
+        label: 3, value: 4
+      }, {
+        label: 3, value: 4
+      }, {
+        label: 3, value: 4
+      }, {
+        label: 3, value: 4
+      }, {
+        label: 3, value: 4
+      }, {
+        label: 3, value: 4
+      },
+      {
+        label: 5, value: 6
+      },
+      {
+        label: 7, value: 8
+      }],
+    }
   },
 
   touchstart: function (e) {
@@ -69,9 +131,9 @@ Page({
       product.props[i].swipeLeft = false
       product.props[i].swipeRight = false
     }
-    if (type == 'prices') {
+    if (type == 'price') {
       product.prices[index].swipeLeft = true
-    } else if (type == 'props') {
+    } else if (type == 'prop') {
       product.props[index].swipeLeft = true
     }
     this.setData({
@@ -81,8 +143,8 @@ Page({
 
   onSwiperRight: function (index, type) {
     let product = this.data.product
-    if (type == 'prices' && !product.prices[index].swipeLeft) return
-    if (type == 'props' && !product.props[index].swipeLeft) return
+    if (type == 'price' && !product.prices[index].swipeLeft) return
+    if (type == 'prop' && !product.props[index].swipeLeft) return
 
     for (let i in product.prices) {
       product.prices[i].swipeLeft = false
@@ -92,9 +154,9 @@ Page({
       product.props[i].swipeLeft = false
       product.props[i].swipeRight = false
     }
-    if (type == 'prices') {
+    if (type == 'price') {
       product.prices[index].swipeRight = true
-    } else if (type == 'props') {
+    } else if (type == 'prop') {
       product.props[index].swipeRight = true
     }
     this.setData({
@@ -162,6 +224,7 @@ Page({
   },
 
   onPriceAdd: function (e) {
+    console.log(e.currentTarget.offsetTop, e.detail.y)
     this.setData({
       scrollTop: e.currentTarget.offsetTop
     })
@@ -176,6 +239,16 @@ Page({
     this.setData({
       'product.prices': prices,
     })
+    // let top = e.detail.y + prices.length * 50
+    // if(top>300){
+    //   top = top - 300
+    //   console.log(e.detail.y, top)
+    //   setTimeout(function () {
+    //     this.setData({
+    //       scrollTop: top
+    //     })
+    //   }.bind(this))
+    // } 
   },
 
   onPropAdd: function (e) {
@@ -195,37 +268,19 @@ Page({
     })
   },
 
-  onItemLongTap: function (e) {
-    let index = e.currentTarget.dataset.index
-    let type = e.currentTarget.dataset.type
-    let offsetLeft = e.currentTarget.offsetLeft
-    let offsetTop = e.currentTarget.offsetTop
-    let value = e.currentTarget.dataset.value
-    let product = this.data.product
-    let types = type.split('-')
-    product[types[0]][index].edit = types[1]
-    this.setData({
-      product: product,
-      inputIndex: index,
-      inputType: type,
-      inputShow: true,
-      inputValue: value,
-      inputLeft: offsetLeft,
-      inputTop: offsetTop + 4
-    })
-  },
-
-  onInputBlur: function (e) {
-    let index = e.currentTarget.dataset.index
-    let type = e.currentTarget.dataset.type
+  onItemBlur: function (e) {
     let value = e.detail.value
+    let type = e.currentTarget.dataset.type
+    let index = e.currentTarget.dataset.index
     let product = this.data.product
-    let types = type.split('-')
-    product[types[0]][index][types[1]] = value
-    product[types[0]][index].edit = ''
+    if (index >= 0) {
+      if (type == 'price-label') product.prices[index].label = value
+      if (type == 'price-value') product.prices[index].value = value
+      if (type == 'prop-label') product.props[index].label = value
+      if (type == 'prop-value') product.props[index].value = value
+    }
     this.setData({
-      product: product,
-      inputShow: false
+      product: product
     })
   },
 

@@ -1,4 +1,4 @@
-<view scroll-y="{{true}}" scroll-top="{{scrollTop}}">
+<scroll-view scroll-y="{{true}}" scroll-top="{{scrollTop}}">
   <view class="product">
     <view class="cate-title">
       <view class="label">商品类别</view>
@@ -30,7 +30,7 @@
         <image src="/images/icon/plus.png" />
       </view>
     </view>
-    <template is="items" data="{{items:product.prices, type:'prices',labelholder:'输入价格标签', valueholder:'输入价格值'}}" />
+    <template is="items" data="{{items:product.prices, type:'price',labelholder:'输入价格标签', valueholder:'输入价格值'}}" />
 
     <view class="head" id="head-props">
       <view class="head-title">商品属性</view>
@@ -38,27 +38,28 @@
         <image src="/images/icon/plus.png" />
       </view>
     </view>
-    <template is="items" data="{{items:product.props, type:'props',editing:'', labelholder:'输入商品属性', valueholder:'输入属性值'}}" />
-
-    <input class="input" focus="true" wx:if="{{inputShow}}" data-index="{{inputIndex}}" data-type="{{inputType}}" style="left:{{inputLeft}}px;top:{{inputTop}}px;" value="{{inputValue}}" placeholder="{{inputPlaceHoder}}" bindblur="onInputBlur" />
-
+    <template is="items" data="{{items:product.props, type:'prop',labelholder:'输入商品属性', valueholder:'输入属性值'}}" />
   </view>
-</view>
+</scroll-view>
 
 <template name="items">
   <view class="list">
     <block wx:for="{{items}}" wx:key="">
-      <template is="item" data="{{...item, index, type, editing,  labelholder, valueholder}}" />
+      <template is="item" data="{{...item, index, type, labelholder, valueholder}}" />
     </block>
   </view>
 </template>
 
 <template name="item">
-  <view class="item" data-index="{{index}}" data-type="{{type}}" bindtouchstart="touchstart" bindtouchmove="touchmove" bindtouchend="touchend">
+  <view class="item" id="price-{{index}}" data-index="{{index}}" data-type="{{type}}" bindtouchstart="touchstart" bindtouchmove="touchmove" bindtouchend="touchend">
     <view class="inner {{swipeLeft?'swipeleft':''}}">
       <view class="left">
-        <view class="item-label {{label?'':'empty'}} {{edit=='label'?'eidt':''}}" data-index="{{index}}" data-value="{{label}}" data-type="{{type}}-label" bindtap="onItemLongTap">{{label || labelholder}}</view>
-        <view class="item-value {{value?'':'empty'}} {{edit=='value'?'edit':''}}" data-index="{{index}}" data-value="{{value}}" data-type="{{type}}-value" bindtap="onItemLongTap">{{value || valueholder}}</view>
+        <view class="item-label">
+          <input value="{{label}}" data-index="{{index}}" data-type="{{type}}-label" bindblur="onItemBlur" placeholder="{{labelholder}}" />
+        </view>
+        <view class="item-value">
+          <input value="{{value}}" data-index="{{index}}" data-type="{{type}}-value" bindblur="onItemBlur" placeholder="{{valueholder}}" />
+        </view>
       </view>
       <view class="right">
         <view class="editor sort-up" data-index="{{index}}" data-type="{{type}}" catchtap="onItemSortUp">
