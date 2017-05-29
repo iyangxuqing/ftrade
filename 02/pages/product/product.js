@@ -1,7 +1,9 @@
 import { http } from '../../utils/http.js'
+import { Product } from '../../utils/products.js'
 
 var touch = {}
 var longtap = false
+var delImageShowTimer = null
 
 Page({
 
@@ -23,12 +25,9 @@ Page({
       title: '',
       images: [],
       images_remote: [],
-      prices: [{ label: 123456789, value: '这是一段很长很长的文字，很长很长，应该有20个字符的长度。' }],
+      prices: [],
       props: [],
     },
-    inputLeft: 0,
-    inputTop: 0,
-    inputShow: false,
   },
 
   touchstart: function (e) {
@@ -103,6 +102,9 @@ Page({
   },
 
   onImageAdd: function (e) {
+    this.setData({
+      delImageIndex: -1
+    })
     wx.chooseImage({
       count: 1,
       sizeType: ['compressed'],
@@ -134,22 +136,57 @@ Page({
       longtap = false
       return
     }
+    this.setData({
+      delImageIndex: -1
+    })
+    let index = e.currentTarget.dataset.index
+    wx.chooseImage({
+      count: 1,
+      sizeType: ['compressed'],
+      success: function (res) {
+        var tempFilePaths = res.tempFilePaths
+        let images = this.data.product.images
+        let images_remote = this.data.product.images_remote
+        images[index] = tempFilePaths[0]
+        this.setData({
+          'product.images': images
+        })
+        http.upload({
+          paths: tempFilePaths
+        }).then(function (res) {
+          for (let i in images) {
+            if (images[i] == res.uploadedFiles[0].source) {
+              images_remote[i] = res.uploadedFiles[0].target
+              this.data.product.images_remote = images_remote
+              break
+            }
+          }
+        }.bind(this))
+      }.bind(this)
+    })
   },
 
   onImageLongTap: function (e) {
     longtap = true
     let index = e.currentTarget.dataset.index
-    wx.showActionSheet({
-      itemList: ['删除图片'],
-      success: function (res) {
-        if (res.tapIndex == 0) {
-          let images = this.data.product.images
-          images.splice(index, 1)
-          this.setData({
-            'product.images': images
-          })
-        }
-      }.bind(this)
+    this.setData({
+      delImageIndex: index
+    })
+    clearTimeout(delImageShowTimer)
+    delImageShowTimer = setTimeout(function () {
+      this.setData({
+        delImageIndex: -1
+      })
+    }.bind(this), 6000)
+  },
+
+  onImageDel: function (e) {
+    let index = e.currentTarget.dataset.index
+    let images = this.data.product.images
+    images.splice(index, 1)
+    this.setData({
+      'product.images': images,
+      delImageIndex: -1
     })
   },
 
@@ -164,6 +201,7 @@ Page({
     let prices = this.data.product.prices
     for (let i in prices) {
       if (prices[i].label == '') return
+      if (prices[i].value == '') return
     }
     prices.push({
       label: '',
@@ -178,6 +216,7 @@ Page({
     let props = this.data.product.props
     for (let i in props) {
       if (props[i].label == '') return
+      if (props[i].value == '') return
     }
     props.push({
       label: '',
@@ -188,34 +227,15 @@ Page({
     })
   },
 
-  onItemTap: function (e) {
-    let index = e.currentTarget.dataset.index
-    let type = e.currentTarget.dataset.type
-    let offsetLeft = e.currentTarget.offsetLeft
-    let offsetTop = e.currentTarget.offsetTop
-    let value = e.currentTarget.dataset.value
-    let product = this.data.product
-    let types = type.split('-')
-    product[types[0]][index].edit = types[1]
-    this.setData({
-      product: product,
-      inputIndex: index,
-      inputType: type,
-      inputShow: true,
-      inputValue: value,
-      inputLeft: offsetLeft,
-      inputTop: offsetTop + 5
-    })
-  },
-
-  onInputBlur: function (e) {
+  onItemBlur: function (e) {
     let index = e.currentTarget.dataset.index
     let type = e.currentTarget.dataset.type
     let value = e.detail.value
     let product = this.data.product
     let types = type.split('-')
-    product[types[0]][index][types[1]] = value
-    product[types[0]][index].edit = ''
+    if (value) {
+      product[types[0]][index][types[1]] = value
+    }
     this.setData({
       product: product,
       inputShow: false
@@ -271,10 +291,9 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
-    let id = options.id || 'p1495777209160'
-    let cid = options.cid || '89'
-    console.log(id, cid)
-    this.data.product.cid = cid
+    let id = options.id
+    let cid = options.cid
+
     let cates = wx.getStorageSync('cates')
     let cate = {}
     for (let i in cates) {
@@ -291,9 +310,29 @@ Page({
       }
       if (cate.title) break
     }
+
+    let product = {}
+    if (id) {
+      let products = wx.getStorageSync('products')
+      for (let i in products) {
+        if (products[i].id == id) {
+          product = products[i]
+          break
+        }
+      }
+    } else {
+      product.cid = cid
+      product.images = []
+      product.prices = []
+      product.props = []
+      product.images_remote = []
+    }
+
     this.setData({
-      cate: cate
+      cate: cate,
+      product: product
     })
+
   },
 
   /**
@@ -314,7 +353,6 @@ Page({
    * 生命周期函数--监听页面隐藏
    */
   onHide: function (e) {
-    console.log(e, 'hide')
   },
 
   /**
@@ -322,11 +360,23 @@ Page({
    */
   onUnload: function (e) {
     let product = this.data.product
+    for (let i in product.prices) {
+      if (product.prices[i].label == '') {
+        product.prices.splice(i, 1)
+      }
+    }
+    for (let i in product.props) {
+      if (product.props[i].label == '') {
+        product.prices.props(i, 1)
+      }
+    }
     if (!product.title && product.images.length == 0) return
     let products = wx.getStorageSync('products') || []
-    product.id = 'p' + Date.now()
-    products.push(product)
-    wx.setStorageSync('products', products)
+    if (!product.id) {
+      Product.add(products, product)
+    } else {
+      Product.set(products, product)
+    }
   },
 
   /**

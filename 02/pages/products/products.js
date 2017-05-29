@@ -1,4 +1,5 @@
 import { Category } from '../../utils/category.js'
+import { Product } from '../../utils/products.js'
 
 var touchPositionX = 0
 var touchPositionY = 0
@@ -17,10 +18,10 @@ Page({
     moving: {
       top: 0,
       left: 0,
-      display: 'none',
       product: {},
       sourceIndex: -1,
       targetIndex: -1,
+      display: 'none',
     }
 
   },
@@ -70,11 +71,7 @@ Page({
     let sourceIndex = moving.sourceIndex
     let targetIndex = moving.targetIndex
     let products = this.data.products
-    let product = products[sourceIndex]
-    if (targetIndex > 0 && targetIndex < products.length) {
-      products.splice(sourceIndex, 1)
-      products.splice(targetIndex, 0, product)
-    }
+    Product.sort(products, sourceIndex, targetIndex)
     moving.display = 'none'
     moving.sourceIndex = -1
     moving.targetIndex = -1
@@ -120,23 +117,13 @@ Page({
     }.bind(this), 6000)
   },
 
-  onProductDelete: function (e) {
+  onProductDel: function (e) {
     let id = e.currentTarget.dataset.id
-    console.log(id)
     let products = this.data.products
-    let index = -1
-    for (let i in products) {
-      if (products[i].id == id) {
-        index = i
-        break
-      }
-    }
-    if (index > -1) {
-      products.splice(index, 1)
-      this.setData({
-        products: products
-      })
-    }
+    Product.del(products, id)
+    this.setData({
+      products: products
+    })
   },
 
   onProductAdd: function (e) {
@@ -145,6 +132,7 @@ Page({
       url: '../product/product?cid=' + cid,
     })
   },
+
 
   /**
    * 生命周期函数--监听页面加载
