@@ -56,8 +56,8 @@
   <view class="item" data-index="{{index}}" data-type="{{type}}" bindtouchstart="touchstart" bindtouchmove="touchmove" bindtouchend="touchend">
     <view class="item-inner {{swipeLeft?'swipeleft':''}}">
       <view class="left">
-        <view class="item-label" data-index="{{index}}" data-type="{{type}}-label" catchtap="onItemBlur">{{label || labelholder}}</view>
-        <view class="item-value" data-index="{{index}}" data-type="{{type}}-value" catchtap="onItemBlur">{{value || valueholder}}</view>
+        <input class="item-label" data-index="{{index}}" data-type="{{type}}-label" bindblur="onItemBlur" value="{{label}}" placeholder="{{labelholder}}" />
+        <input class="item-value" data-index="{{index}}" data-type="{{type}}-value" bindblur="onItemBlur" value="{{value}}" placeholder="{{valueholder}}" />
       </view>
       <view class="right">
         <view class="sort-up" data-index="{{index}}" data-type="{{type}}" catchtap="onItemSortUp">

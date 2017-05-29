@@ -88,13 +88,14 @@
 }
 
 .item-label {
-  width: 50%;
-  padding: 10rpx 20rpx;
+  width: 260rpx;
+  padding-left: 20rpx;
+  margin-right: 40rpx;
 }
 
 .item-value {
-  width: 50%;
-  padding: 10rpx 20rpx;
+  padding: 10rpx 0;
+  width: 330rpx;
 }
 
 .right {

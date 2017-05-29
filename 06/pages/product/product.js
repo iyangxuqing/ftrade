@@ -228,9 +228,6 @@ Page({
   },
 
   onItemBlur: function (e) {
-    let offsetLeft = e.currentTarget.offsetLeft
-    let offsetTop = e.currentTarget.offsetTop
-    console.log(offsetLeft, offsetTop)
     let index = e.currentTarget.dataset.index
     let type = e.currentTarget.dataset.type
     let value = e.detail.value
