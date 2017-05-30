@@ -227,21 +227,48 @@ Page({
     })
   },
 
-  onItemBlur: function (e) {
+  onItemEdit: function (e) {
     let offsetLeft = e.currentTarget.offsetLeft
     let offsetTop = e.currentTarget.offsetTop
-    console.log(offsetLeft, offsetTop)
+    let index = e.currentTarget.dataset.index
+    let type = e.currentTarget.dataset.type
+    let value = e.currentTarget.dataset.value
+    let platform = wx.getSystemInfoSync().platform
+    let editor = {
+      show: true,
+      left: offsetLeft,
+      top: offsetTop,
+      index: index,
+      type: type,
+      value: value,
+      platform: platform
+    }
+    let product = this.data.product
+    let types = type.split('-')
+    product[types[0]][index][types[1]] = value
+    product[types[0]][index].editing = types[1]
+    this.setData({
+      product: product
+    })
+    setTimeout(function () {
+      this.setData({
+        editor: editor
+      })
+    }.bind(this), 5)
+  },
+
+  onEditorBlur: function (e) {
     let index = e.currentTarget.dataset.index
     let type = e.currentTarget.dataset.type
     let value = e.detail.value
     let product = this.data.product
     let types = type.split('-')
-    if (value) {
-      product[types[0]][index][types[1]] = value
-    }
+    product[types[0]][index][types[1]] = value
+    product[types[0]][index].editing = ''
+    console.log('blur')
     this.setData({
       product: product,
-      inputShow: false
+      'editor.show': false
     })
   },
 
@@ -276,7 +303,7 @@ Page({
     let temp = items[index]
     items[index] = items[index + 1]
     items[index + 1] = temp
-    for(let i in items){
+    for (let i in items) {
       items[i].swipeLeft = false
       items[i].swipeRight = false
     }

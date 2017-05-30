@@ -4,11 +4,11 @@
 
 <view class="products">
   <block wx:for="{{products}}" wx:key="" wx:for-item="product">
-    <view class="product {{moving.sourceIndex==index?'source':''}} {{moving.targetIndex==index?'target':''}}" data-id="{{product.id}}" data-index="{{index}}" catchtap="onProductTap" catchlongtap="onProductLongTap">
+    <view class="product {{moving.sourceIndex==index?'source':''}} {{moving.targetIndex==index?'target':''}}" data-id="{{product.id}}" data-index="{{index}}" catchtap="onProductTap">
       <view class="product-editor" wx:if="{{product.editor}}" data-id="{{product.id}}" catchtap="onProductDel">
         <image src="/images/icon/close.png" />
       </view>
-      <view class="product-image">
+      <view class="product-image" data-index="{{index}}" catchlongtap="onProductLongTap">
         <image src="{{product.images[0]}}" />
       </view>
       <view class="product-title" data-id="{{product.id}}" data-index="{{index}}" catchtouchstart="touchstart" catchtouchmove="touchmove" catchtouchend="touchend">

@@ -42,6 +42,12 @@ Page({
     let products = this.data.products
     this.data.moving.sourceIndex = index
     this.data.moving.product = products[index]
+    for (let i in products) {
+      products[i].editor = false
+    }
+    this.setData({
+      products: products
+    })
   },
 
   touchmove: function (e) {
@@ -88,6 +94,12 @@ Page({
     }
     let id = e.currentTarget.dataset.id
     let products = this.data.products
+    for (let i in products) {
+      products[i].editor = false
+    }
+    this.setData({
+      products: products
+    })
     wx.navigateTo({
       url: '../product/product?id=' + id + '&cid=' + this.cid,
     })
