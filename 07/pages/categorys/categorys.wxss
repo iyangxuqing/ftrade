@@ -1,3 +1,5 @@
+/* pages/test/test.wxss */
+
 .categorys {
   margin-top: 10rpx;
   margin-bottom: 10rpx;

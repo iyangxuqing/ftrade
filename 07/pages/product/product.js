@@ -7,6 +7,9 @@ var delImageShowTimer = null
 
 Page({
 
+  /**
+   * 页面的初始数据
+   */
   data: {
     cata: {
       id: '',

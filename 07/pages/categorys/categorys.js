@@ -5,10 +5,8 @@ var touch = {}
 Page({
 
   data: {
-    cates: [],
-    newValue: '',
-    expandId: '',
-    swipeLeftId: '',
+    newValue: '', //用于清空新增类目输入框
+    cates: []
   },
 
   touchstart: function (e) {
@@ -39,68 +37,107 @@ Page({
   },
 
   onSwiperLeft: function (id) {
+    let cates = this.data.cates
+    for (let i in cates) {
+      cates[i].swipeLeft = false
+      cates[i].swipeRight = false
+      if (cates[i].id == id) {
+        cates[i].swipeLeft = true
+      }
+      for (let j in cates[i].children) {
+        cates[i].children[j].swipeLeft = false
+        cates[i].children[j].swipeRight = false
+        if (cates[i].children[j].id == id) {
+          cates[i].children[j].swipeLeft = true
+        }
+      }
+    }
     this.setData({
-      swipeLeftId: id
+      cates: cates
     })
   },
 
   onSwiperRight: function (id) {
+    let cates = this.data.cates
+    for (let i in cates) {
+      cates[i].swipeLeft = false
+      cates[i].swipeRight = false
+      if (cates[i].id == id) {
+        cates[i].swipeRight = true
+      }
+      for (let j in cates[i].children) {
+        cates[i].children[j].swipeLeft = false
+        cates[i].children[j].swipeRight = false
+        if (cates[i].children[j].id == id) {
+          cates[i].children[j].swipeRight = true
+        }
+      }
+    }
     this.setData({
-      swipeLeftId: ''
+      cates: cates
     })
   },
 
   onCateExpand: function (e) {
     let id = e.currentTarget.dataset.id
-    if (this.data.expandId == id) id = ''
+    let cates = this.data.cates
+    for (let i in cates) {
+      if (cates[i].id == id) {
+        cates[i].expand = !cates[i].expand
+      } else {
+        cates[i].expand = false
+      }
+    }
     this.setData({
-      expandId: id
+      cates: cates
     })
   },
 
   onCateAdd: function (e) {
     let pid = e.currentTarget.dataset.pid
     let title = e.detail.value
+    let cates = this.data.cates
     if (title == '') return
-    let cates = Category.add({ pid, title },
-      function (res) {
+    Category.add(cates, { pid, title })
+      .then(function (cates) {
         this.setData({
-          cates: res,
+          cates: cates,
+          newValue: '' //清空新增类目输入框
         })
-      }.bind(this)
-    )
-    this.setData({
-      cates: cates,
-      newValue: ''
-    })
+      }.bind(this))
   },
 
   onTitleEdit: function (e) {
     let id = e.currentTarget.dataset.id
     let pid = e.currentTarget.dataset.pid
     let title = e.detail.value
-    let cates = Category.set({ id, pid, title })
-    if (cates) this.setData({ cates: cates })
+    let cates = this.data.cates
+    if (title) Category.set(cates, { id, pid, title })
+    this.setData({
+      cates: cates
+    })
   },
 
   onThumbEdit: function (e) {
     let id = e.currentTarget.dataset.id
     let pid = e.currentTarget.dataset.pid
+    let cates = this.data.cates
     wx.chooseImage({
       count: 1,
       success: function (res) {
         let thumb = res.tempFilePaths[0]
-        let cates = Category.set(
+        Category.set(cates,
           { id, pid, thumb },
-          // function (res) {
-          //   this.setData({
-          //     cates: res
-          //   })
-          // }.bind(this)
-        )
-        this.setData({
-          cates: cates
-        })
+          function () {
+            this.setData({
+              cates: cates
+            })
+          }.bind(this),
+          function () {
+            // this.setData({
+            //   cates: cates
+            // })
+          }.bind(this))
       }.bind(this)
     })
   },
@@ -108,27 +145,44 @@ Page({
   onCateSortUp: function (e) {
     let id = e.currentTarget.dataset.id
     let pid = e.currentTarget.dataset.pid
-    let cates = Category.sort({ id, pid }, true)
+    let cates = this.data.cates
+    for (let i in cates) {
+      cates[i].swipeLeft = false
+      cates[i].swipeRight = false
+      for (let j in cates[i].children) {
+        cates[i].children[j].swipeLeft = false
+        cates[i].children[j].swipeRight = false
+      }
+    }
+    Category.sort(cates, { id, pid }, true)
     this.setData({
-      cates: cates,
-      swipeLeftId: ''
+      cates: cates
     })
   },
 
   onCateSortDown: function (e) {
     let id = e.currentTarget.dataset.id
     let pid = e.currentTarget.dataset.pid
-    let cates = Category.sort({ id, pid }, false)
+    let cates = this.data.cates
+    for (let i in cates) {
+      cates[i].swipeLeft = false
+      cates[i].swipeRight = false
+      for (let j in cates[i].children) {
+        cates[i].children[j].swipeLeft = false
+        cates[i].children[j].swipeRight = false
+      }
+    }
+    Category.sort(cates, { id, pid }, false)
     this.setData({
-      cates: cates,
-      swipeLeftId: ''
+      cates: cates
     })
   },
 
   onCateDelete: function (e) {
     let id = e.currentTarget.dataset.id
     let pid = e.currentTarget.dataset.pid
-    let cates = Category.del({ id, pid })
+    let cates = this.data.cates
+    Category.del(cates, { id, pid })
     this.setData({
       cates: cates
     })

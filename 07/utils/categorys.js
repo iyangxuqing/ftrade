@@ -3,11 +3,11 @@ import { http } from 'http.js'
 export var __cates = []
 
 function get() {
-  let cates = __cates
   return new Promise(function (resolve, reject) {
     http.get({
       url: '_ftrade/category.php?m=get'
     }).then(function (res) {
+      let cates = []
       for (let i in res) {
         let cate = res[i]
         let pid = cate.pid
@@ -17,18 +17,18 @@ function get() {
         } else {
           for (let j in cates) {
             if (cates[j].id == pid) {
-              cates[j].children.push(cate)
+              cates[j].children.push(res[i])
             }
           }
         }
       }
+      __cates = cates
       resolve(cates)
     })
   })
 }
 
-function add(cate, cb) {
-  let cates = __cates
+function add(cates, cate) {
   let max = 0
   if (cate.pid == 0) {
     for (let i in cates) {
@@ -47,63 +47,40 @@ function add(cate, cb) {
       }
     }
   }
-  cate.id = '_newid'
   cate.sort = Number(max) + 1
 
-  if (cate.pid == 0) {
-    cate.children = []
-    cates.push(cate)
-  } else {
-    for (let i in cates) {
-      if (cates[i].id == cate.pid) {
-        cates[i].children.push(cate)
-      }
-    }
-  }
-
-  http.get({
-    url: '_ftrade/category.php?m=add',
-    data: {
-      pid: cate.pid,
-      sort: cate.sort,
-      title: cate.title,
-    }
-  }).then(function (res) {
-    if (!res.error) {
-      if (cate.pid == 0) {
-        for (let i in cates) {
-          if (cates[i].id == '_newid') {
-            cates[i].id = res.insertId
-          }
-        }
-      } else {
-        for (let i in cates) {
-          if (cates[i].id == cate.pid) {
-            for (let j in cates[i].children) {
-              if (cates[i].children[j].id == '_newid') {
-                cates[i].children[j].id = res.insertId
-                break
-              }
+  return new Promise(function (resolve, reject) {
+    http.get({
+      url: '_ftrade/category.php?m=add',
+      data: cate
+    }).then(function (res) {
+      if (!res.error) {
+        cate.id = res.insertId
+        if (cate.pid == 0) {
+          cate.children = []
+          cates.push(cate)
+        } else {
+          for (let i in cates) {
+            if (cates[i].id == cate.pid) {
+              cates[i].children.push(cate)
+              break
             }
-            break
           }
         }
+        resolve(cates)
+        __cates = cates
       }
-      cb && cb(cates)
-    }
+    })
   })
-
-  return cates
 }
 
-function set(cate, cb) {
-  if ('title' in cate) return setTitle(cate, cb)
-  if ('thumb' in cate) return setThumb(cate, cb)
+function set(cates, cate, clientfn, serverfn) {
+  if (cate.title) setTitle(cates, cate)
+  if (cate.thumb) setThumb(cates, cate, clientfn, serverfn)
 }
 
-function setTitle(cate, cb) {
-  let cates = __cates
-  if (cate.title == '') return cates
+function setTitle(cates, cate) {
+  /* client */
   if (cate.pid == 0) {
     for (let i in cates) {
       if (cates[i].id == cate.id) {
@@ -116,31 +93,26 @@ function setTitle(cate, cb) {
     for (let i in cates) {
       if (cates[i].id == cate.pid) {
         for (let j in cates[i].children) {
-          if (cates[i].children[j].id == cate.id) {
-            if (cates[i].children[j].title == cate.title) return
-            cates[i].children[j].title = cate.title
+          let child = cates[i].children[j]
+          if (child.id == cate.id) {
+            if (child.title == cate.title) return
+            child.title = cate.title
             break
           }
         }
-        break
       }
     }
   }
+  __cates = cates
 
+  /* server */
   http.get({
     url: '_ftrade/category.php?m=set',
     data: cate
-  }).then(function (res) {
-    if (!res.error) {
-      cb && cb(cates)
-    }
   })
-
-  return cb
 }
 
-function setThumb(cate, cb) {
-  let cates = __cates
+function setThumb(cates, cate, clientfn, serverfn) {
   let _cate = null
   if (cate.pid == 0) {
     for (let i in cates) {
@@ -158,11 +130,13 @@ function setThumb(cate, cb) {
             break
           }
         }
-        break;
+        if (_cate) break;
       }
     }
   }
   _cate.thumb = cate.thumb
+  __cates = cates
+  clientfn && clientfn()
 
   http.upload({
     paths: new Array(cate.thumb)
@@ -174,16 +148,20 @@ function setThumb(cate, cb) {
     }).then(function (res) {
       if (!res.error) {
         _cate.thumb = cate.thumb
-        cb && cb(cates)
+        __cates = cates
+        serverfn && serverfn()
       }
     })
   })
-
-  return cates
 }
 
-function del(cate) {
-  let cates = __cates
+function del(cates, cate) {
+  http.get({
+    url: '_ftrade/category.php?m=del',
+    data: cate
+  }).then(function (res) {
+
+  })
   if (cate.pid == 0) {
     for (let i in cates) {
       if (cates[i].id == cate.id) {
@@ -200,19 +178,14 @@ function del(cate) {
             break
           }
         }
-        break
       }
     }
   }
-  http.get({
-    url: '_ftrade/category.php?m=del',
-    data: cate
-  })
-  return cates
+  __cates = cates
 }
 
-function sort(cate, up = false) {
-  let cates = __cates
+function sort(cates, cate, up = false) {
+  /* client */
   if (cate.pid == 0) {
     for (let i in cates) {
       if (cates[i].id == cate.id) {
@@ -251,10 +224,10 @@ function sort(cate, up = false) {
             break
           }
         }
-        break
       }
     }
   }
+
   /* server */
   for (let i in cates) {
     if (cates[i].sort != i) {
@@ -279,13 +252,15 @@ function sort(cate, up = false) {
         })
       }
     }
+
     /* client */
     cates[i].sort = i
     for (let j in cates[i].children) {
       cates[i].children[j].sort = j
     }
+    __cates = cates
+
   }
-  return cates
 }
 
 export var Category = {

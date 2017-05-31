@@ -1,12 +1,12 @@
-<template is="categorys" data="{{cates, newValue, swipeLeftId, expandId, dataReady}}" />
+<template is="categorys" data="{{cates, newValue, dataReady}}" />
 
 <template name="categorys">
   <view class="categorys">
     <block wx:for="{{cates}}" wx:key="" wx:for-item="cate">
-      <template is="category" data="{{...cate, swipeLeftId, expandId}}" />
-      <view class="children" wx:if="{{expandId==cate.id}}">
+      <template is="category" data="{{...cate}}" />
+      <view class="children" wx:if="{{cate.expand}}">
         <block wx:for="{{cate.children}}" wx:key="">
-          <template is="category" data="{{...item, swipeLeftId}}" />
+          <template is="category" data="{{...item}}" />
         </block>
         <template is="category-new" data="{{id:0, pid:cate.id, newValue:newValue, placeholder:'新增子类目', dataReady:dataReady}}" />
       </view>
@@ -26,7 +26,7 @@
 
 <template name="category">
   <view class="category" data-id="{{id}}" data-pid="{{pid}}" bindtouchstart="touchstart" bindtouchmove="touchmove" bindtouchend="touchend">
-    <view class="category-inner {{swipeLeftId==id?'swipeleft':''}}">
+    <view class="category-inner {{swipeLeft?'swipeleft':''}}">
       <view class="left">
         <view class="thumb" data-id="{{id}}" data-pid="{{pid}}" catchtap="onThumbEdit">
           <image src="{{thumb || '/images/icon/image.png'}}" />

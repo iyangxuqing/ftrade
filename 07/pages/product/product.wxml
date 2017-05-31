@@ -1,0 +1,79 @@
+<view class="product">
+  <view class="cate-title">
+    <view class="label">商品类别</view>
+    <view class="value">{{cate.ptitle}}>{{cate.title}}</view>
+  </view>
+
+  <view class="product-title">
+    <view class="label">商品名称</view>
+    <view class="value">
+      <input value="{{product.title}}" placeholder="输入商品名称" bindblur="onTitleBlur" />
+    </view>
+  </view>
+
+  <view class="head">商品图片</view>
+  <view class="product-images">
+    <block wx:for="{{product.images}}" wx:key="" wx:for-item="image">
+      <view class="product-image" data-index="{{index}}" catchtap="onImageTap" catchlongtap="onImageLongTap">
+        <view class="product-image-del" data-index="{{index}}" catchtap="onImageDel" wx:if="{{delImageIndex==index}}">
+          <image src="/images/icon/close.png" />
+        </view>
+        <image src="{{image}}" />
+      </view>
+    </block>
+    <view class="product-image" wx:if="{{product.images.length<5}}" catchtap="onImageAdd" style="opacity:0.3">
+      <image src="/images/icon/camera.png" />
+    </view>
+  </view>
+
+  <view class="head">
+    <view class="head-title">价格标签</view>
+  </view>
+  <template is="items" data="{{items:product.prices, type:'prices',labelholder:'输入价格标签', valueholder:'输入价格值'}}" />
+  <view class="item item-new" catchtap="onPriceAdd">
+    <view class="item-label">新增价格标签</view>
+  </view>
+
+  <view class="head">
+    <view class="head-title">商品属性</view>
+  </view>
+  <template is="items" data="{{items:product.props, type:'props',labelholder:'输入商品属性', valueholder:'输入属性值'}}" />
+  <view class="item item-new" catchtap="onPropAdd">
+    <view class="item-label">新增商品属性</view>
+  </view>
+
+  <view class="editor {{editor.platform}}" style="top:{{editor.top}}px;left:{{editor.left}}px" wx:if="{{editor.show}}">
+    <textarea auto-height focus="{{true}}" value="{{editor.value}}" data-index="{{editor.index}}" data-type="{{editor.type}}" bindblur="onEditorBlur" />
+  </view>
+
+</view>
+
+<template name="items">
+  <view class="list">
+    <block wx:for="{{items}}" wx:key="">
+      <template is="item" data="{{...item, index, type,  labelholder, valueholder}}" />
+    </block>
+  </view>
+</template>
+
+<template name="item">
+  <view class="item" data-index="{{index}}" data-type="{{type}}" bindtouchstart="touchstart" bindtouchmove="touchmove" bindtouchend="touchend">
+    <view class="item-inner {{swipeLeft?'swipeleft':''}}">
+      <view class="left">
+        <view class="item-label {{label?'':'empty'}} {{editing=='label'?'editing':''}}" data-index="{{index}}" data-type="{{type}}-label" data-value="{{label}}" catchtap="onItemEdit">{{label || labelholder}}</view>
+        <view class="item-value {{value?'':'empty'}} {{editing=='value'?'editing':''}}" data-index="{{index}}" data-type="{{type}}-value" data-value="{{value}}" catchtap="onItemEdit">{{value || valueholder}}</view>
+      </view>
+      <view class="right">
+        <view class="sort-up" data-index="{{index}}" data-type="{{type}}" catchtap="onItemSortUp">
+          <image src="/images/icon/sort-up.png" />
+        </view>
+        <view class="sort-down" data-index="{{index}}" data-type="{{type}}" catchtap="onItemSortDown">
+          <image src="/images/icon/sort-down.png" />
+        </view>
+        <view class="delete" data-index="{{index}}" data-type="{{type}}" catchtap="onItemDelete">
+          <image src="/images/icon/close.png" />
+        </view>
+      </view>
+    </view>
+  </view>
+</template>
