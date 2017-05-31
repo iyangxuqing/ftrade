@@ -8,27 +8,25 @@
         <block wx:for="{{cate.children}}" wx:key="">
           <template is="category" data="{{...item}}" />
         </block>
-        <template is="category-new" data="{{id:0, pid:cate.id, newValue:newValue, dataReady:dataReady}}" />
+        <template is="category-new" data="{{id:0, pid:cate.id, newValue:newValue, placeholder:'新增子类目', dataReady:dataReady}}" />
       </view>
     </block>
-    <template is="category-new" data="{{id:0, pid:0, newValue:newValue, dataReady:dataReady}}" />
+    <template is="category-new" data="{{id:0, pid:0, newValue:newValue, placeholder:'新增类目', dataReady:dataReady}}" />
   </view>
 </template>
 
 <template name="category-new">
   <view class="category category-new" wx:if="{{dataReady}}">
-    <view class="thumb">
-      <image wx:if="{{false}}" src="/images/icon/add.png" />
-    </view>
+    <view class="thumb"></view>
     <view class="title">
-      <input data-id="{{id}}" data-pid="{{pid}}" bindblur="onTitleEdit" value="{{newValue}}" placeholder="{{pid==0?'新增类目':'新增子类目'}}" />
+      <input data-pid="{{pid}}" bindblur="onCateAdd" value="{{newValue}}" placeholder="{{placeholder}}" />
     </view>
   </view>
 </template>
 
 <template name="category">
-  <view class="category {{children?'':'child'}}" data-id="{{id}}" data-pid="{{pid}}" bindtouchstart="touchstart" bindtouchmove="touchmove" bindtouchend="touchend">
-    <view class="inner {{swipeLeft?'swipeleft':''}}">
+  <view class="category" data-id="{{id}}" data-pid="{{pid}}" bindtouchstart="touchstart" bindtouchmove="touchmove" bindtouchend="touchend">
+    <view class="category-inner {{swipeLeft?'swipeleft':''}}">
       <view class="left">
         <view class="thumb" data-id="{{id}}" data-pid="{{pid}}" catchtap="onThumbEdit">
           <image src="{{thumb || '/images/icon/image.png'}}" />
@@ -37,22 +35,22 @@
           <input value="{{title}}" data-id="{{id}}" data-pid="{{pid}}" bindblur="onTitleEdit" placeholder="类目名不可为空" />
         </view>
         <view class="icon" wx:if="{{children}}" data-id="{{id}}" catchtap="onCateExpand">
-          <image src="/images/icon/arrow-up.png" wx:if="{{expand}}" />
-          <image src="/images/icon/arrow-down.png" wx:else />
+          <image src="/images/icon/packup.png" wx:if="{{expand}}" />
+          <image src="/images/icon/unfold.png" wx:else />
         </view>
         <view class="icon" wx:if="{{!children}}" data-id="{{id}}" data-pid="{{pid}}" catchtap="onNavProducts">
-          <image src="/images/icon/arrow-right.png" />
+          <image src="/images/icon/enter.png" />
         </view>
       </view>
       <view class="right">
-        <view class="editor sort-up" data-id="{{id}}" data-pid="{{pid}}" catchtap="onCateSortUp">
-          <image src="/images/icon/sort-up.png" />
+        <view class="sort-up" data-id="{{id}}" data-pid="{{pid}}" catchtap="onCateSortUp">
+          <image src="/images/icon/sort-up-white.png" />
         </view>
-        <view class="editor sort-down" data-id="{{id}}" data-pid="{{pid}}" catchtap="onCateSortDown">
-          <image src="/images/icon/sort-down.png" />
+        <view class="sort-down" data-id="{{id}}" data-pid="{{pid}}" catchtap="onCateSortDown">
+          <image src="/images/icon/sort-down-white.png" />
         </view>
-        <view class="editor delete" data-id="{{id}}" data-pid="{{pid}}" catchtap="onCateDelete">
-          <image src="/images/icon/close.png" />
+        <view class="delete" data-id="{{id}}" data-pid="{{pid}}" catchtap="onCateDelete">
+          <image src="/images/icon/delete-white.png" />
         </view>
       </view>
     </view>

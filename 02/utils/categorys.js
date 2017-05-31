@@ -70,9 +70,9 @@ function add(cates, cate) {
   })
 }
 
-function set(cates, cate) {
+function set(cates, cate, clientfn, serverfn) {
   if (cate.title) setTitle(cates, cate)
-  if (cate.thumb) setThumb(cates, cate)
+  if (cate.thumb) setThumb(cates, cate, clientfn, serverfn)
 }
 
 function setTitle(cates, cate) {
@@ -107,12 +107,12 @@ function setTitle(cates, cate) {
   })
 }
 
-function setThumb(cates, cate) {
-  /* client */
+function setThumb(cates, cate, clientfn, serverfn) {
+  let _cate = null
   if (cate.pid == 0) {
     for (let i in cates) {
       if (cates[i].id == cate.id) {
-        cates[i].thumb = cate.thumb
+        _cate = cates[i]
         break
       }
     }
@@ -120,22 +120,32 @@ function setThumb(cates, cate) {
     for (let i in cates) {
       if (cates[i].id == cate.pid) {
         for (let j in cates[i].children) {
-          let child = cates[i].children[j]
-          if (child.id == cate.id) {
-            child.thumb = cate.thumb
+          if (cates[i].children[j].id == cate.id) {
+            _cate = cates[i].children[j]
             break
           }
         }
+        if (_cate) break;
       }
     }
   }
-  /* server */
-  if (cate.thumb.indexOf('wxfile://') == -1) {
+  _cate.thumb = cate.thumb
+  clientfn && clientfn()
+
+  http.upload({
+    paths: new Array(cate.thumb)
+  }).then(function (res) {
+    cate.thumb = res.uploadedFiles[0].target
     http.get({
       url: '_ftrade/category.php?m=set',
       data: cate
+    }).then(function (res) {
+      if (!res.error) {
+        _cate.thumb = cate.thumb
+        serverfn && serverfn()
+      }
     })
-  }
+  })
 }
 
 function del(cates, cate) {
@@ -253,6 +263,4 @@ export var Category = {
   set: set,
   del: del,
   sort: sort,
-  setTitle: setTitle,
-  setThumb: setThumb,
 }

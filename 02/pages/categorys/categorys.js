@@ -1,13 +1,10 @@
 import { http } from '../../utils/http.js'
-import { Category } from '../../utils/category.js'
+import { Category } from '../../utils/categorys.js'
 
 var touch = {}
 
 Page({
 
-  /**
-   * 页面的初始数据
-   */
   data: {
     newValue: '', //用于清空新增类目输入框
     cates: []
@@ -97,27 +94,29 @@ Page({
     })
   },
 
+  onCateAdd: function (e) {
+    let pid = e.currentTarget.dataset.pid
+    let title = e.detail.value
+    let cates = this.data.cates
+    if (title == '') return
+    Category.add(cates, { pid, title })
+      .then(function (cates) {
+        this.setData({
+          cates: cates,
+          newValue: '' //清空新增类目输入框
+        })
+      }.bind(this))
+  },
+
   onTitleEdit: function (e) {
     let id = e.currentTarget.dataset.id
     let pid = e.currentTarget.dataset.pid
     let title = e.detail.value
     let cates = this.data.cates
-    if (id == 0 && title == '') return
-
-    if (id == 0) {
-      Category.add(cates, { pid, title, thumb: '' })
-        .then(function (cates) {
-          this.setData({
-            cates: cates,
-            newValue: '' //清空新增类目输入框
-          })
-        }.bind(this))
-    } else {
-      Category.setTitle(cates, { id, pid, title })
-      this.setData({
-        cates: cates
-      })
-    }
+    if (title) Category.set(cates, { id, pid, title })
+    this.setData({
+      cates: cates
+    })
   },
 
   onThumbEdit: function (e) {
@@ -128,17 +127,18 @@ Page({
       count: 1,
       success: function (res) {
         let thumb = res.tempFilePaths[0]
-        Category.setThumb(cates, { id, pid, thumb })
-        this.setData({
-          cates: cates
-        })
-        http.upload({
-          paths: new Array(thumb)
-        }).then(function (res) {
-          thumb = res.uploadedFiles[0].target
-          Category.setThumb(cates, { id, pid, thumb })
-          this.data.cates = cates //等待下次setData时更新
-        }.bind(this))
+        Category.set(cates,
+          { id, pid, thumb },
+          function () {
+            this.setData({
+              cates: cates
+            })
+          }.bind(this),
+          function () {
+            // this.setData({
+            //   cates: cates
+            // })
+          }.bind(this))
       }.bind(this)
     })
   },
@@ -147,6 +147,14 @@ Page({
     let id = e.currentTarget.dataset.id
     let pid = e.currentTarget.dataset.pid
     let cates = this.data.cates
+    for (let i in cates) {
+      cates[i].swipeLeft = false
+      cates[i].swipeRight = false
+      for (let j in cates[i].children) {
+        cates[i].children[j].swipeLeft = false
+        cates[i].children[j].swipeRight = false
+      }
+    }
     Category.sort(cates, { id, pid }, true)
     this.setData({
       cates: cates
@@ -157,6 +165,14 @@ Page({
     let id = e.currentTarget.dataset.id
     let pid = e.currentTarget.dataset.pid
     let cates = this.data.cates
+    for (let i in cates) {
+      cates[i].swipeLeft = false
+      cates[i].swipeRight = false
+      for (let j in cates[i].children) {
+        cates[i].children[j].swipeLeft = false
+        cates[i].children[j].swipeRight = false
+      }
+    }
     Category.sort(cates, { id, pid }, false)
     this.setData({
       cates: cates

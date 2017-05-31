@@ -1,4 +1,4 @@
-import { Category } from '../../utils/category.js'
+import { Category } from '../../utils/categorys.js'
 import { Product } from '../../utils/products.js'
 
 var touchPositionX = 0
