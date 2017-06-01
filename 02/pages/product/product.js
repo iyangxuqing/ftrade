@@ -1,14 +1,14 @@
 import { http } from '../../utils/http.js'
-import { Product } from '../../utils/products.js'
+import { __products, Product } from '../../utils/products.js'
 
 var touch = {}
-var longtap = false
+var imageLongTap = false
 var delImageShowTimer = null
 
 Page({
 
   data: {
-    cata: {
+    cate: {
       id: '',
       pid: '',
       title: '',
@@ -21,7 +21,6 @@ Page({
       cid: '',
       title: '',
       images: [],
-      images_remote: [],
       prices: [],
       props: [],
     },
@@ -56,46 +55,26 @@ Page({
   },
 
   onSwiperLeft: function (index, type) {
-    let product = this.data.product
-    for (let i in product.prices) {
-      product.prices[i].swipeLeft = false
-      product.prices[i].swipeRight = false
-    }
-    for (let i in product.props) {
-      product.props[i].swipeLeft = false
-      product.props[i].swipeRight = false
-    }
-    if (type == 'prices') {
-      product.prices[index].swipeLeft = true
-    } else if (type == 'props') {
-      product.props[index].swipeLeft = true
-    }
     this.setData({
-      product: product
+      swipeLeftId: type + '-' + index
     })
   },
 
   onSwiperRight: function (index, type) {
-    let product = this.data.product
-    if (type == 'prices' && !product.prices[index].swipeLeft) return
-    if (type == 'props' && !product.props[index].swipeLeft) return
-
-    for (let i in product.prices) {
-      product.prices[i].swipeLeft = false
-      product.prices[i].swipeRight = false
-    }
-    for (let i in product.props) {
-      product.props[i].swipeLeft = false
-      product.props[i].swipeRight = false
-    }
-    if (type == 'prices') {
-      product.prices[index].swipeRight = true
-    } else if (type == 'props') {
-      product.props[index].swipeRight = true
-    }
     this.setData({
-      product: product
+      swipeLeftId: -1
     })
+  },
+
+  onTitleBlur: function (e) {
+    let title = e.detail.value
+    let product = this.data.product
+    product.title = title
+    let products = Product.set({
+      id: product.id,
+      title: product.title
+    })
+    console.log(this.data.product)
   },
 
   onImageAdd: function (e) {
@@ -108,7 +87,6 @@ Page({
       success: function (res) {
         var tempFilePaths = res.tempFilePaths
         let images = this.data.product.images
-        let images_remote = this.data.product.images_remote
         images.push(tempFilePaths[0])
         this.setData({
           'product.images': images
@@ -118,8 +96,8 @@ Page({
         }).then(function (res) {
           for (let i in images) {
             if (images[i] == res.uploadedFiles[0].source) {
-              images_remote[i] = res.uploadedFiles[0].target
-              this.data.product.images_remote = images_remote
+              images[i] = res.uploadedFiles[0].target
+              this.data.product.images[i] = images[i]
               break
             }
           }
@@ -129,8 +107,8 @@ Page({
   },
 
   onImageTap: function (e) {
-    if (longtap) {
-      longtap = false
+    if (imageLongTap) {
+      imageLongTap = false
       return
     }
     this.setData({
@@ -143,7 +121,6 @@ Page({
       success: function (res) {
         var tempFilePaths = res.tempFilePaths
         let images = this.data.product.images
-        let images_remote = this.data.product.images_remote
         images[index] = tempFilePaths[0]
         this.setData({
           'product.images': images
@@ -153,8 +130,8 @@ Page({
         }).then(function (res) {
           for (let i in images) {
             if (images[i] == res.uploadedFiles[0].source) {
-              images_remote[i] = res.uploadedFiles[0].target
-              this.data.product.images_remote = images_remote
+              images[i] = res.uploadedFiles[0].target
+              this.data.product.images[i] = images[i]
               break
             }
           }
@@ -164,7 +141,7 @@ Page({
   },
 
   onImageLongTap: function (e) {
-    longtap = true
+    imageLongTap = true
     let index = e.currentTarget.dataset.index
     this.setData({
       delImageIndex: index
@@ -182,45 +159,23 @@ Page({
     let images = this.data.product.images
     images.splice(index, 1)
     this.setData({
+      delImageIndex: -1,
       'product.images': images,
-      delImageIndex: -1
     })
   },
 
-  onTitleBlur: function (e) {
-    let title = e.detail.value
-    this.setData({
-      'product.title': title
-    })
-  },
-
-  onPriceAdd: function (e) {
-    let prices = this.data.product.prices
-    for (let i in prices) {
-      if (prices[i].label == '') return
-      if (prices[i].value == '') return
-    }
-    prices.push({
-      label: '',
+  onItemAdd: function (e) {
+    let value = e.detail.value
+    if (value == '') return
+    let type = e.currentTarget.dataset.type
+    let product = this.data.product
+    product[type].push({
+      label: value,
       value: ''
     })
     this.setData({
-      'product.prices': prices,
-    })
-  },
-
-  onPropAdd: function (e) {
-    let props = this.data.product.props
-    for (let i in props) {
-      if (props[i].label == '') return
-      if (props[i].value == '') return
-    }
-    props.push({
-      label: '',
-      value: ''
-    })
-    this.setData({
-      'product.props': props
+      newValue: '',
+      product: product
     })
   },
 
@@ -242,10 +197,8 @@ Page({
     }
     let product = this.data.product
     let types = type.split('-')
-    product[types[0]][index][types[1]] = value
-    product[types[0]][index].editing = types[1]
     this.setData({
-      product: product
+      editId: types[0] + '-' + types[1] + '-' + index
     })
     setTimeout(function () {
       this.setData({
@@ -261,10 +214,9 @@ Page({
     let product = this.data.product
     let types = type.split('-')
     product[types[0]][index][types[1]] = value
-    product[types[0]][index].editing = ''
-    console.log('blur')
     this.setData({
       product: product,
+      editId: -1,
       'editor.show': false
     })
   },
@@ -272,20 +224,14 @@ Page({
   onItemSortUp: function (e) {
     let index = e.currentTarget.dataset.index
     let type = e.currentTarget.dataset.type
-    if (index == 0) return
     let product = this.data.product
-    let items = []
-    if (type == 'prices') items = product.prices
-    if (type == 'props') items = product.props
-    let temp = items[index]
-    items[index] = items[index - 1]
-    items[index - 1] = temp
-    for (let i in items) {
-      items[i].swipeLeft = false
-      items[i].swipeRight = false
-    }
+    if (index == 0) return
+    let temp = product[type][index]
+    product[type][index] = product[type][index - 1]
+    product[type][index - 1] = temp
     this.setData({
-      product: product
+      product: product,
+      swipeLeftId: -1
     })
   },
 
@@ -293,19 +239,13 @@ Page({
     let index = e.currentTarget.dataset.index
     let type = e.currentTarget.dataset.type
     let product = this.data.product
-    let items = []
-    if (type == 'prices') items = product.prices
-    if (type == 'props') items = product.props
-    if (index == items.length - 1) return
-    let temp = items[index]
-    items[index] = items[index + 1]
-    items[index + 1] = temp
-    for (let i in items) {
-      items[i].swipeLeft = false
-      items[i].swipeRight = false
-    }
+    if (index == product[type].length - 1) return
+    let temp = product[type][index]
+    product[type][index] = product[type][index + 1]
+    product[type][index + 1] = temp
     this.setData({
-      product: product
+      product: product,
+      swipeLeftId: -1
     })
   },
 
@@ -313,12 +253,10 @@ Page({
     let index = e.currentTarget.dataset.index
     let type = e.currentTarget.dataset.type
     let product = this.data.product
-    let items = []
-    if (type == 'prices') items = product.prices
-    if (type == 'props') items = product.props
-    items.splice(index, 1)
+    product[type].splice(index, 1)
     this.setData({
-      product: product
+      product: product,
+      swipeLeftId: -1
     })
   },
 
@@ -347,20 +285,31 @@ Page({
     }
 
     let product = {}
+
+    if (!id) {
+      product = {
+        cid: cid,
+        images: [],
+        prices: [],
+        props: []
+      }
+      product = Product.add(product,
+        function (product) {
+          this.setData({
+            product: product
+          })
+        }.bind(this)
+      )
+    }
+
     if (id) {
-      let products = wx.getStorageSync('products')
+      let products = __products
       for (let i in products) {
         if (products[i].id == id) {
           product = products[i]
           break
         }
       }
-    } else {
-      product.cid = cid
-      product.images = []
-      product.prices = []
-      product.props = []
-      product.images_remote = []
     }
 
     this.setData({

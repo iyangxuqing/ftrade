@@ -1,0 +1,58 @@
+<template is="categorys" data="{{cates, newValue, swipeLeftId, expandId, dataReady}}" />
+
+<template name="categorys">
+  <view class="categorys">
+    <block wx:for="{{cates}}" wx:key="" wx:for-item="cate">
+      <template is="category" data="{{...cate, swipeLeftId, expandId}}" />
+      <view class="children" wx:if="{{expandId==cate.id}}">
+        <block wx:for="{{cate.children}}" wx:key="">
+          <template is="category" data="{{...item, swipeLeftId}}" />
+        </block>
+        <template is="category-new" data="{{id:0, pid:cate.id, newValue:newValue, placeholder:'新增子类目', dataReady:dataReady}}" />
+      </view>
+    </block>
+    <template is="category-new" data="{{id:0, pid:0, newValue:newValue, placeholder:'新增类目', dataReady:dataReady}}" />
+  </view>
+</template>
+
+<template name="category-new">
+  <view class="category category-new" wx:if="{{dataReady}}">
+    <view class="thumb"></view>
+    <view class="title">
+      <input data-pid="{{pid}}" bindblur="onCateAdd" value="{{newValue}}" placeholder="{{placeholder}}" />
+    </view>
+  </view>
+</template>
+
+<template name="category">
+  <view class="category" data-id="{{id}}" data-pid="{{pid}}" bindtouchstart="touchstart" bindtouchmove="touchmove" bindtouchend="touchend">
+    <view class="category-inner {{swipeLeftId==id?'swipeleft':''}}">
+      <view class="left">
+        <view class="thumb" data-id="{{id}}" data-pid="{{pid}}" catchtap="onThumbEdit">
+          <image src="{{thumb || '/images/icon/image.png'}}" />
+        </view>
+        <view class="title">
+          <input value="{{title}}" data-id="{{id}}" data-pid="{{pid}}" bindblur="onTitleEdit" placeholder="类目名不可为空" />
+        </view>
+        <view class="icon" wx:if="{{children}}" data-id="{{id}}" catchtap="onCateExpand">
+          <image src="/images/icon/packup.png" wx:if="{{expand}}" />
+          <image src="/images/icon/unfold.png" wx:else />
+        </view>
+        <view class="icon" wx:if="{{!children}}" data-id="{{id}}" data-pid="{{pid}}" catchtap="onNavProducts">
+          <image src="/images/icon/enter.png" />
+        </view>
+      </view>
+      <view class="right">
+        <view class="sort-up" data-id="{{id}}" data-pid="{{pid}}" catchtap="onCateSortUp">
+          <image src="/images/icon/sort-up-white.png" />
+        </view>
+        <view class="sort-down" data-id="{{id}}" data-pid="{{pid}}" catchtap="onCateSortDown">
+          <image src="/images/icon/sort-down-white.png" />
+        </view>
+        <view class="delete" data-id="{{id}}" data-pid="{{pid}}" catchtap="onCateDelete">
+          <image src="/images/icon/delete-white.png" />
+        </view>
+      </view>
+    </view>
+  </view>
+</template>
