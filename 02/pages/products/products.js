@@ -64,11 +64,11 @@ Page({
   },
 
   touchend: function (e) {
+    let cid = this.data.cate.id
     let moving = this.data.moving
     let sourceIndex = moving.sourceIndex
     let targetIndex = moving.targetIndex
-    let products = this.data.products
-    Product.sort(products, sourceIndex, targetIndex)
+    let products = Product.sort(cid, sourceIndex, targetIndex)
     moving.display = 'none'
     moving.sourceIndex = -1
     moving.targetIndex = -1
@@ -110,8 +110,9 @@ Page({
 
   onProductDel: function (e) {
     let id = e.currentTarget.dataset.id
-    let products = this.data.products
-    Product.del(products, id)
+    let cid = this.data.cate.id
+    let products = Product.del({ id, cid })
+    console.log('products-del', products)
     this.setData({
       products: products
     })
@@ -124,55 +125,42 @@ Page({
     })
   },
 
+  onProductsUpdate: function (products, product) {
+    console.log('onProductsUpdate')
+    this.setData({
+      products: products
+    })
+  },
 
   /**
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
-    let cid = options.id || 89
-    let cpid = options.pid || 85
-    let cate = { id: cid, pid: cpid }
-    let cates = __cates
-    for (let i in cates) {
-      if (cates[i].id == cpid) {
-        cate.ptitle = cates[i].title
-        cate.pthumb = cates[i].thumb
-        for (let j in cates[i].children) {
-          if (cates[i].children[j].id == cid) {
-            cate.title = cates[i].children[j].title
-            cate.thumb = cates[i].children[j].thumb
-            break
-          }
-        }
-        break
-      }
-    }
+    getApp().listener.on('products', this.onProductsUpdate)
+
+    let cid = options.id
+    let cate = Category.get({ id: cid })
     this.setData({
       cate: cate
     })
+    Product.get({ cid: cid }).then(function (res) {
+      this.setData({
+        products: res
+      })
+    }.bind(this))
   },
 
   /**
    * 生命周期函数--监听页面初次渲染完成
    */
   onReady: function () {
+
   },
 
   /**
    * 生命周期函数--监听页面显示
    */
   onShow: function () {
-    let cid = this.data.cate.id
-    let _products = wx.getStorageSync('products')
-    let products = []
-    for (let i in _products) {
-      if (_products[i].cid == cid) {
-        products.push(_products[i])
-      }
-    }
-    this.setData({
-      products: products
-    })
 
   },
 

@@ -1,5 +1,6 @@
 import { http } from '../../utils/http.js'
-import { __products, Product } from '../../utils/products.js'
+import { Category } from '../../utils/categorys.js'
+import { Product } from '../../utils/products.js'
 
 var touch = {}
 var imageLongTap = false
@@ -8,12 +9,12 @@ var delImageShowTimer = null
 Page({
 
   data: {
-    cate: {
+    cata: {
       id: '',
-      pid: '',
       title: '',
-      ptitle: '',
       thumb: '',
+      pid: '',
+      ptitle: '',
       pthumb: ''
     },
     product: {
@@ -24,6 +25,18 @@ Page({
       prices: [],
       props: [],
     },
+    editor: {
+      show: false,
+      top: 0,
+      left: 0,
+      type: '',
+      index: '',
+      value: '',
+      platform: ''
+    },
+    editId: '',
+    swipeLeftId: '',
+    delImageIndex: -1
   },
 
   touchstart: function (e) {
@@ -49,32 +62,28 @@ Page({
     let dy = touch.y2 - touch.y1
     let dt = touch.t2 - touch.t1
     if ((Math.abs(dy) < Math.abs(dx) && dt < 250)) {
-      if (dx < -20) this.onSwiperLeft(touch.index, touch.type)
-      if (dx > 20) this.onSwiperRight(touch.index, touch.type)
+      if (dx < -20) this.onSwiperLeft(touch.type, touch.index)
+      if (dx > 20) this.onSwiperRight(touch.type, touch.index)
     }
   },
 
-  onSwiperLeft: function (index, type) {
+  onSwiperLeft: function (type, index) {
     this.setData({
       swipeLeftId: type + '-' + index
     })
   },
 
-  onSwiperRight: function (index, type) {
+  onSwiperRight: function (type, index) {
     this.setData({
-      swipeLeftId: -1
+      swipeLeftId: ''
     })
   },
 
   onTitleBlur: function (e) {
     let title = e.detail.value
-    let product = this.data.product
-    product.title = title
-    let products = Product.set({
-      id: product.id,
-      title: product.title
+    this.setData({
+      'product.title': title
     })
-    console.log(this.data.product)
   },
 
   onImageAdd: function (e) {
@@ -180,20 +189,27 @@ Page({
   },
 
   onItemEdit: function (e) {
-    let offsetLeft = e.currentTarget.offsetLeft
-    let offsetTop = e.currentTarget.offsetTop
-    let index = e.currentTarget.dataset.index
+    if (this.data.editor.show) {
+      let type = this.data.editor.type
+      let index = this.data.editor.index
+      let value = this.data.editor.value
+      let product = this.data.product
+      let types = type.split('-')
+      product[types[0]][index][types[1]] = value
+      this.setData({
+        product: product
+      })
+    }
     let type = e.currentTarget.dataset.type
+    let index = e.currentTarget.dataset.index
     let value = e.currentTarget.dataset.value
-    let platform = wx.getSystemInfoSync().platform
     let editor = {
       show: true,
-      left: offsetLeft,
-      top: offsetTop,
-      index: index,
+      top: e.currentTarget.offsetTop,
+      left: e.currentTarget.offsetLeft,
       type: type,
+      index: index,
       value: value,
-      platform: platform
     }
     let product = this.data.product
     let types = type.split('-')
@@ -207,17 +223,22 @@ Page({
     }.bind(this), 5)
   },
 
+  onEditorInput: function (e) {
+    let value = e.detail.value
+    this.data.editor.value = value
+  },
+
   onEditorBlur: function (e) {
-    let index = e.currentTarget.dataset.index
     let type = e.currentTarget.dataset.type
+    let index = e.currentTarget.dataset.index
     let value = e.detail.value
     let product = this.data.product
     let types = type.split('-')
     product[types[0]][index][types[1]] = value
     this.setData({
-      product: product,
-      editId: -1,
-      'editor.show': false
+      'editId': '',
+      'product': product,
+      'editor.show': false,
     })
   },
 
@@ -266,57 +287,20 @@ Page({
   onLoad: function (options) {
     let id = options.id
     let cid = options.cid
-
-    let cates = wx.getStorageSync('cates')
-    let cate = {}
-    for (let i in cates) {
-      for (let j in cates[i].children) {
-        if (cates[i].children[j].id == cid) {
-          cate.id = cid
-          cate.pid = cates[i].id
-          cate.ptitle = cates[i].title
-          cate.pthumb = cates[i].thumb
-          cate.title = cates[i].children[j].title
-          cate.thumb = cates[i].children[j].thumb
-          break;
-        }
-      }
-      if (cate.title) break
+    let product = {
+      cid: cid,
+      images: [],
+      prices: [],
+      props: []
     }
-
-    let product = {}
-
-    if (!id) {
-      product = {
-        cid: cid,
-        images: [],
-        prices: [],
-        props: []
-      }
-      product = Product.add(product,
-        function (product) {
-          this.setData({
-            product: product
-          })
-        }.bind(this)
-      )
-    }
-
-    if (id) {
-      let products = __products
-      for (let i in products) {
-        if (products[i].id == id) {
-          product = products[i]
-          break
-        }
-      }
-    }
-
+    let cate = Category.get({ id: cid })
+    if (id) product = Product.get({ id, cid })
+    let platform = wx.getSystemInfoSync().platform
     this.setData({
       cate: cate,
-      product: product
+      product: product,
+      platform: platform
     })
-
   },
 
   /**
@@ -344,22 +328,11 @@ Page({
    */
   onUnload: function (e) {
     let product = this.data.product
-    for (let i in product.prices) {
-      if (product.prices[i].label == '') {
-        product.prices.splice(i, 1)
-      }
-    }
-    for (let i in product.props) {
-      if (product.props[i].label == '') {
-        product.prices.props(i, 1)
-      }
-    }
-    if (!product.title && product.images.length == 0) return
-    let products = wx.getStorageSync('products') || []
+    if (!product.title && !product.images.length) return
     if (!product.id) {
-      Product.add(products, product)
+      Product.add(product)
     } else {
-      Product.set(products, product)
+      Product.set(product)
     }
   },
 

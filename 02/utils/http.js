@@ -7,9 +7,9 @@ function checkResponse(res) {
 }
 
 function showRequestFailedTip() {
-    // getApp().listener.trigger('tip', {
-    //     title: '网络错误，请重试...',
-    // })
+    getApp().listener.trigger('tip', {
+        title: '网络错误，请重试...',
+    })
 }
 
 function get(options) {

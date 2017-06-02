@@ -2,7 +2,15 @@ import { http } from 'http.js'
 
 export var __cates = []
 
-function get() {
+function get(options) {
+  if (!options) {
+    return getCategorys()
+  } else if ('id' in options) {
+    return getCategory(options.id)
+  }
+}
+
+function getCategorys() {
   let cates = []
   return new Promise(function (resolve, reject) {
     http.get({
@@ -26,6 +34,24 @@ function get() {
       resolve(cates)
     })
   })
+}
+
+function getCategory(id) {
+  let cates = __cates
+  for (let i in cates) {
+    for (let j in cates[i].children) {
+      if (cates[i].children[j].id == id) {
+        return {
+          id: id,
+          title: cates[i].children[j].title,
+          thumb: cates[i].children[j].thumb,
+          pid: cates[i].id,
+          ptitle: cates[i].title,
+          pthumb: cates[i].thumb,
+        }
+      }
+    }
+  }
 }
 
 function add(cate, cb) {
