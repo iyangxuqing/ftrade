@@ -5,13 +5,12 @@
 }
 
 .category {
-  position: relative;
   overflow: hidden;
   background: #fff;
   border-bottom: 1px solid #ccc;
 }
 
-.category:first-child{
+.category:first-child {
   border-top: 1px solid #ccc;
 }
 
@@ -30,18 +29,17 @@
 }
 
 .category .icon {
-  width: 100rpx;
+  width: 150rpx;
   height: 120rpx;
-  padding: 40rpx 30rpx;
+  padding: 40rpx 30rpx 40rpx 80rpx;
   flex-shrink: 0;
 }
 
 .children .category {
-  font-size: 0.9rem;
   border-bottom: 1px dashed #ccc;
 }
 
-.children .category:first-child{
+.children .category:first-child {
   border-top: 0;
 }
 
@@ -101,4 +99,27 @@
   height: 120rpx;
   padding: 40rpx;
   background-color: red;
+}
+
+.editor {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 400rpx;
+  background-color: #fff;
+}
+
+.editor.devtools {
+  margin-top: -4rpx;
+  margin-left: 0rpx;
+}
+
+.editor.ios {
+  margin-top: -2rpx;
+  margin-left: 0rpx;
+}
+
+.editor.android {
+  margin-top: 0rpx;
+  margin-left: 0rpx;
 }

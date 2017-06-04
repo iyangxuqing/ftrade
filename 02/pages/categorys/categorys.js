@@ -9,6 +9,16 @@ Page({
     newValue: '',
     expandId: '',
     swipeLeftId: '',
+    editor: {
+      focus: false,
+      top: 0,
+      left: -1000,
+      data: {
+        id: '',
+        pid: '',
+        value: ''
+      }
+    }
   },
 
   touchstart: function (e) {
@@ -62,7 +72,8 @@ Page({
     let pid = e.currentTarget.dataset.pid
     let title = e.detail.value
     if (title == '') return
-    let cates = Category.add({ pid, title },
+    let cates = Category.add(
+      { pid, title },
       function (res) {
         this.setData({
           cates: res,
@@ -76,11 +87,43 @@ Page({
   },
 
   onTitleEdit: function (e) {
+    if (this.data.editor.left > 0) {
+      this.setData({
+        'editor.left': -1000
+      })
+      return
+    }
     let id = e.currentTarget.dataset.id
     let pid = e.currentTarget.dataset.pid
-    let title = e.detail.value
-    let cates = Category.set({ id, pid, title })
-    if (cates) this.setData({ cates: cates })
+    let title = e.currentTarget.dataset.title
+    let offsetTop = e.currentTarget.offsetTop
+    let offsetLeft = e.currentTarget.offsetLeft
+    this.setData({
+      editor: {
+        focus: true,
+        top: offsetTop,
+        left: offsetLeft,
+        data: { id, pid, value: title }
+      }
+    })
+  },
+
+  onEditorBlur: function (e) {
+    let id = this.data.editor.data.id
+    let pid = this.data.editor.data.pid
+    let oldValue = this.data.editor.data.value
+    let value = e.detail.value
+    if (value == '' || value == oldValue) {
+      this.setData({
+        'editor.left': -1000
+      })
+      return
+    }
+    let cates = Category.set({ id, pid, title: value })
+    this.setData({
+      'cates': cates,
+      'editor.left': -1000
+    })
   },
 
   onThumbEdit: function (e) {
@@ -146,6 +189,10 @@ Page({
   * 生命周期函数--监听页面加载
   */
   onLoad: function (options) {
+    let platform = wx.getSystemInfoSync().platform
+    this.setData({
+      platform: platform
+    })
     Category.get().then(function (res) {
       this.setData({
         cates: res,

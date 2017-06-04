@@ -32,7 +32,8 @@
   <template is="items" data="{{items:product.prices, type:'prices', swipeLeftId, editId, labelholder:'输入价格标签', valueholder:'输入价格值'}}" />
   <view class="item item-new">
     <view class="item-label">
-      <textarea auto-height bindblur="onItemAdd" cursor-spacing="20" data-type="prices" value="{{newValue}}" placeholder="新增价格标签" />
+      <view catchtap="onItemAdd" data-type="prices-new">新增价格标签</view>
+      <!--<textarea auto-height bindblur="onItemAdd" cursor-spacing="20" data-type="prices" value="{{newValue}}" placeholder="新增价格标签" />-->
     </view>
   </view>
 
@@ -46,8 +47,12 @@
     </view>
   </view>
 
-  <view class="editor" style="top:{{editor.top}}px;left:{{editor.left}}px" wx:if="{{editor.show}}">
+  <!--<view class="editor" style="top:{{editor.top}}px;left:{{editor.left}}px" wx:if="{{editor.show}}">
     <textarea auto-height focus="{{true}}" cursor-spacing="20" value="{{editor.value}}" data-index="{{editor.index}}" data-type="{{editor.type}}" bindblur="onEditorBlur" bindinput="onEditorInput" />
+  </view>-->
+
+  <view class="editor" style="top:{{editor.top}}px;left:{{editor.left}}px">
+    <textarea auto-height focus="{{editor.focus}}" cursor-spacing="10" value="{{editor.value}}" data-type="{{editor.type}}" data-index="{{editor.index}}" bindblur="onEditorBlur" />
   </view>
 
 </view>

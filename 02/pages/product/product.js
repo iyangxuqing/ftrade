@@ -26,9 +26,8 @@ Page({
       props: [],
     },
     editor: {
-      show: false,
       top: 0,
-      left: 0,
+      left: -1000,
       type: '',
       index: '',
       value: '',
@@ -174,47 +173,49 @@ Page({
   },
 
   onItemAdd: function (e) {
-    let value = e.detail.value
-    if (value == '') return
+    console.log('tap-add')
+    // if (this.data.editor.left > 0) {
+    //   this.setData({
+    //     'editor.left': -1000
+    //   })
+    //   return
+    // }
     let type = e.currentTarget.dataset.type
-    let product = this.data.product
-    product[type].push({
-      label: value,
-      value: ''
-    })
+    let offsetTop = e.currentTarget.offsetTop
+    let offsetLeft = e.currentTarget.offsetLeft
     this.setData({
-      newValue: '',
-      product: product
+      'editor.type': type,
+      'editor.index': -1,
+      'editor.value': '',
+      'editor.top': offsetTop,
+      'editor.left': offsetLeft,
+      'editor.focus': true,
     })
   },
 
   onItemEdit: function (e) {
-    if (this.data.editor.show) {
-      let type = this.data.editor.type
-      let index = this.data.editor.index
-      let value = this.data.editor.value
-      let product = this.data.product
-      let types = type.split('-')
-      product[types[0]][index][types[1]] = value
-      this.setData({
-        product: product
-      })
-    }
+    // if (this.data.editor.left > 0) {
+    //   this.setData({
+    //     'editor.left': -1000
+    //   })
+    //   return
+    // }
+    console.log('tap-item')
     let type = e.currentTarget.dataset.type
     let index = e.currentTarget.dataset.index
     let value = e.currentTarget.dataset.value
     let editor = {
-      show: true,
       top: e.currentTarget.offsetTop,
       left: e.currentTarget.offsetLeft,
       type: type,
       index: index,
       value: value,
+      focus: true
     }
     let product = this.data.product
     let types = type.split('-')
     this.setData({
-      editId: types[0] + '-' + types[1] + '-' + index
+      editId: types[0] + '-' + types[1] + '-' + index,
     })
     setTimeout(function () {
       this.setData({
@@ -224,21 +225,35 @@ Page({
   },
 
   onEditorInput: function (e) {
-    let value = e.detail.value
-    this.data.editor.value = value
+    // let value = e.detail.value
+    // this.data.editor.value = value
   },
 
   onEditorBlur: function (e) {
     let type = e.currentTarget.dataset.type
     let index = e.currentTarget.dataset.index
     let value = e.detail.value
+    console.log('blur', type, index)
     let product = this.data.product
+    if (type == 'prices-new') {
+      if (value) {
+        product.prices.push({
+          label: value,
+          value: ''
+        })
+      }
+      this.setData({
+        product: product,
+        'editor.left': -1000
+      })
+      return
+    }
     let types = type.split('-')
     product[types[0]][index][types[1]] = value
     this.setData({
       'editId': '',
       'product': product,
-      'editor.show': false,
+      'editor.left': -1000,
     })
   },
 

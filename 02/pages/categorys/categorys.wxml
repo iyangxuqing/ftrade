@@ -1,7 +1,7 @@
 <template is="categorys" data="{{cates, newValue, swipeLeftId, expandId, dataReady}}" />
 
-<view class="editor editor-input" wx:if="{{editor.show}}" style="top:{{editor.top}}px;left:{{editor.left}}px">
-  <input value="{{editor.value}}" bindblur="onEditorBlue" cursor-spacing="20" placeholder="输入类目名称" />
+<view class="editor {{platform}}" style="top:{{editor.top}}px;left:{{editor.left}}px;">
+  <input value="{{editor.data.value}}" bindblur="onEditorBlur" cursor-spacing="10" focus="{{editor.focus}}" placeholder="类目不可为空" />
 </view>
 
 <template name="categorys">
@@ -23,7 +23,7 @@
   <view class="category category-new" wx:if="{{dataReady}}">
     <view class="thumb"></view>
     <view class="title">
-      <input data-pid="{{pid}}" bindblur="onCateAdd" value="{{newValue}}" placeholder="{{placeholder}}" />
+      <input data-pid="{{pid}}" value="{{newValue}}" cursor-spacing="10" bindblur="onCateAdd" placeholder="{{placeholder}}" />
     </view>
   </view>
 </template>
@@ -36,8 +36,7 @@
           <image src="{{thumb || '/images/icon/image.png'}}" />
         </view>
         <view class="title">
-          <!--<input value="{{title}}" data-id="{{id}}" data-pid="{{pid}}" bindblur="onTitleEdit" placeholder="类目名不可为空" />-->
-          <view data-id="{{id}}" data-pid="{{pid}}" catchtap="onTitleEdit">{{title||'类目名不可为空'}}</view>
+          <view data-id="{{id}}" data-pid="{{pid}}" data-title="{{title}}" catchtap="onTitleEdit">{{title}}</view>
         </view>
         <view class="icon" wx:if="{{children}}" data-id="{{id}}" catchtap="onCateExpand">
           <image src="/images/icon/packup.png" wx:if="{{expand}}" />

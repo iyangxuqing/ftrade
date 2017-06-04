@@ -56,7 +56,7 @@ function getCategory(id) {
 
 function add(cate, cb) {
   let cates = __cates
-  let max = 0
+  let max = -1
   if (cate.pid == 0) {
     for (let i in cates) {
       if (cates[i].sort > max) {
@@ -71,10 +71,11 @@ function add(cate, cb) {
             max = cates[i].children[j].sort
           }
         }
+        break
       }
     }
   }
-  cate.id = '_newid'
+  cate.id = 'c' + Date.now()
   cate.sort = Number(max) + 1
 
   if (cate.pid == 0) {
@@ -84,6 +85,7 @@ function add(cate, cb) {
     for (let i in cates) {
       if (cates[i].id == cate.pid) {
         cates[i].children.push(cate)
+        break
       }
     }
   }
@@ -99,16 +101,17 @@ function add(cate, cb) {
     if (!res.error) {
       if (cate.pid == 0) {
         for (let i in cates) {
-          if (cates[i].id == '_newid') {
-            cates[i].id = res.insertId
+          if (cates[i].id == res.clientId) {
+            cates[i].id = res.serverId
+            break
           }
         }
       } else {
         for (let i in cates) {
           if (cates[i].id == cate.pid) {
             for (let j in cates[i].children) {
-              if (cates[i].children[j].id == '_newid') {
-                cates[i].children[j].id = res.insertId
+              if (cates[i].children[j].id == 'res.clientId') {
+                cates[i].children[j].id = res.serverId
                 break
               }
             }
@@ -130,11 +133,9 @@ function set(cate, cb) {
 
 function setTitle(cate, cb) {
   let cates = __cates
-  if (cate.title == '') return cates
   if (cate.pid == 0) {
     for (let i in cates) {
       if (cates[i].id == cate.id) {
-        if (cates[i].title == cate.title) return
         cates[i].title = cate.title
         break
       }
@@ -144,7 +145,6 @@ function setTitle(cate, cb) {
       if (cates[i].id == cate.pid) {
         for (let j in cates[i].children) {
           if (cates[i].children[j].id == cate.id) {
-            if (cates[i].children[j].title == cate.title) return
             cates[i].children[j].title = cate.title
             break
           }
@@ -163,7 +163,7 @@ function setTitle(cate, cb) {
     }
   })
 
-  return cb
+  return cates
 }
 
 function setThumb(cate, cb) {
@@ -285,6 +285,7 @@ function sort(cate, up = false) {
   /* server */
   for (let i in cates) {
     if (cates[i].sort != i) {
+      cates[i].sort = i
       http.get({
         url: '_ftrade/category.php?m=set',
         data: { id: cates[i].id, sort: i }
@@ -296,6 +297,7 @@ function sort(cate, up = false) {
     }
     for (let j in cates[i].children) {
       if (cates[i].children[j].sort != j) {
+        cates[i].children[j].sort = j
         http.get({
           url: '_ftrade/category.php?m=set',
           data: { id: cates[i].children[j].id, sort: j }
@@ -305,11 +307,6 @@ function sort(cate, up = false) {
           }
         })
       }
-    }
-    /* client */
-    cates[i].sort = i
-    for (let j in cates[i].children) {
-      cates[i].children[j].sort = j
     }
   }
   return cates
