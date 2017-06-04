@@ -69,20 +69,24 @@ Page({
   },
 
   onCateAdd: function (e) {
+    if (this.data.editor.left > 0) {
+      this.setData({
+        'editor.left': -1000
+      })
+      return
+    }
     let pid = e.currentTarget.dataset.pid
-    let title = e.detail.value
-    if (title == '') return
-    let cates = Category.add(
-      { pid, title },
-      function (res) {
-        this.setData({
-          cates: res,
-        })
-      }.bind(this)
-    )
+    let offsetTop = e.currentTarget.offsetTop
+    let offsetLeft = e.currentTarget.offsetLeft
+    let placeholder = pid == 0 ? '输入类目名称' : '输入子类目名称'
     this.setData({
-      cates: cates,
-      newValue: ''
+      editor: {
+        focus: true,
+        top: offsetTop,
+        left: offsetLeft,
+        placeholder: placeholder,
+        data: { pid }
+      }
     })
   },
 
@@ -103,6 +107,7 @@ Page({
         focus: true,
         top: offsetTop,
         left: offsetLeft,
+        placeholder: '类目名称不可为空',
         data: { id, pid, value: title }
       }
     })
@@ -115,6 +120,21 @@ Page({
     let value = e.detail.value
     if (value == '' || value == oldValue) {
       this.setData({
+        'editor.left': -1000
+      })
+      return
+    }
+    if (!id) {
+      let cates = Category.add(
+        { pid, title: value },
+        function (res) {
+          this.setData({
+            cates: res
+          })
+        }.bind(this)
+      )
+      this.setData({
+        cates: cates,
         'editor.left': -1000
       })
       return

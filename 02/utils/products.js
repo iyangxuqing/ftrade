@@ -22,7 +22,6 @@ function getProducts(cid) {
         if (!res.error) {
           let products = res
           for (let i in products) {
-            console.log(products[i].props.length)
             products[i].images = JSON.parse(products[i].images)
             products[i].prices = JSON.parse(products[i].prices)
             products[i].props = JSON.parse(products[i].props)

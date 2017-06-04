@@ -1,7 +1,7 @@
-<template is="categorys" data="{{cates, newValue, swipeLeftId, expandId, dataReady}}" />
+<template is="categorys" data="{{cates, swipeLeftId, expandId, dataReady}}" />
 
 <view class="editor {{platform}}" style="top:{{editor.top}}px;left:{{editor.left}}px;">
-  <input value="{{editor.data.value}}" bindblur="onEditorBlur" cursor-spacing="10" focus="{{editor.focus}}" placeholder="类目不可为空" />
+  <input value="{{editor.data.value}}" bindblur="onEditorBlur" cursor-spacing="10" focus="{{editor.focus}}" placeholder="{{editor.placeholder}}" />
 </view>
 
 <template name="categorys">
@@ -12,19 +12,17 @@
         <block wx:for="{{cate.children}}" wx:key="">
           <template is="category" data="{{...item, swipeLeftId}}" />
         </block>
-        <template is="category-new" data="{{id:0, pid:cate.id, newValue:newValue, placeholder:'新增子类目', dataReady:dataReady}}" />
+        <template is="category-new" data="{{pid:cate.id, placeholder:'新增子类目', dataReady:dataReady}}" />
       </view>
     </block>
-    <template is="category-new" data="{{id:0, pid:0, newValue:newValue, placeholder:'新增类目', dataReady:dataReady}}" />
+    <template is="category-new" data="{{pid:0, placeholder:'新增类目', dataReady:dataReady}}" />
   </view>
 </template>
 
 <template name="category-new">
   <view class="category category-new" wx:if="{{dataReady}}">
     <view class="thumb"></view>
-    <view class="title">
-      <input data-pid="{{pid}}" value="{{newValue}}" cursor-spacing="10" bindblur="onCateAdd" placeholder="{{placeholder}}" />
-    </view>
+    <view class="title" data-pid="{{pid}}" catchtap="onCateAdd">{{placeholder}}</view>
   </view>
 </template>
 

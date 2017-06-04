@@ -93,6 +93,7 @@ function add(cate, cb) {
   http.get({
     url: '_ftrade/category.php?m=add',
     data: {
+      id: cate.id,
       pid: cate.pid,
       sort: cate.sort,
       title: cate.title,

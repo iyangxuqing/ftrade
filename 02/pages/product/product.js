@@ -173,81 +173,89 @@ Page({
   },
 
   onItemAdd: function (e) {
-    console.log('tap-add')
-    // if (this.data.editor.left > 0) {
-    //   this.setData({
-    //     'editor.left': -1000
-    //   })
-    //   return
-    // }
+    if (this.data.editor.left > 0) {
+      this.setData({
+        'editor.left': -1000
+      })
+      return
+    }
     let type = e.currentTarget.dataset.type
-    let offsetTop = e.currentTarget.offsetTop
-    let offsetLeft = e.currentTarget.offsetLeft
+    let top = e.currentTarget.offsetTop
+    let left = e.currentTarget.offsetLeft
+    let placeholder = type == 'prices' ? '新增价格标签' : '新增商品属性'
     this.setData({
       'editor.type': type,
       'editor.index': -1,
       'editor.value': '',
-      'editor.top': offsetTop,
-      'editor.left': offsetLeft,
       'editor.focus': true,
+      'editor.top': top,
+      'editor.left': left,
+      'editor.placeholder': placeholder
     })
   },
 
   onItemEdit: function (e) {
-    // if (this.data.editor.left > 0) {
-    //   this.setData({
-    //     'editor.left': -1000
-    //   })
-    //   return
-    // }
-    console.log('tap-item')
+    if (this.data.editor.left > 0) {
+      this.setData({
+        'editor.left': -1000
+      })
+      return
+    }
+    let top = e.currentTarget.offsetTop
+    let left = e.currentTarget.offsetLeft
     let type = e.currentTarget.dataset.type
     let index = e.currentTarget.dataset.index
     let value = e.currentTarget.dataset.value
-    let editor = {
-      top: e.currentTarget.offsetTop,
-      left: e.currentTarget.offsetLeft,
-      type: type,
-      index: index,
-      value: value,
-      focus: true
-    }
     let product = this.data.product
     let types = type.split('-')
+    let placeholder = types[0] == 'prices' ? '输入价格值' : '输入属性值'
     this.setData({
       editId: types[0] + '-' + types[1] + '-' + index,
     })
     setTimeout(function () {
       this.setData({
-        editor: editor
+        editor: {
+          top: top,
+          left: left,
+          type: type,
+          index: index,
+          value: value,
+          focus: true,
+          placeholder: placeholder
+        }
       })
-    }.bind(this), 5)
-  },
-
-  onEditorInput: function (e) {
-    // let value = e.detail.value
-    // this.data.editor.value = value
+    }.bind(this), 10)
   },
 
   onEditorBlur: function (e) {
     let type = e.currentTarget.dataset.type
     let index = e.currentTarget.dataset.index
     let value = e.detail.value
-    console.log('blur', type, index)
     let product = this.data.product
-    if (type == 'prices-new') {
+
+    if (!value) {
+      this.setData({
+        'editId': '',
+        'product': product,
+        'editor.left': -1000
+      })
+      return
+    }
+
+    if (index < 0) {
       if (value) {
-        product.prices.push({
+        product[type].push({
           label: value,
           value: ''
         })
       }
       this.setData({
-        product: product,
+        product,
         'editor.left': -1000
       })
       return
     }
+
     let types = type.split('-')
     product[types[0]][index][types[1]] = value
     this.setData({
@@ -302,7 +310,6 @@ Page({
   onLoad: function (options) {
     let id = options.id
     let cid = options.cid
-    console.log(id, cid)
     let product = {
       cid: cid,
       images: [],

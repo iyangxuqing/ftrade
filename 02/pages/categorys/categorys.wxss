@@ -54,6 +54,7 @@
 .category-new {
   display: flex;
   align-items: center;
+  color: #888;
 }
 
 .category-inner {

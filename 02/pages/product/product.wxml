@@ -1,4 +1,4 @@
-<view class="product {{platform}}">
+<view class="product">
   <view class="cate-title">
     <view class="label">商品类别</view>
     <view class="value">{{cate.ptitle}}>{{cate.title}}</view>
@@ -31,10 +31,7 @@
   </view>
   <template is="items" data="{{items:product.prices, type:'prices', swipeLeftId, editId, labelholder:'输入价格标签', valueholder:'输入价格值'}}" />
   <view class="item item-new">
-    <view class="item-label">
-      <view catchtap="onItemAdd" data-type="prices-new">新增价格标签</view>
-      <!--<textarea auto-height bindblur="onItemAdd" cursor-spacing="20" data-type="prices" value="{{newValue}}" placeholder="新增价格标签" />-->
-    </view>
+    <view class="item-label" data-type="prices" data-index="-1" catchtap="onItemAdd">新增价格标签</view>
   </view>
 
   <view class="head">
@@ -42,19 +39,12 @@
   </view>
   <template is="items" data="{{items:product.props, type:'props', swipeLeftId, editId, labelholder:'输入商品属性', valueholder:'输入属性值'}}" />
   <view class="item item-new">
-    <view class="item-label">
-      <textarea auto-height bindblur="onItemAdd" cursor-spacing="20" data-type="props" value="{{newValue}}" placeholder="新增商品属性" />
-    </view>
+    <view class="item-label" data-type="props" data-index="-1" catchtap="onItemAdd">新增商品属性</view>
   </view>
 
-  <!--<view class="editor" style="top:{{editor.top}}px;left:{{editor.left}}px" wx:if="{{editor.show}}">
-    <textarea auto-height focus="{{true}}" cursor-spacing="20" value="{{editor.value}}" data-index="{{editor.index}}" data-type="{{editor.type}}" bindblur="onEditorBlur" bindinput="onEditorInput" />
-  </view>-->
-
-  <view class="editor" style="top:{{editor.top}}px;left:{{editor.left}}px">
-    <textarea auto-height focus="{{editor.focus}}" cursor-spacing="10" value="{{editor.value}}" data-type="{{editor.type}}" data-index="{{editor.index}}" bindblur="onEditorBlur" />
+  <view class="editor {{platform}}" style="top:{{editor.top}}px;left:{{editor.left}}px">
+    <textarea auto-height focus="{{editor.focus}}" cursor-spacing="10" value="{{editor.value}}" data-type="{{editor.type}}" data-index="{{editor.index}}" bindblur="onEditorBlur" placeholder="{{editor.placeholder}}" />
   </view>
-
 </view>
 
 <template name="items">
