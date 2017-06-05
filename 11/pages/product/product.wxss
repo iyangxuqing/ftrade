@@ -140,7 +140,6 @@
   position: absolute;
   width: 336rpx;
   padding: 10rpx 20rpx;
-  overflow: hidden;
   background-color: #fff;
 }
 

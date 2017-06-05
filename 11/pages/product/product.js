@@ -27,17 +27,16 @@ Page({
     },
     editor: {
       top: 0,
-      left: -1000,
-      blur: false,
-      focus: false,
+      left: 0,
       type: '',
       index: '',
       value: '',
+      show: false,
+      platform: '',
     },
     editId: '',
     swipeLeftId: '',
-    delImageIndex: -1,
-    platform: 'devtools',
+    delImageIndex: -1
   },
 
   touchstart: function (e) {
@@ -175,11 +174,17 @@ Page({
   },
 
   onItemAdd: function (e) {
-    if (this.data.editor.left > 0) {
+    console.log('onItemAdd')
+    // if (this.data.editor.left > 0) {
+    //   this.setData({
+    //     'editor.left': -1000
+    //   })
+    //   return
+    // }
+    if (this.data.editor.show) {
       this.setData({
         'editId': '',
-        'editor.focus': false,
-        'editor.left': -1000
+        'editor.show': false
       })
       return
     }
@@ -188,28 +193,31 @@ Page({
     let left = e.currentTarget.offsetLeft
     let placeholder = type == 'prices' ? '新增价格标签' : '新增商品属性'
     this.setData({
-      editor: {
-        top: top,
-        left: left,
-        blur: false,
-        focus: true,
-        type: type,
-        index: -1,
-        value: '',
-        placeholder: placeholder
-      }
+      'editor.type': type,
+      'editor.index': -1,
+      'editor.value': '',
+      'editor.show': true,
+      'editor.top': top,
+      'editor.left': left,
+      'editor.placeholder': placeholder
     })
   },
 
   onItemEdit: function (e) {
-    if (this.data.editor.left > 0) {
+    console.log('onItemEdit')
+    if (this.data.editor.show) {
       this.setData({
         'editId': '',
-        'editor.focus': false,
-        'editor.left': -1000,
+        'editor.show': false
       })
       return
     }
+    // if (this.data.editor.left > 0) {
+    //   this.setData({
+    //     'editor.left': -1000
+    //   })
+    //   return
+    // }
     let top = e.currentTarget.offsetTop
     let left = e.currentTarget.offsetLeft
     let type = e.currentTarget.dataset.type
@@ -217,28 +225,27 @@ Page({
     let value = e.currentTarget.dataset.value
     let product = this.data.product
     let types = type.split('-')
-    let placeholder = '输入价格值'
-    if (types[0] == 'props') placeholder = '输入属性值'
-    let editId = types[0] + '-' + types[1] + '-' + index
+    let placeholder = types[0] == 'prices' ? '输入价格值' : '输入属性值'
     this.setData({
-      editId: editId,
-      editor: {
-        top: top,
-        left: left,
-        blur: false,
-        focus: true,
-        type: type,
-        index: index,
-        value: value,
-        placeholder: placeholder
-      }
+      editId: types[0] + '-' + types[1] + '-' + index,
     })
+    setTimeout(function () {
+      this.setData({
+        editor: {
+          top: top,
+          left: left,
+          type: type,
+          index: index,
+          value: value,
+          show: true,
+          placeholder: placeholder
+        }
+      })
+    }.bind(this), 10)
   },
 
   onEditorBlur: function (e) {
-    if (this.data.editor.blur) return
-    this.data.editor.blur = true
-
+    console.log('onEditorBlur')
     let type = e.currentTarget.dataset.type
     let index = e.currentTarget.dataset.index
     let value = e.detail.value
@@ -248,7 +255,7 @@ Page({
       this.setData({
         'editId': '',
         'product': product,
-        'editor.left': -1000,
+        'editor.show': false,
       })
       return
     }
@@ -261,9 +268,8 @@ Page({
         })
       }
       this.setData({
-        'editId': '',
-        'product': product,
-        'editor.left': -1000,
+        product,
+        'editor.show': false,
       })
       return
     }
@@ -273,7 +279,7 @@ Page({
     this.setData({
       'editId': '',
       'product': product,
-      'editor.left': -1000,
+      'editor.show': false,
     })
   },
 

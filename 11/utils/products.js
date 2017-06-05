@@ -3,19 +3,16 @@ import { http } from 'http.js'
 export var __products = []
 
 function get(options) {
-  if ('id' in options && 'cid' in options) {
+  if ('cid' in options && !('id' in options)) {
+    return getProducts(options.cid)
+  } else if ('cid' in options && 'id' in options) {
     return getProduct(options)
-  } else if ('cid' in options) {
-    return getProducts(options)
   }
 }
 
-function getProducts(options) {
+function getProducts(cid) {
   return new Promise(function (resolve, reject) {
-    let cid = options.cid
-    /* 设置cache默认为true */
-    if (!('cache' in options)) options.cache = true
-    if (options.cache && __products[cid]) {
+    if (__products[cid]) {
       resolve(__products[cid])
     } else {
       http.get({

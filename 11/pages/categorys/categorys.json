@@ -1,5 +1,6 @@
 {
   "navigationBarTitleText": "商品类目",
   "enablePullDownRefresh": true,
+  "backgroundColor": "#fff",
   "backgroundTextStyle": "dark"
 }

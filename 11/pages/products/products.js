@@ -1,4 +1,5 @@
 import { Category } from '../../utils/categorys.js'
+import { __cates } from '../../utils/categorys.js'
 import { Product } from '../../utils/products.js'
 
 var touchPositionX = 0
@@ -9,8 +10,6 @@ var productEditTimer = null
 Page({
 
   data: {
-    cata: {},
-    products: [],
     moving: {
       top: 0,
       left: 0,
@@ -183,15 +182,7 @@ Page({
    * 页面相关事件处理函数--监听用户下拉动作
    */
   onPullDownRefresh: function () {
-    Product.get({
-      cache: false,
-      cid: this.data.cate.id
-    }).then(function (res) {
-      wx.stopPullDownRefresh()
-      this.setData({
-        products: res
-      })
-    }.bind(this))
+
   },
 
   /**
