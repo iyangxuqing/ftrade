@@ -13,7 +13,6 @@ function get(options) {
 function getProducts(options) {
   return new Promise(function (resolve, reject) {
     let cid = options.cid
-    let lang = options.lang || 'zh'
     /* 设置cache默认为true */
     if (!('cache' in options)) options.cache = true
     if (options.cache && __products[cid]) {
@@ -26,13 +25,9 @@ function getProducts(options) {
         if (!res.error) {
           let products = res
           for (let i in products) {
-            let title = products[i].title.replace("u0027", "'")
-            let prices = products[i].prices.replace("u0027", "'")
-            let props = products[i].props.replace("u0027", "'")
-            products[i].title = JSON.parse(title)[lang]
             products[i].images = JSON.parse(products[i].images)
-            products[i].prices = JSON.parse(prices)[lang]
-            products[i].props = JSON.parse(props)[lang]
+            products[i].prices = JSON.parse(products[i].prices)
+            products[i].props = JSON.parse(products[i].props)
           }
           __products[cid] = products
           resolve(__products[cid])
@@ -61,7 +56,7 @@ function add(product, cb) {
     if (products[i].sort > max) max = products[i].sort
   }
   product.id = 'p' + Date.now()
-  product.sort = Number(max) + 1
+  product.sort = max + 1
   products.push(product)
 
   http.get({

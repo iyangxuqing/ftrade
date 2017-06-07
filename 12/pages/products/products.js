@@ -127,6 +127,7 @@ Page({
   },
 
   onProductsUpdate: function (products, product) {
+    console.log('onProductsUpdate')
     this.setData({
       products: products
     })
@@ -143,7 +144,7 @@ Page({
     this.setData({
       cate: cate
     })
-    Product.get({ cid }).then(function (res) {
+    Product.get({ cid: cid }).then(function (res) {
       this.setData({
         products: res
       })

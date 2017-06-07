@@ -124,7 +124,7 @@ function add(cate, cb) {
         for (let i in cates) {
           if (cates[i].id == cate.pid) {
             for (let j in cates[i].children) {
-              if (cates[i].children[j].id == res.clientId) {
+              if (cates[i].children[j].id == 'res.clientId') {
                 cates[i].children[j].id = res.serverId
                 break
               }

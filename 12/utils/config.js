@@ -3,7 +3,7 @@ var versionNumber = "1.0";
 var version = "weApp/" + versionNumber;
 var sid = "725945cd45";
 
-var apiUrl = 'https://yixing01.applinzi.com/api/';
+var apiUrl = 'https://yixing02.applinzi.com/api/';
 var imagesUrl = 'http://yixing02-images.stor.sinaapp.com/';
 var uploadDir = 'upload/ftrade/' + sid + '/';
 

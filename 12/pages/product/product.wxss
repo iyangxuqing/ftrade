@@ -1,0 +1,159 @@
+.product {
+  padding-bottom: 200rpx;
+}
+
+.cate-title, .product-title {
+  display: flex;
+  align-items: center;
+  margin-bottom: 2rpx;
+}
+
+.cate-title .label, .product-title .label {
+  height: 80rpx;
+  display: flex;
+  align-items: center;
+  padding: 20rpx;
+  margin-right: 2rpx;
+  background-color: #ddd;
+}
+
+.cate-title .value, .product-title .value {
+  flex-grow: 1;
+  height: 80rpx;
+  display: flex;
+  align-items: center;
+  padding: 20rpx;
+  background-color: #ddd;
+}
+
+.head {
+  height: 70rpx;
+  line-height: 70rpx;
+  padding-left: 20rpx;
+  background-color: #ddd;
+  margin-top: 30rpx;
+}
+
+.product-images {
+  padding: 10rpx 0;
+  display: flex;
+  border-bottom: 1px solid #ccc;
+}
+
+.product-image {
+  flex-shrink: 0;
+  position: relative;
+  width: 126rpx;
+  height: 126rpx;
+  margin-right: 10rpx;
+}
+
+.product-image-del {
+  position: absolute;
+  width: 80rpx;
+  height: 80rpx;
+  top: -20rpx;
+  right: -20rpx;
+  padding: 20rpx;
+}
+
+.item {
+  min-height: 100rpx;
+  overflow: hidden;
+  border-bottom: 1px solid #ddd;
+  display: flex;
+  align-items: center;
+}
+
+.item-new {
+  color: #888;
+}
+
+.item-inner {
+  width: 1000rpx;
+  min-height: 100rpx;
+  display: flex;
+  align-items: center;
+  transition: all 300ms ease;
+}
+
+.item-inner.swipeleft {
+  transform: translateX(-300rpx);
+}
+
+.left {
+  width: 672rpx;
+  display: flex;
+  align-items: center;
+}
+
+.item-label {
+  width: 50%;
+  padding: 10rpx 20rpx;
+  line-height: 1.2;
+  word-wrap: break-word;
+}
+
+.item-value {
+  width: 50%;
+  padding: 10rpx 20rpx;
+  line-height: 1.2;
+  word-wrap: break-word;
+}
+
+.item-label.empty, .item-value.empty {
+  color: #888;
+}
+
+.item-label.editing, .item-value.editing {
+  opacity: 0;
+}
+
+.right {
+  width: 300rpx;
+  display: flex;
+  align-items: center;
+}
+
+.sort-up {
+  width: 100rpx;
+  height: 100rpx;
+  padding: 30rpx;
+  background-color: seagreen;
+}
+
+.sort-down {
+  width: 100rpx;
+  height: 100rpx;
+  padding: 30rpx;
+  background-color: orange;
+}
+
+.delete {
+  width: 100rpx;
+  height: 100rpx;
+  padding: 30rpx;
+  background-color: red;
+}
+
+.editor {
+  position: absolute;
+  width: 336rpx;
+  padding: 10rpx 20rpx;
+  overflow: hidden;
+  background-color: #fff;
+}
+
+textarea {
+  width: 100%;
+}
+
+.ios textarea {
+  margin-top: -18rpx;
+  margin-left: -12rpx;
+}
+
+.android textarea {
+  margin-top: 4rpx;
+  margin-left: 0rpx;
+}

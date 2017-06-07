@@ -364,23 +364,18 @@ Page({
   onUnload: function (e) {
     let product = this.data.product
     if (!product.title && !product.images.length) return
-
-    if(product.title.length>12){
-      product.title = product.title.substr(0, 12)
-    }
-    while (JSON.stringify(product.images).length >= 500) {
-      product.images.pop()
-    }
-    while (JSON.stringify(product.prices).length >= 300) {
-      product.prices.pop()
-    }
-    while (JSON.stringify(product.props).length >= 500) {
-      product.props.pop()
-    }
-
     if (!product.id) {
       Product.add(product)
     } else {
+      while (JSON.stringify(product.images).length >= 500) {
+        product.images.pop()
+      }
+      while (JSON.stringify(product.prices).length >= 300) {
+        product.prices.pop()
+      }
+      while (JSON.stringify(product.props).length >= 500) {
+        product.props.pop()
+      }
       Product.set(product)
     }
   },
