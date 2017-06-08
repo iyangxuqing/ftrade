@@ -6,56 +6,72 @@ export var __cates = []
   获取类目信息，options中存在id字段时，只获取单个类目信息，无id字段时则获取全部类目信息。cache字段用来控制是否从缓存中读取。
  */
 function get(options = {}) {
+  let defaults = { lang: 'zh', cache: true }
+  options = Object.assign(defaults, options)
   if ('id' in options) {
-    return getCategory(options.id)
+    return getCategory(options)
   } else {
-    return getCategorys(options.cache)
+    return getCategorys(options)
   }
 }
 
 /*
   取得所有类目信息，包括子类目，cache=true时，如果内存中已有数据则使用内存数据
 */
-function getCategorys(cache = true) {
+function getCategorys(options) {
   return new Promise(function (resolve, reject) {
-    if (cache && __cates.length > 0) {
-      resolve(__cates)
+    if (options.cache && __cates.length > 0) {
+      resolve(__cates[options.lang])
       return
     }
 
-    __cates = []
     http.get({
       url: '_ftrade/category.php?m=get'
     }).then(function (res) {
-      for (let i in res) {
-        let cate = res[i]
-        let pid = cate.pid
-        if (pid == 0) {
-          cate.children = []
-          __cates.push(cate)
-        } else {
-          for (let j in __cates) {
-            if (__cates[j].id == pid) {
-              __cates[j].children.push(cate)
+      if (!res.error) {
+        let cates = res
+        let _cates = []
+        for (let i in cates) {
+          let cate = cates[i]
+          let lang = cate.lang
+          if (!_cates[lang]) _cates[lang] = []
+          _cates[lang].push(cate)
+        }
+        for (let lang in _cates) {
+          let cates = []
+          for (let i in _cates[lang]) {
+            let cate = _cates[lang][i]
+            let pid = cate.pid
+            if (pid == 0) {
+              cate.children = []
+              cates.push(cate)
+            } else {
+              for (let j in cates) {
+                if (cates[j].id == pid) {
+                  cates[j].children.push(cate)
+                }
+              }
             }
           }
+          __cates[lang] = cates
         }
+        resolve(__cates[options.lang])
       }
-      resolve(__cates)
     })
   })
 }
 
 /*
-  由类目id取得该类目信息，由products、product等页面调用
+  由类目id取得该类目信息，供products、product等页面调用
+  options.id, options.lang
 */
-function getCategory(id) {
-  let cates = __cates
+function getCategory(options) {
+  let cates = __cates[options.lang]
   for (let i in cates) {
     for (let j in cates[i].children) {
-      if (cates[i].children[j].id == id) {
+      if (cates[i].children[j].id == options.id) {
         return {
-          id: id,
+          id: options.id,
           title: cates[i].children[j].title,
           thumb: cates[i].children[j].thumb,
           pid: cates[i].id,
@@ -68,7 +84,8 @@ function getCategory(id) {
 }
 
 function add(cate, cb) {
-  let cates = __cates
+  let lang = cate.lang || 'zh'
+  let cates = __cates[lang]
   let max = -1
   if (cate.pid == 0) {
     for (let i in cates) {
@@ -88,7 +105,7 @@ function add(cate, cb) {
       }
     }
   }
-  cate.id = 'c' + Date.now()
+  cate.id = Date.now()
   cate.sort = Number(max) + 1
 
   if (cate.pid == 0) {
@@ -113,26 +130,6 @@ function add(cate, cb) {
     }
   }).then(function (res) {
     if (!res.error) {
-      if (cate.pid == 0) {
-        for (let i in cates) {
-          if (cates[i].id == res.clientId) {
-            cates[i].id = res.serverId
-            break
-          }
-        }
-      } else {
-        for (let i in cates) {
-          if (cates[i].id == cate.pid) {
-            for (let j in cates[i].children) {
-              if (cates[i].children[j].id == res.clientId) {
-                cates[i].children[j].id = res.serverId
-                break
-              }
-            }
-            break
-          }
-        }
-      }
       cb && cb(cates)
     }
   })
@@ -146,7 +143,8 @@ function set(cate, cb) {
 }
 
 function setTitle(cate, cb) {
-  let cates = __cates
+  let lang = cate.lang || 'zh'
+  let cates = __cates[lang]
   if (cate.pid == 0) {
     for (let i in cates) {
       if (cates[i].id == cate.id) {
@@ -181,7 +179,8 @@ function setTitle(cate, cb) {
 }
 
 function setThumb(cate, cb) {
-  let cates = __cates
+  let lang = cate.lang || 'zh'
+  let cates = __cates[lang]
   let _cate = null
   if (cate.pid == 0) {
     for (let i in cates) {
@@ -224,7 +223,8 @@ function setThumb(cate, cb) {
 }
 
 function del(cate) {
-  let cates = __cates
+  let lang = cate.lang || 'zh'
+  let cates = __cates[lang]
   if (cate.pid == 0) {
     for (let i in cates) {
       if (cates[i].id == cate.id) {
@@ -253,7 +253,8 @@ function del(cate) {
 }
 
 function sort(cate, up = false) {
-  let cates = __cates
+  let lang = cate.lang || 'zh'
+  let cates = __cates[lang]
   if (cate.pid == 0) {
     for (let i in cates) {
       if (cates[i].id == cate.id) {

@@ -4,13 +4,14 @@ import { Product } from '../../utils/products.js'
 var touchPositionX = 0
 var touchPositionY = 0
 var productlongtap = false
-var productEditTimer = null
+var productDeleteTimer = null
 
 Page({
 
   data: {
-    cata: {},
+    cate: {},
     products: [],
+    deleteId: -1,
     moving: {
       top: 0,
       left: 0,
@@ -38,7 +39,7 @@ Page({
     this.data.moving.sourceIndex = index
     this.data.moving.product = products[index]
     this.setData({
-      editId: -1
+      deleteId: -1
     })
   },
 
@@ -55,8 +56,8 @@ Page({
     let targetIndex = row * 3 + col
 
     let moving = this.data.moving
-    moving.left = left
     moving.top = top
+    moving.left = left
     moving.display = 'block'
     moving.targetIndex = targetIndex
     this.setData({
@@ -67,9 +68,10 @@ Page({
   touchend: function (e) {
     let cid = this.data.cate.id
     let moving = this.data.moving
+    let product = moving.product
     let sourceIndex = moving.sourceIndex
     let targetIndex = moving.targetIndex
-    let products = Product.sort(cid, sourceIndex, targetIndex)
+    let products = Product.sort(product, sourceIndex, targetIndex)
     moving.display = 'none'
     moving.sourceIndex = -1
     moving.targetIndex = -1
@@ -88,7 +90,7 @@ Page({
     let cid = this.data.cate.id
     let products = this.data.products
     this.setData({
-      editId: -1
+      deleteId: -1
     })
     wx.navigateTo({
       url: '../product/product?id=' + id + '&cid=' + cid,
@@ -99,12 +101,12 @@ Page({
     productlongtap = true
     let id = e.currentTarget.dataset.id
     this.setData({
-      editId: id
+      deleteId: id
     })
-    clearTimeout(productEditTimer)
-    productEditTimer = setTimeout(function () {
+    clearTimeout(productDeleteTimer)
+    productDeleteTimer = setTimeout(function () {
       this.setData({
-        editId: -1
+        deleteId: -1
       })
     }.bind(this), 6000)
   },
@@ -112,8 +114,9 @@ Page({
   onProductDel: function (e) {
     let id = e.currentTarget.dataset.id
     let cid = this.data.cate.id
+    console.log(id, cid)
     let products = Product.del({ id, cid })
-    console.log('products-del', products)
+    console.log(products)
     this.setData({
       products: products
     })
@@ -138,7 +141,7 @@ Page({
   onLoad: function (options) {
     getApp().listener.on('products', this.onProductsUpdate)
 
-    let cid = options.id
+    let cid = options.cid
     let cate = Category.get({ id: cid })
     this.setData({
       cate: cate

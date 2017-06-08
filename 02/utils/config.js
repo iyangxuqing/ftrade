@@ -4,7 +4,7 @@ var version = "weApp/" + versionNumber;
 var sid = "725945cd45";
 
 var apiUrl = 'https://yixing01.applinzi.com/api/';
-var imagesUrl = 'http://yixing02-images.stor.sinaapp.com/';
+var imagesUrl = 'http://yixing01-images.stor.sinaapp.com/';
 var uploadDir = 'upload/ftrade/' + sid + '/';
 
 module.exports.debug = debug;

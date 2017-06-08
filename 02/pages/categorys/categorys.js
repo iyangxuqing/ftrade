@@ -6,13 +6,14 @@ Page({
 
   data: {
     cates: [],
-    newValue: '',
     expandId: '',
     swipeLeftId: '',
+    platform: '',
     editor: {
-      focus: false,
       top: 0,
       left: -1000,
+      focus: false,
+      placeholder: '',
       data: {
         id: '',
         pid: '',
@@ -76,14 +77,14 @@ Page({
       return
     }
     let pid = e.currentTarget.dataset.pid
-    let offsetTop = e.currentTarget.offsetTop
-    let offsetLeft = e.currentTarget.offsetLeft
+    let top = e.currentTarget.offsetTop
+    let left = e.currentTarget.offsetLeft
     let placeholder = pid == 0 ? '输入类目名称' : '输入子类目名称'
     this.setData({
       editor: {
+        top: top,
+        left: left,
         focus: true,
-        top: offsetTop,
-        left: offsetLeft,
         placeholder: placeholder,
         data: { pid }
       }
@@ -100,13 +101,13 @@ Page({
     let id = e.currentTarget.dataset.id
     let pid = e.currentTarget.dataset.pid
     let title = e.currentTarget.dataset.title
-    let offsetTop = e.currentTarget.offsetTop
-    let offsetLeft = e.currentTarget.offsetLeft
+    let top = e.currentTarget.offsetTop
+    let left = e.currentTarget.offsetLeft
     this.setData({
       editor: {
+        top: top,
+        left: left,
         focus: true,
-        top: offsetTop,
-        left: offsetLeft,
         placeholder: '类目名称不可为空',
         data: { id, pid, value: title }
       }
@@ -125,25 +126,18 @@ Page({
       return
     }
     if (!id) {
-      let cates = Category.add(
-        { pid, title: value },
-        function (res) {
-          this.setData({
-            cates: res
-          })
-        }.bind(this)
-      )
+      let cates = Category.add({ pid, title: value })
       this.setData({
         cates: cates,
         'editor.left': -1000
       })
-      return
+    } else {
+      let cates = Category.set({ id, pid, title: value })
+      this.setData({
+        'cates': cates,
+        'editor.left': -1000
+      })
     }
-    let cates = Category.set({ id, pid, title: value })
-    this.setData({
-      'cates': cates,
-      'editor.left': -1000
-    })
   },
 
   onThumbEdit: function (e) {
@@ -153,14 +147,7 @@ Page({
       count: 1,
       success: function (res) {
         let thumb = res.tempFilePaths[0]
-        let cates = Category.set(
-          { id, pid, thumb },
-          // function (res) {
-          //   this.setData({
-          //     cates: res
-          //   })
-          // }.bind(this)
-        )
+        let cates = Category.set({ id, pid, thumb })
         this.setData({
           cates: cates
         })
@@ -201,7 +188,7 @@ Page({
     let id = e.currentTarget.dataset.id
     let pid = e.currentTarget.dataset.pid
     wx.navigateTo({
-      url: '../products/products?id=' + id + '&pid=' + pid
+      url: '../products/products?cid=' + id
     })
   },
 

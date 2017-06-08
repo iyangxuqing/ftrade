@@ -5,7 +5,7 @@
 <view class="products">
   <block wx:for="{{products}}" wx:key="" wx:for-item="product">
     <view class="product {{moving.sourceIndex==index?'source':''}} {{moving.targetIndex==index?'target':''}}" data-id="{{product.id}}" data-index="{{index}}" catchtap="onProductTap">
-      <view class="product-editor" wx:if="{{product.id==editId}}" data-id="{{product.id}}" catchtap="onProductDel">
+      <view class="product-editor" wx:if="{{product.id==deleteId}}" data-id="{{product.id}}" catchtap="onProductDel">
         <image src="/images/icon/close.png" />
       </view>
       <view class="product-image" data-id="{{product.id}}" catchlongtap="onProductLongTap">

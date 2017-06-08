@@ -363,7 +363,7 @@ Page({
    */
   onUnload: function (e) {
     let product = this.data.product
-    if (!product.title && !product.images.length) return
+    if (!product.title) return
 
     if(product.title.length>12){
       product.title = product.title.substr(0, 12)

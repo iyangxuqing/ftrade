@@ -91,6 +91,7 @@ function upload(options) {
           uploadDir: uploadDir
         },
         success: function (res) {
+          console.log(res)
           var data = JSON.parse(res.data)
           if (data.target) {
             uploadedFiles.push({
