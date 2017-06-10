@@ -5,6 +5,7 @@ import { Product } from '../../utils/products.js'
 var touch = {}
 var imageLongTap = false
 var delImageShowTimer = null
+var hasChanged = false
 
 Page({
 
@@ -81,10 +82,14 @@ Page({
   },
 
   onTitleBlur: function (e) {
+    let oldTitle = this.data.product.title
     let title = e.detail.value
-    this.setData({
-      'product.title': title
-    })
+    if (oldTitle != title) {
+      hasChanged = true
+      this.setData({
+        'product.title': title
+      })
+    }
   },
 
   onImageAdd: function (e) {
@@ -146,6 +151,7 @@ Page({
             }
           }
         }.bind(this))
+        hasChanged = true
       }.bind(this)
     })
   },
@@ -172,6 +178,7 @@ Page({
       delImageIndex: -1,
       'product.images': images,
     })
+    hasChanged = true
   },
 
   onItemAdd: function (e) {
@@ -242,9 +249,11 @@ Page({
     let type = e.currentTarget.dataset.type
     let index = e.currentTarget.dataset.index
     let value = e.detail.value
+    let oldValue = this.data.editor.value
     let product = this.data.product
 
-    if (!value) {
+    console.log(value, oldValue)
+    if (!value || value == oldValue) {
       this.setData({
         'editId': '',
         'product': product,
@@ -253,6 +262,7 @@ Page({
       return
     }
 
+    hasChanged = true
     if (index < 0) {
       if (value) {
         product[type].push({
@@ -363,7 +373,7 @@ Page({
    */
   onUnload: function (e) {
     let product = this.data.product
-    if (product.title) {
+    if (hasChanged && product.title) {
       Product.set(product)
     }
   },
