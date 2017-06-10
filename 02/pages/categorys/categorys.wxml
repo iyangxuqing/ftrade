@@ -1,7 +1,7 @@
 <template is="categorys" data="{{cates, swipeLeftId, expandId, dataReady}}" />
 
 <view class="editor {{platform}}" style="top:{{editor.top}}px;left:{{editor.left}}px;">
-  <input value="{{editor.data.value}}" bindblur="onEditorBlur" cursor-spacing="10" focus="{{editor.focus}}" placeholder="{{editor.placeholder}}" />
+  <input value="{{editor.data.value}}" bindblur="onEditorBlur" cursor-spacing="10" maxlength="20" focus="{{editor.focus}}" placeholder="{{editor.placeholder}}" />
 </view>
 
 <template name="categorys">

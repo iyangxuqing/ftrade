@@ -178,10 +178,24 @@ Page({
   onCateDelete: function (e) {
     let id = e.currentTarget.dataset.id
     let pid = e.currentTarget.dataset.pid
-    let cates = Category.del({ id, pid })
-    this.setData({
-      cates: cates
-    })
+    Category.del({ id, pid }).then(function (res) {
+      if (res.error) {
+        wx.showModal({
+          title: '提示',
+          content: res.error,
+          showCancel: false,
+          success: function () {
+            this.setData({
+              swipeLeftId: -1
+            })
+          }.bind(this)
+        })
+      } else {
+        this.setData({
+          cates: res
+        })
+      }
+    }.bind(this))
   },
 
   onNavProducts: function (e) {

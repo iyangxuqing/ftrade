@@ -33,6 +33,7 @@ function getCategorys(options) {
         let _cates = []
         for (let i in cates) {
           let cate = cates[i]
+          cate.title = cate.title.escape(false)
           let lang = cate.lang
           if (!_cates[lang]) _cates[lang] = []
           _cates[lang].push(cate)
@@ -126,7 +127,7 @@ function add(cate, cb) {
       id: cate.id,
       pid: cate.pid,
       sort: cate.sort,
-      title: cate.title,
+      title: cate.title.escape()
     }
   }).then(function (res) {
     if (!res.error) {
@@ -168,7 +169,11 @@ function setTitle(cate, cb) {
 
   http.get({
     url: '_ftrade/category.php?m=set',
-    data: cate
+    data: {
+      id: cate.id,
+      pid: cate.pid,
+      title: cate.title.escape()
+    }
   }).then(function (res) {
     if (!res.error) {
       cb && cb(cates)
@@ -223,33 +228,40 @@ function setThumb(cate, cb) {
 }
 
 function del(cate) {
-  let lang = cate.lang || 'zh'
-  let cates = __cates[lang]
-  if (cate.pid == 0) {
-    for (let i in cates) {
-      if (cates[i].id == cate.id) {
-        cates.splice(i, 1)
-        break
-      }
-    }
-  } else {
-    for (let i in cates) {
-      if (cates[i].id == cate.pid) {
-        for (let j in cates[i].children) {
-          if (cates[i].children[j].id == cate.id) {
-            cates[i].children.splice(j, 1)
-            break
+  return new Promise(function (resolve, reject) {
+    http.get({
+      url: '_ftrade/category.php?m=del',
+      data: cate
+    }).then(function (res) {
+      if (res.error) {
+        resolve(res)
+      } else {
+        let lang = cate.lang || 'zh'
+        let cates = __cates[lang]
+        if (cate.pid == 0) {
+          for (let i in cates) {
+            if (cates[i].id == cate.id) {
+              cates.splice(i, 1)
+              break
+            }
+          }
+        } else {
+          for (let i in cates) {
+            if (cates[i].id == cate.pid) {
+              for (let j in cates[i].children) {
+                if (cates[i].children[j].id == cate.id) {
+                  cates[i].children.splice(j, 1)
+                  break
+                }
+              }
+              break
+            }
           }
         }
-        break
+        resolve(cates)
       }
-    }
-  }
-  http.get({
-    url: '_ftrade/category.php?m=del',
-    data: cate
+    })
   })
-  return cates
 }
 
 function sort(cate, up = false) {

@@ -1,3 +1,4 @@
+import 'utils/util.js'
 import { Listener } from 'utils/listener.js'
 
 App({

@@ -7,7 +7,7 @@
   <view class="product-title">
     <view class="label">商品名称</view>
     <view class="value">
-      <input value="{{product.title}}" placeholder="输入商品名称" bindblur="onTitleBlur" />
+      <input value="{{product.title}}" placeholder="输入商品名称" bindblur="onTitleBlur" maxlength="20" />
     </view>
   </view>
 
@@ -29,7 +29,7 @@
   <view class="head">
     <view class="head-title">价格标签</view>
   </view>
-  <template is="items" data="{{items:product.prices, type:'prices', swipeLeftId, editId, labelholder:'输入价格标签', valueholder:'输入价格值'}}" />
+  <template is="items" data="{{items:product.prices, type:'prices', swipeLeftId, editId, labelholder:'输入价格标签', valueholder:'输入价格(元)'}}" />
   <view class="item item-new">
     <view class="item-label" data-type="prices" data-index="-1" catchtap="onItemAdd">新增价格标签</view>
   </view>
@@ -54,7 +54,7 @@
         <view class="item-inner {{swipeLeftId==type+'-'+index?'swipeleft':''}}">
           <view class="left">
             <view class="item-label {{item.label?'':'empty'}} {{editId==type+'-label-'+index?'editing':''}}" data-index="{{index}}" data-type="{{type}}-label" data-value="{{item.label}}" catchtap="onItemEdit">{{item.label || labelholder}}</view>
-            <view class="item-value {{item.value?'':'empty'}} {{editId==type+'-value-'+index?'editing':''}}" data-index="{{index}}" data-type="{{type}}-value" data-value="{{item.value}}" catchtap="onItemEdit">{{item.value || valueholder}}</view>
+            <view class="item-value {{item.value?'':'empty'}} {{editId==type+'-value-'+index?'editing':''}}" data-index="{{index}}" data-type="{{type}}-value" data-value="{{item.value}}" catchtap="onItemEdit">{{item.value && type=='prices'?'￥':''}}{{item.value || valueholder}}</view>
           </view>
           <view class="right">
             <view class="sort-up" data-index="{{index}}" data-type="{{type}}" catchtap="onItemSortUp">

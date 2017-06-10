@@ -217,7 +217,7 @@ Page({
     let value = e.currentTarget.dataset.value
     let product = this.data.product
     let types = type.split('-')
-    let placeholder = '输入价格值'
+    let placeholder = '输入价格(元)'
     if (types[0] == 'props') placeholder = '输入属性值'
     let editId = types[0] + '-' + types[1] + '-' + index
     this.setData({
@@ -363,24 +363,7 @@ Page({
    */
   onUnload: function (e) {
     let product = this.data.product
-    if (!product.title) return
-
-    if(product.title.length>12){
-      product.title = product.title.substr(0, 12)
-    }
-    while (JSON.stringify(product.images).length >= 500) {
-      product.images.pop()
-    }
-    while (JSON.stringify(product.prices).length >= 300) {
-      product.prices.pop()
-    }
-    while (JSON.stringify(product.props).length >= 500) {
-      product.props.pop()
-    }
-
-    if (!product.id) {
-      Product.add(product)
-    } else {
+    if (product.title) {
       Product.set(product)
     }
   },
