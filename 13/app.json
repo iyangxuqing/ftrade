@@ -1,6 +1,5 @@
 {
   "pages": [
-    "pages/client/product/product",
     "pages/categorys/categorys",
     "pages/products/products",
     "pages/product/product",
