@@ -13,49 +13,48 @@ Page({
       '/images/p04.jpg',
       '/images/p05.jpg',
     ],
-    open: 'open'
+    menuOpen: ''
   },
 
   onMenuTap: function (e) {
-    if (this.data.open) {
+    if (this.data.menuOpen) {
       this.setData({
-        open: ''
+        menuOpen: ''
       })
     } else {
       this.setData({
-        open: 'open'
+        menuOpen: 'menuOpen'
       })
     }
   },
 
   onMaskTap: function (e) {
     this.setData({
-      open: ''
+      menuOpen: ''
     })
   },
 
   onItemTap: function (e) {
     let id = e.currentTarget.dataset.id
     let pid = e.currentTarget.dataset.pid
-    console.log(id, pid)
     let cates = this.data.cates
     if (pid == 0) {
       for (let i in cates) {
         if (cates[i].id == id) {
-          let collapse = !cates[i].collapse
-          cates[i].collapse = collapse
-          if (collapse) {
-            cates[i].childrenHeight = 0
-          } else {
-            cates[i].childrenHeight = 102 * cates[i].children.length
-          }
+          cates[i].expand = !cates[i].expand
           break
         }
       }
       this.setData({
         cates: cates
       })
+      return
     }
+
+    this.setData({
+      menuOpen: ''
+    })
+
   },
 
   /**
@@ -63,13 +62,17 @@ Page({
    */
   onLoad: function (options) {
     Category.get().then(function (res) {
-      console.log(res)
       let cates = res
       for (let i in cates) {
-        cates[i].childrenHeight = 102 * cates[i].children.length
+        cates[i].height = 80
+        let count = cates[i].children.length
+        if (count > 0) {
+          cates[i].height += count * 102 - 2
+        }
       }
+      cates[0].expand = true
       this.setData({
-        cates: res
+        cates: cates
       })
     }.bind(this))
   },

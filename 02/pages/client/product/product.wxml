@@ -1,53 +1,47 @@
-<view class="container {{open}}">
-
-  <view class="product">
-    <swiper class="product-images" indicator-dots>
-      <block wx:for="{{images}}" wx:key="">
-        <swiper-item>
-          <image src="{{item}}" />
-        </swiper-item>
-      </block>
-    </swiper>
-    <view class="menu" catchtap="onMenuTap">
+<view class="product {{menuOpen}}">
+  <swiper class="product-images" indicator-dots>
+    <block wx:for="{{images}}" wx:key="">
+      <swiper-item>
+        <image src="{{item}}" />
+      </swiper-item>
+    </block>
+  </swiper>
+  <view class="menu" catchtap="onMenuTap">
+    <view class="menu-inner">
       <view class="menu-inner">
         <view class="menu-inner">
           <view class="menu-inner">
             <view class="menu-inner">
-              <view class="menu-inner">
-                <image src="/images/icon/menu-white.png" />
-              </view>
+              <image src="/images/icon/menu-white.png" />
             </view>
           </view>
         </view>
       </view>
     </view>
-    <view class="mask" wx:if="{{open}}" catchtap="onMaskTap"></view>
   </view>
+  <view class="mask" wx:if="{{menuOpen}}" catchtap="onMaskTap"></view>
+</view>
 
 
-  <view class="categorys">
-    <view class="items">
-      <block wx:for="{{cates}}" wx:key="">
+<view class="categorys {{menuOpen}}">
+  <view class="items">
+    <block wx:for="{{cates}}" wx:key="">
+      <view class="item-wrapper {{item.expand&&item.children.length?'expand':''}}" style="height:{{item.expand?item.height:80}}rpx">
         <view class="item item-level1" data-id="{{item.id}}" data-pid="{{item.pid}}" catchtap="onItemTap">
           <view class="item-title">{{item.title}}</view>
-          <view class="item-icon {{item.collapse?'unfold':'packup'}}">
+          <view class="item-icon {{item.expand?'packup':'unfold'}}">
             <image src="/images/icon/enter.png" />
           </view>
         </view>
-        <view class="items" style="height:{{item.childrenHeight}}rpx">
-          <block wx:for="{{item.children}}" wx:key="">
-            <view class="item item-level2" data-id="{{item.id}}" data-pid="{{item.pid}}" catchtap="onItemTap">
-              <view class="item-title">{{item.title}}</view>
-              <view class="item-icon">
-                <image src="/images/icon/enter.png" />
-              </view>
+        <block wx:for="{{item.children}}" wx:key="">
+          <view class="item item-level2" data-id="{{item.id}}" data-pid="{{item.pid}}" catchtap="onItemTap">
+            <view class="item-title">{{item.title}}</view>
+            <view class="item-icon">
+              <image src="/images/icon/enter.png" />
             </view>
-          </block>
-        </view>
-      </block>
-    </view>
+          </view>
+        </block>
+      </view>
+    </block>
   </view>
-
-
-
 </view>
