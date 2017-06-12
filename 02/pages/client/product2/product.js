@@ -7,55 +7,43 @@ Page({
    * 页面的初始数据
    */
   data: {
-    images: [
-      '/images/p01.jpg',
-      '/images/p02.jpg',
-    ],
-    menuOpen: ''
+
   },
 
-  onMenuTriggerTap: function (e) {
-    let menuOpen = this.data.menuOpen
-    menuOpen = menuOpen ? '' : 'menuOpen'
-    this.setData({
-      menuOpen: 'menuOpen'
-    })
-  },
-
-  onMaskTap: function (e) {
-    this.setData({
-      menuOpen: ''
-    })
-  },
-
-  onItemTap: function (e) {
+  onCateTap: function (e) {
     let id = e.currentTarget.dataset.id
     let pid = e.currentTarget.dataset.pid
     let cates = this.data.cates
+    let activeId = this.data.activeId
+    let activeChildId = ''
     if (pid == 0) {
       for (let i in cates) {
         if (cates[i].id == id) {
-          cates[i].expand = !cates[i].expand
-          break
+          activeId = id
+          activeChildId = cates[i].activeId
+          break;
         }
       }
-      this.setData({
-        cates: cates
-      })
-      return
+    } else {
+      for (let i in cates) {
+        if (cates[i].id == pid) {
+          for (let j in cates[i].children) {
+            if (cates[i].children[j].id == id) {
+              cates[i].activeId = id
+              activeChildId = id
+              break;
+            }
+          }
+        }
+      }
     }
 
     this.setData({
-      menuOpen: ''
+      activeId,
+      cates,
     })
 
-    let cate = Category.get({ id })
-    this.setData({
-      cate: cate
-    })
-    console.log(cate)
-
-    Product.get({ cid: id }).then(function (res) {
+    Product.get({ cid: activeChildId, lang:'en' }).then(function (res) {
       let products = []
       for (let i in res) {
         products.push(res[i])
@@ -71,30 +59,35 @@ Page({
         products: products
       })
     }.bind(this))
-
   },
 
   /**
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
-    Category.get().then(function (res) {
+    // Category.get({ lang: 'zh' }).then(function (res) {
+    //   console.log(res)
+    // })
+    // Category.get({ lang: 'en' }).then(function (res) {
+    //   console.log(res)
+    // })
+    // return
+
+    Category.get({ lang: 'en' }).then(function (res) {
       let cates = res
+      let activeId = cates[0].id
       for (let i in cates) {
-        cates[i].height = 80
-        let count = cates[i].children.length
-        if (count > 0) {
-          cates[i].height += count * 102 - 2
+        // 有的类目可能在其下面还没建子类目
+        if (cates[i].children.length) {
+          cates[i].activeId = cates[i].children[0].id
         }
       }
-      cates[0].expand = true
-      let id = cates[0].children[0].id
-      let cate = Category.get({ id })
       this.setData({
-        cates: cates,
-        cate: cate
+        activeId: activeId,
+        cates: cates
       })
-      Product.get({ cid: id }).then(function (res) {
+      let cid = cates[0].children[0].id
+      Product.get({ cid, lang:'en' }).then(function (res) {
         let products = []
         for (let i in res) {
           products.push(res[i])
@@ -111,6 +104,7 @@ Page({
         })
       }.bind(this))
     }.bind(this))
+
   },
 
   /**

@@ -1,4 +1,5 @@
 /**app.wxss**/
+
 page {
   padding-left: 40rpx;
   padding-right: 40rpx;
@@ -17,4 +18,5 @@ image {
 
 ::-webkit-scrollbar {
   display: none;
+  width: 0;
 }

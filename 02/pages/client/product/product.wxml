@@ -1,47 +1,76 @@
-<view class="product {{menuOpen}}">
-  <swiper class="product-images" indicator-dots>
-    <block wx:for="{{images}}" wx:key="">
-      <swiper-item>
-        <image src="{{item}}" />
-      </swiper-item>
-    </block>
-  </swiper>
-  <view class="menu" catchtap="onMenuTap">
-    <view class="menu-inner">
-      <view class="menu-inner">
-        <view class="menu-inner">
-          <view class="menu-inner">
-            <view class="menu-inner">
+<view class="page {{menuOpen}}">
+
+  <view class="page-mask" wx:if="{{menuOpen}}" catchtap="onMaskTap"></view>
+
+  <view class="menu-trigger" wx:if="{{!menuOpen}}" catchtap="onMenuTriggerTap">
+    <!--<view class="menu-trigger-inner">-->
+      <!--<view class="menu-trigger-inner">-->
+        <!--<view class="menu-trigger-inner">-->
+          <!--<view class="menu-trigger-inner">-->
+            <!--<view class="menu-trigger-inner">-->
               <image src="/images/icon/menu-white.png" />
-            </view>
-          </view>
-        </view>
-      </view>
-    </view>
+            <!--</view>-->
+          <!--</view>-->
+        <!--</view>-->
+      <!--</view>-->
+    <!--</view>-->
   </view>
-  <view class="mask" wx:if="{{menuOpen}}" catchtap="onMaskTap"></view>
-</view>
 
+  <view class="page-header">
+    <swiper class="page-header-images" indicator-dots>
+      <block wx:for="{{images}}" wx:key="">
+        <swiper-item>
+          <image src="{{item}}" />
+        </swiper-item>
+      </block>
+    </swiper>
+  </view>
 
-<view class="categorys {{menuOpen}}">
-  <view class="items">
-    <block wx:for="{{cates}}" wx:key="">
-      <view class="item-wrapper {{item.expand&&item.children.length?'expand':''}}" style="height:{{item.expand?item.height:80}}rpx">
-        <view class="item item-level1" data-id="{{item.id}}" data-pid="{{item.pid}}" catchtap="onItemTap">
-          <view class="item-title">{{item.title}}</view>
-          <view class="item-icon {{item.expand?'packup':'unfold'}}">
-            <image src="/images/icon/enter.png" />
-          </view>
-        </view>
-        <block wx:for="{{item.children}}" wx:key="">
-          <view class="item item-level2" data-id="{{item.id}}" data-pid="{{item.pid}}" catchtap="onItemTap">
-            <view class="item-title">{{item.title}}</view>
-            <view class="item-icon">
-              <image src="/images/icon/enter.png" />
+  <view class="page-content">
+    <view class="products">
+      <view class="products-head">
+        <view class="cate-title">{{cate.ptitle}}</view>
+        <view class="cate-separater">-</view>
+        <view class="cate-title">{{cate.title}}</view>
+      </view>
+      <view class="products-list">
+        <block wx:for="{{products}}" wx:key="">
+          <text class="line" wx:if="{{index>0&&index%6==0}}"></text>
+          <view class="product">
+            <view class="product-image">
+              <image src="{{item.images[0]}}" />
             </view>
+            <view class="product-title">{{item.title}}</view>
           </view>
         </block>
       </view>
-    </block>
+    </view>
   </view>
 </view>
+
+<template is="menu-left" data="{{items:cates, menuOpen}}" />
+
+<template name="menu-left">
+  <view class="menu-left-container {{menuOpen}}">
+    <view class="items">
+      <block wx:for="{{items}}" wx:key="">
+        <view class="item-group {{item.expand&&item.children.length?'expand':''}}" style="height:{{item.expand?item.height:80}}rpx">
+          <view class="item item-level1" data-id="{{item.id}}" data-pid="{{item.pid}}" catchtap="onItemTap">
+            <view class="item-title">{{item.title}}</view>
+            <view class="item-icon {{item.expand?'packup':'unfold'}}">
+              <image src="/images/icon/enter.png" />
+            </view>
+          </view>
+          <block wx:for="{{item.children}}" wx:key="">
+            <view class="item item-level2" data-id="{{item.id}}" data-pid="{{item.pid}}" catchtap="onItemTap">
+              <view class="item-title">{{item.title}}</view>
+              <view class="item-icon">
+                <image src="/images/icon/enter.png" />
+              </view>
+            </view>
+          </block>
+        </view>
+      </block>
+    </view>
+  </view>
+</template>

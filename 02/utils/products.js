@@ -16,6 +16,7 @@ function getProducts(options) {
   return new Promise(function (resolve, reject) {
     let lang = options.lang
     let _cid = '_' + options.cid
+
     if (options.cache) {
       if (__products[lang] && __products[lang][_cid]) {
         resolve(__products[lang][_cid])
@@ -23,10 +24,14 @@ function getProducts(options) {
       }
     }
 
+    if(!__products[lang]) __products[lang] = []
+    if(!__products[lang][_cid]) __products[lang][_cid] = []
+
     http.get({
       url: '_ftrade/product.php?m=get',
       data: { cid: options.cid }
     }).then(function (res) {
+      console.log(res)
       if (!res.error) {
         let products = res
         for (let i in products) {
