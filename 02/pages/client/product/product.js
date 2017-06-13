@@ -13,6 +13,17 @@ Page({
     ],
     menuOpen: ''
   },
+  start: function (e) {
+    this.setData({
+      menuOpen: ''
+    })
+  },
+  move: function (e) {
+
+  },
+  end: function (e) {
+
+  },
 
   onMenuTriggerTap: function (e) {
     let menuOpen = this.data.menuOpen

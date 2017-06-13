@@ -1,18 +1,18 @@
 <view class="page {{menuOpen}}">
 
-  <view class="page-mask" wx:if="{{menuOpen}}" catchtap="onMaskTap"></view>
+  <view class="page-mask" wx:if="{{menuOpen}}" catchtap="onMaskTap" catchtouchstart="start" catchtouchmove="move" catchtouchend="end"></view>
 
   <view class="menu-trigger" wx:if="{{!menuOpen}}" catchtap="onMenuTriggerTap">
     <!--<view class="menu-trigger-inner">-->
-      <!--<view class="menu-trigger-inner">-->
-        <!--<view class="menu-trigger-inner">-->
-          <!--<view class="menu-trigger-inner">-->
-            <!--<view class="menu-trigger-inner">-->
-              <image src="/images/icon/menu-white.png" />
-            <!--</view>-->
-          <!--</view>-->
-        <!--</view>-->
-      <!--</view>-->
+    <!--<view class="menu-trigger-inner">-->
+    <!--<view class="menu-trigger-inner">-->
+    <!--<view class="menu-trigger-inner">-->
+    <!--<view class="menu-trigger-inner">-->
+    <image src="/images/icon/menu-white.png" />
+    <!--</view>-->
+    <!--</view>-->
+    <!--</view>-->
+    <!--</view>-->
     <!--</view>-->
   </view>
 

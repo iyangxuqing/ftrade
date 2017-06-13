@@ -31,7 +31,6 @@ function getProducts(options) {
       url: '_ftrade/product.php?m=get',
       data: { cid: options.cid }
     }).then(function (res) {
-      console.log(res)
       if (!res.error) {
         let products = res
         for (let i in products) {

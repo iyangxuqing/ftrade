@@ -11,6 +11,7 @@ page {
   overflow: hidden;
   overflow-y: auto;
   transition: all 0.3s ease;
+  -webkit-overflow-scrolling: touch;
 }
 
 .page.menuOpen {
@@ -18,7 +19,8 @@ page {
 }
 
 .page-header {
-  position: absolute;
+  position: fixed;
+  /*position: absolute;*/
   width: 100%;
   height: 400rpx;
 }
@@ -45,7 +47,7 @@ page {
 }
 
 .menu-trigger {
-  position: absolute;
+  position: fixed;
   top: -8rpx;
   left: -8rpx;
   width: 120rpx;
@@ -62,16 +64,17 @@ page {
 }
 
 .products {
-  height: 100%;
-  overflow: hidden;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
+  /*height: 100%;*/
+  /*overflow: hidden;
+  overflow-y: auto;*/
+  /*-webkit-overflow-scrolling: touch;*/
   margin-top: 40rpx;
 }
 
 .products::-webkit-scrollbar {
   display: none;
   width: 0;
+  height: 0;
 }
 
 .products-head {
@@ -136,9 +139,6 @@ page {
   left: 0;
   width: 500rpx;
   height: 100%;
-  overflow: hidden;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
   transform: translate3d(-500rpx, 0, 0);
   transition: all 0.3s ease;
   background-color: #eee;
@@ -147,6 +147,7 @@ page {
 .menu-left-container::-webkit-scrollbar {
   display: none;
   width: 0;
+  height: 0;
 }
 
 .menu-left-container.menuOpen {
@@ -154,6 +155,10 @@ page {
 }
 
 .items {
+  height: 100%;
+  overflow: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
   background-color: #fff;
 }
 

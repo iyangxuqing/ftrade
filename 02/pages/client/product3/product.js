@@ -1,5 +1,6 @@
 import { Category } from '../../../utils/categorys.js'
 import { Product } from '../../../utils/products.js'
+var touch = {}
 
 Page({
 
@@ -8,6 +9,18 @@ Page({
    */
   data: {
 
+  },
+
+  onMenuTriggerTap: function (e) {
+    let leftOpen = this.data.openLeft
+    leftOpen = leftOpen ? '' : 'left-open'
+    this.setData({ leftOpen })
+  },
+
+  onMaskTap: function (e) {
+    this.setData({
+      leftOpen: ''
+    })
   },
 
   onCateTap: function (e) {
@@ -43,35 +56,29 @@ Page({
       cates,
     })
 
-    Product.get({ cid: activeChildId, lang:'en' }).then(function (res) {
-      let products = []
-      for (let i in res) {
-        products.push(res[i])
-      }
-      for (let i in res) {
-        products.push(res[i])
-      }
-      for (let i in res) {
-        products.push(res[i])
-      }
-      products.pop()
-      this.setData({
-        products: products
-      })
-    }.bind(this))
+    Product.get({ cid: activeChildId, lang: 'en' })
+      .then(function (res) {
+        let products = []
+        for (let i in res) {
+          products.push(res[i])
+        }
+        for (let i in res) {
+          products.push(res[i])
+        }
+        for (let i in res) {
+          products.push(res[i])
+        }
+        products.pop()
+        this.setData({
+          products: products
+        })
+      }.bind(this))
   },
 
   /**
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
-    // Category.get({ lang: 'zh' }).then(function (res) {
-    //   console.log(res)
-    // })
-    // Category.get({ lang: 'en' }).then(function (res) {
-    //   console.log(res)
-    // })
-    // return
 
     Category.get({ lang: 'en' }).then(function (res) {
       let cates = res
@@ -87,7 +94,7 @@ Page({
         cates: cates
       })
       let cid = cates[0].children[0].id
-      Product.get({ cid, lang:'en' }).then(function (res) {
+      Product.get({ cid, lang: 'en' }).then(function (res) {
         let products = []
         for (let i in res) {
           products.push(res[i])
