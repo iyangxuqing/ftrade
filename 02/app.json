@@ -1,9 +1,10 @@
 {
   "pages": [
+    "pages/client/product4/product",
+    "pages/categorys/categorys",
     "pages/client/product3/product",
     "pages/client/product2/product",
     "pages/client/product/product",
-    "pages/categorys/categorys",
     "pages/products/products",
     "pages/product/product",
     "pages/index/index",
@@ -12,7 +13,7 @@
   "window": {
     "backgroundTextStyle": "light",
     "navigationBarBackgroundColor": "#fff",
-    "navigationBarTitleText": "WeChat",
+    "navigationBarTitleText": "",
     "navigationBarTextStyle": "black",
     "backgroundColor": "#fff"
   }
