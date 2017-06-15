@@ -6,7 +6,7 @@ export var __cates = []
   获取类目信息，options中存在id字段时，只获取单个类目信息，无id字段时则获取全部类目信息。cache字段用来控制是否从缓存中读取。
  */
 function get(options = {}) {
-  let defaults = { lang: 'zh', cache: true }
+  let defaults = { language: 'zh', cache: true }
   options = Object.assign(defaults, options)
   if ('id' in options) {
     return getCategory(options)
@@ -21,15 +21,15 @@ function get(options = {}) {
 function getCategorys(options) {
   return new Promise(function (resolve, reject) {
     if (options.cache && __cates.length > 0) {
-      resolve(__cates[options.lang])
+      resolve(__cates[options.language])
       return
     }
 
     http.get({
       url: '_ftrade/category.php?m=get'
     }).then(function (res) {
-      if (!res.error) {
-        let cates = res
+      if (res.categorys) {
+        let cates = res.categorys
         let _cates = []
         for (let i in cates) {
           let cate = cates[i]
@@ -56,7 +56,7 @@ function getCategorys(options) {
           }
           __cates[lang] = cates
         }
-        resolve(__cates[options.lang])
+        resolve(__cates[options.language])
       }
     })
   })
@@ -64,10 +64,10 @@ function getCategorys(options) {
 
 /*
   由类目id取得该类目信息，供products、product等页面调用
-  options.id, options.lang
+  options.id, options.language
 */
 function getCategory(options) {
-  let cates = __cates[options.lang]
+  let cates = __cates[options.language]
   for (let i in cates) {
     for (let j in cates[i].children) {
       if (cates[i].children[j].id == options.id) {

@@ -3,7 +3,7 @@ import { http } from 'http.js'
 export var __products = []
 
 function get(options) {
-  let defaults = { lang: 'zh', cache: true }
+  let defaults = { language: 'zh', cache: true }
   options = Object.assign(defaults, options)
   if ('id' in options && 'cid' in options) {
     return getProduct(options)
@@ -14,7 +14,7 @@ function get(options) {
 
 function getProducts(options) {
   return new Promise(function (resolve, reject) {
-    let lang = options.lang
+    let lang = options.language
     let _cid = '_' + options.cid
 
     if (options.cache) {
@@ -31,8 +31,8 @@ function getProducts(options) {
       url: '_ftrade/product.php?m=get',
       data: { cid: options.cid }
     }).then(function (res) {
-      if (!res.error) {
-        let products = res
+      if (res.products) {
+        let products = res.products
         for (let i in products) {
           let product = products[i]
           product.images = JSON.parse(product.images)
@@ -56,7 +56,7 @@ function getProducts(options) {
           if (!__products[lang][_cid]) __products[lang][_cid] = []
           __products[lang][_cid].push(product)
         }
-        resolve(__products[lang][_cid])
+        resolve(__products[options.language][_cid])
       }
     })
   })
@@ -65,7 +65,7 @@ function getProducts(options) {
 function getProduct(options) {
   let id = options.id
   let cid = options.cid
-  let lang = options.lang
+  let lang = options.language
   let _cid = '_' + options.cid
   let products = __products[lang][_cid]
   for (let i in products) {

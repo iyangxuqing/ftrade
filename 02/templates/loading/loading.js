@@ -1,31 +1,63 @@
 export class Loading {
 
   constructor() {
-    this.timer = null
+    this.showTimer = null
   }
 
   show(options = {}) {
     let page = getCurrentPages().pop()
-    this.timer = setTimeout(function () {
+    page.setData({
+      'loading.show': true,
+    })
+    this.showTimer = setTimeout(function () {
       page.setData({
-        'loading.mask': options.mask || true,
-        'loading.title': options.title || '',
-        'loading.visible': true,
-        'loading.animateCss': 'animate-fade-in'
+        'loading.showIcon': true
       })
-    }, 1000)
+    }, 500)
   }
 
   hide() {
     let page = getCurrentPages().pop()
-    clearTimeout(this.timer)
+    clearTimeout(this.showTimer)
     page.setData({
-      'loading.animateCss': 'animate-fade-out'
+      'loading.show': false
     })
-    setTimeout(function () {
-      page.setData({
-        'loading.visible': false
-      })
-    }, 300)
   }
+
+}
+
+export class PageLoading {
+
+  constructor() {
+    this.showTimer = null
+    this.hideTimer = null
+  }
+
+  show(options = {}) {
+    let page = getCurrentPages().pop()
+    page.setData({
+      'pageLoading.fade': '',
+      'pageLoading.show': true,
+    })
+    clearTimeout(this.hideTimer)
+    this.showTimer = setTimeout(function () {
+      page.setData({
+        'pageLoading.showIcon': true
+      })
+    }, 500)
+  }
+
+  hide() {
+    let page = getCurrentPages().pop()
+    clearTimeout(this.showTimer)
+    page.setData({
+      'pageLoading.fade': 'fade'
+    })
+    this.hideTimer = setTimeout(function () {
+      page.setData({
+        'pageLoading.show': false
+      })
+    }, 200)
+  }
+
 }

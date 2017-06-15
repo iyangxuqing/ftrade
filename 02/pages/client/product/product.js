@@ -1,5 +1,10 @@
+import { Loading } from '../../../templates/loading/loading.js'
+import { PageLoading } from '../../../templates/loading/loading.js'
 import { Category } from '../../../utils/categorys.js'
 import { Product } from '../../../utils/products.js'
+import { Language, Languages } from '../../../utils/language.js'
+
+var touch = {}
 
 Page({
 
@@ -7,121 +12,154 @@ Page({
    * 页面的初始数据
    */
   data: {
-    images: [
-      '/images/p01.jpg',
-      '/images/p02.jpg',
-    ],
-    menuOpen: ''
+    languages: Languages
   },
-  start: function (e) {
+
+  onLanguageTap: function (e) {
+    let id = e.currentTarget.dataset.id
+
+    this.loading.show()
+    this.onLanguageChanged(id, function () {
+      this.loading.hide()
+    }.bind(this))
+
     this.setData({
-      menuOpen: ''
+      leftOpen: ''
     })
   },
-  move: function (e) {
 
-  },
-  end: function (e) {
+  onLanguageChanged: function (language, cb) {
+    let phrases = Language(language)
+    wx.setNavigationBarTitle({
+      title: phrases['productList'],
+    })
+    this.setData({
+      language: language,
+      categoryEmpty: phrases['categoryEmpty'],
+      productEmpty: phrases['productEmpty'],
+    })
 
+    Category.get({ language }).then(function (cates) {
+      let activeId = cates[0].id
+      for (let i in cates) {
+        // 有的类目可能在其下面还没建子类目
+        if (cates[i].children.length) {
+          cates[i].activeId = cates[i].children[0].id
+        }
+      }
+      this.setData({
+        activeId: activeId,
+        cates: cates
+      })
+      let cid = cates[0].children[0].id
+      Product.get({ cid, language }).then(function (products) {
+        let _products = []
+        for (let i in products) {
+          _products.push(products[i])
+        }
+        for (let i in products) {
+          _products.push(products[i])
+        }
+        for (let i in products) {
+          _products.push(products[i])
+        }
+        _products.pop()
+        this.setData({
+          products: _products
+        })
+        cb && cb()
+      }.bind(this))
+    }.bind(this))
   },
 
   onMenuTriggerTap: function (e) {
-    let menuOpen = this.data.menuOpen
-    menuOpen = menuOpen ? '' : 'menuOpen'
-    this.setData({
-      menuOpen: 'menuOpen'
-    })
+    let leftOpen = this.data.openLeft
+    leftOpen = leftOpen ? '' : 'left-open'
+    this.setData({ leftOpen })
   },
 
   onMaskTap: function (e) {
     this.setData({
-      menuOpen: ''
+      leftOpen: ''
     })
   },
 
-  onItemTap: function (e) {
+  onCateTap: function (e) {
     let id = e.currentTarget.dataset.id
     let pid = e.currentTarget.dataset.pid
     let cates = this.data.cates
+    let activeId = this.data.activeId
+
+    let activeChildId = ''
     if (pid == 0) {
       for (let i in cates) {
         if (cates[i].id == id) {
-          cates[i].expand = !cates[i].expand
-          break
+          activeId = id
+          activeChildId = cates[i].activeId
+          break;
         }
       }
-      this.setData({
-        cates: cates
-      })
-      return
+    } else {
+      for (let i in cates) {
+        if (cates[i].id == pid) {
+          for (let j in cates[i].children) {
+            if (cates[i].children[j].id == id) {
+              cates[i].activeId = id
+              activeChildId = id
+              break;
+            }
+          }
+        }
+      }
     }
 
     this.setData({
-      menuOpen: ''
+      activeId,
+      cates,
     })
 
-    let cate = Category.get({ id })
-    this.setData({
-      cate: cate
+    this.loading.show()
+    let language = this.data.language
+    Product.get({ cid: activeChildId, language })
+      .then(function (products) {
+        let _products = []
+        for (let i in products) {
+          _products.push(products[i])
+        }
+        for (let i in products) {
+          _products.push(products[i])
+        }
+        for (let i in products) {
+          _products.push(products[i])
+        }
+        _products.pop()
+        this.setData({
+          products: _products
+        })
+        this.loading.hide()
+      }.bind(this))
+  },
+
+  onAdminTap: function (e) {
+    wx.navigateTo({
+      url: '/pages/categorys/categorys',
     })
-    console.log(cate)
-
-    Product.get({ cid: id }).then(function (res) {
-      let products = []
-      for (let i in res) {
-        products.push(res[i])
-      }
-      for (let i in res) {
-        products.push(res[i])
-      }
-      for (let i in res) {
-        products.push(res[i])
-      }
-      products.pop()
-      this.setData({
-        products: products
-      })
-    }.bind(this))
-
   },
 
   /**
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
-    Category.get().then(function (res) {
-      let cates = res
-      for (let i in cates) {
-        cates[i].height = 80
-        let count = cates[i].children.length
-        if (count > 0) {
-          cates[i].height += count * 102 - 2
-        }
-      }
-      cates[0].expand = true
-      let id = cates[0].children[0].id
-      let cate = Category.get({ id })
-      this.setData({
-        cates: cates,
-        cate: cate
-      })
-      Product.get({ cid: id }).then(function (res) {
-        let products = []
-        for (let i in res) {
-          products.push(res[i])
-        }
-        for (let i in res) {
-          products.push(res[i])
-        }
-        for (let i in res) {
-          products.push(res[i])
-        }
-        products.pop()
-        this.setData({
-          products: products
-        })
-      }.bind(this))
+
+    this.loading = new Loading()
+    this.pageLoading = new PageLoading()
+
+    this.pageLoading.show()
+    let language = wx.getStorageSync('language') || 'en'
+    this.onLanguageChanged(language, function () {
+      this.pageLoading.hide()
     }.bind(this))
+
   },
 
   /**
@@ -173,3 +211,17 @@ Page({
 
   }
 })
+
+/* 数据传输 */
+/*
+  程序启动时，会有一个语言选择页面，当作程序封面页。
+  选择了语言后，会把语言选项保存在localStorage中，当作全局变量。
+  保存在localStorage中，也为了用户后续进入程序时，可以避开语言选择页面。
+  在开发初期由于语言选择页面还未接入，为方便开发在app.js中提供默认语言'en'。
+  全局语言选项也会保存在app.language中，以方便取用。
+
+  程序启动时，会一次性读入类目数据，包括所有语言的数据。
+  除了下拉刷新外，此后不会再去读取类目数据了。
+  类目数据是程序架构关键，数据量也不大，如果读入不成功，程序就不再运行。
+
+*/

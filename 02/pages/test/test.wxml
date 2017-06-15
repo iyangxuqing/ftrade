@@ -1,0 +1,6 @@
+<!--pages/test/test.wxml-->
+<text catchtap="onTap">pages/test/test.wxml</text>
+
+<view class="loading">
+  <view class="mask"></view>
+</view>

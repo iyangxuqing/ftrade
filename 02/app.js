@@ -9,6 +9,14 @@ App({
     var logs = wx.getStorageSync('logs') || []
     logs.unshift(Date.now())
     wx.setStorageSync('logs', logs)
+
+    var language = wx.getStorageSync('language')
+    if (!language) {
+      language = 'en'
+      wx.setStorageSync('language', language)
+      this.language = language
+    }
+    
   },
   getUserInfo: function (cb) {
     var that = this

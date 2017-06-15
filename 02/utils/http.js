@@ -8,7 +8,17 @@ function showRequestFailedTip() {
   // getApp().listener.trigger('tip', {
   //     title: '网络错误，请重试...',
   // })
+  console.log('net fail.')
 }
+
+/*
+  网络请求
+  在没有网络时，wx.request会引发fail错误，回报{errMsg: 'request:fail'}
+  当请求超时，同样引发fail错误，回报{errMsg: 'request: fail timeout'}
+  在没有fail错误发生时，success收到的数据也可能由于服务器的原因，
+  或数据本身逻辑错误，使得res.data中为服务器的报错信息。
+  检查数据的完整性，应当查看res.data中存在相关字段或res.data.error==''。
+*/
 
 function get(options) {
   return new Promise(function (resolve, reject) {
@@ -28,7 +38,7 @@ function get(options) {
       fail: function (error) {
         showRequestFailedTip()
         reject(error)
-      }
+      },
     })
   })
 }
@@ -99,10 +109,12 @@ function upload(options) {
             })
           } else {
             reject(res)
+            return
           }
         },
         fail: function (res) {
           reject(res)
+          return
         },
         complete: function () {
           uploadedNum++;

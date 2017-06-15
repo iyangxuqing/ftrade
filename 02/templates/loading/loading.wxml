@@ -1,9 +1,17 @@
 <template name="loading">
-  <view class="loading" wx:if="{{visible}}">
-    <view class="loading-mask" wx:if="{{visible && mask}}"></view>
-    <view class="loading-body {{animateCss}}">
+  <view class="loading" wx:if="{{show}}">
+    <view class="loading-mask"></view>
+    <view class="loading-body" wx:if="{{showIcon}}">
       <view class="loading-icon"></view>
-      <view class="loading-title" wx:if="{{title}}">{{title}}</view>
+    </view>
+  </view>
+</template>
+
+<template name="page-loading">
+  <view class="page-loading" wx:if="{{show}}">
+    <view class="loading-mask {{fade}}"></view>
+    <view class="loading-body" wx:if="{{showIcon}}">
+      <view class="loading-icon"></view>
     </view>
   </view>
 </template>

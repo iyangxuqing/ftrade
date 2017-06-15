@@ -44,18 +44,18 @@ Page({
     let dy = touch.y2 - touch.y1
     let dt = touch.t2 - touch.t1
     if ((Math.abs(dy) < Math.abs(dx) && dt < 250)) {
-      if (dx < -20) this.onSwiperLeft(touch.id)
-      if (dx > 20) this.onSwiperRight(touch.id)
+      if (dx < -20) this.onSwipeLeft(touch.id)
+      if (dx > 20) this.onSwipeRight(touch.id)
     }
   },
 
-  onSwiperLeft: function (id) {
+  onSwipeLeft: function (id) {
     this.setData({
       swipeLeftId: id
     })
   },
 
-  onSwiperRight: function (id) {
+  onSwipeRight: function (id) {
     this.setData({
       swipeLeftId: -1
     })
