@@ -1,63 +1,34 @@
-<import src='/templates/loading/loading.wxml' />
-<template is="loading" data="{{...loading}}" />
-<template is="page-loading" data="{{...pageLoading}}" />
-
-<view class="page {{leftOpen}} {{language}}">
-
-  <view class="page-mask" wx:if="{{leftOpen}}" catchtap="onMaskTap"></view>
-
-  <view class="page-header">
-    <view class="page-header-1">
-      <view class="menu-trigger" catchtap="onMenuTriggerTap">
-        <image src="/images/icon/menu-black.png" />
-      </view>
-      <view class="categorys-level1">
-        <block wx:for="{{cates}}" wx:key="" wx:for-item="cate">
-          <view class="category-level1 {{activeId==cate.id?'active':''}}" data-id="{{cate.id}}" data-pid="{{cate.pid}}" catchtap="onCateTap">{{cate.title}}</view>
-        </block>
-      </view>
-    </view>
-    <view class="page-header-2">
-      <block wx:for="{{cates}}" wx:key="" wx:for-item="cate">
-        <view class="categorys-level2" wx:if="{{cate.id==activeId}}">
-          <block wx:for="{{cate.children}}" wx:key="">
-            <view class="category category-level2 {{cate.activeId==item.id?'active':''}}" data-id="{{item.id}}" data-pid="{{item.pid}}" catchtap="onCateTap">{{item.title}}</view>
-          </block>
-          <view class="empty" wx:if="{{!cate.children.length}}">
-            <text>{{categoryEmpty}}</text>
-          </view>
-        </view>
-      </block>
-    </view>
-  </view>
-
-  <view class="page-content">
-    <view class="products">
-      <block wx:for="{{products}}" wx:key="">
-        <text class="line" wx:if="{{index>0&&index%6==0}}"></text>
-        <view class="product">
+<view class="product">
+  <view class="product-images">
+    <swiper indicator-dots>
+      <block wx:for="{{product.images}}" wx:key="">
+        <swiper-item>
           <view class="product-image">
-            <image src="{{item.images[0]}}" />
+            <image src="{{item}}" mode="aspectFit" />
           </view>
-          <view class="product-title">{{item.title}}</view>
-        </view>
+        </swiper-item>
       </block>
-      <view class="empty" wx:if="{{!products.length}}">
-        <text>{{productEmpty}}</text>
-      </view>
-    </view>
+    </swiper>
   </view>
 
-</view>
-
-<view class="left {{leftOpen}}">
-
-  <view class="languages">
-    <block wx:for="{{languages}}" wx:key="">
-      <view class="language" catchtap="onLanguageTap" data-id="{{index}}">{{item}}</view>
+  <view class="items product-prices">
+    <view class="items-head">批发价格</view>
+    <block wx:for="{{product.prices}}" wx:key="">
+      <view class="item product-price">
+        <view class="label">{{item.label}}</view>
+        <view class="value">{{item.value}}</view>
+      </view>
     </block>
   </view>
 
-  <view class="admin" catchtap="onAdminTap">后台管理</view>
-
+  <view class="items product-props">
+    <view class="items-head">商品属性</view>
+    <block wx:for="{{product.props}}" wx:key="">
+      <view class="item product-prop">
+        <view class="label">{{item.label}}</view>
+        <view class="value">{{item.value}}</view>
+      </view>
+    </block>
+  </view>
+  
 </view>
