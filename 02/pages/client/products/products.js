@@ -1,8 +1,40 @@
 import { Loading } from '../../../templates/loading/loading.js'
-import { PageLoading } from '../../../templates/loading/loading.js'
+
 import { Category } from '../../../utils/categorys.js'
 import { Product } from '../../../utils/products.js'
-import { Language, Languages } from '../../../utils/language.js'
+
+var Phrases = {
+  'languages': {
+    'zh': '中文',
+    'en': 'English',
+    'ara': ' عربي ',
+    'kor': '한국어',
+  },
+  'productList': {
+    'zh': '商品列表',
+    'en': 'Product list',
+    'ara': ' قائمة المنتجات ',
+    'kor': '상품 목록',
+  },
+  'productDetails': {
+    'zh': '商品详情',
+    'en': 'Commodity details',
+    'ara': ' تفاصيل المنتج ',
+    'kor': '상품 설명',
+  },
+  'categoryEmpty': {
+    'zh': '该类目下没有子类目',
+    'en': 'There are no subcategories in this category',
+    'ara': ' هذا  التصنيف  لا  تصنيف  فرعي ',
+    'kor': '이 类目 다음 없는 사람 类目',
+  },
+  'productEmpty': {
+    'zh': '该类目下没商品',
+    'en': 'There is no goods under this category',
+    'ara': ' هذا  التصنيف  لا  السلع ',
+    'kor': '이 类目 다음 없는 상품',
+  },
+}
 
 var touch = {}
 
@@ -12,10 +44,10 @@ Page({
    * 页面的初始数据
    */
   data: {
-    languages: Languages
+    languages: Phrases['languages']
   },
 
-  touchstart: function (e) {
+  onMaskTouchStart: function (e) {
     touch.id = e.currentTarget.dataset.id
     touch.x1 = e.touches[0].clientX;
     touch.y1 = e.touches[0].clientY;
@@ -23,45 +55,79 @@ Page({
     touch.x2 = e.touches[0].clientX;
     touch.y2 = e.touches[0].clientY;
     touch.t2 = e.timeStamp;
-    // this.setData({
-    //   leftOpen: ''
-    // })
+    this.onMaskTouch(touch.id)
   },
 
-  touchmove: function (e) {
+  onMaskTouchMove: function (e) {
     touch.x2 = e.touches[0].clientX;
     touch.y2 = e.touches[0].clientY;
     touch.t2 = e.timeStamp;
-
-    let dx = touch.x2 - touch.x1
-    let dy = touch.y2 - touch.y1
-    if (dx < -5 && Math.abs(dy) < 5) {
-      // this.setData({
-      //   leftOpen: ''
-      // })
-    }
   },
 
-  touchend: function (e) {
+  onMaskTouchEnd: function (e) {
     touch.t2 = e.timeStamp
     let dx = touch.x2 - touch.x1
     let dy = touch.y2 - touch.y1
     let dt = touch.t2 - touch.t1
-    if ((Math.abs(dy) < Math.abs(dx) && dt < 250)) {
-      if (dx < -20) this.onSwipeLeft(touch.id)
-      if (dx > 20) this.onSwipeRight(touch.id)
+    if ((Math.abs(dy) < Math.abs(dx) / 2 && dt < 250)) {
+      if (dx < -20) this.onMaskSwipeLeft(touch.id)
+      if (dx > 20) this.onMaskSwipeRight(touch.id)
     }
   },
 
-  onSwipeLeft: function (id) {
-    this.setData({
-      leftOpen: ''
-    })
+  onPopupTouchStart: function (e) {
+    touch.id = e.currentTarget.dataset.id
+    touch.x1 = e.touches[0].clientX;
+    touch.y1 = e.touches[0].clientY;
+    touch.t1 = e.timeStamp;
+    touch.x2 = e.touches[0].clientX;
+    touch.y2 = e.touches[0].clientY;
+    touch.t2 = e.timeStamp;
   },
 
-  onSwipeRight: function (id) {
+  onPopupTouchMove: function (e) {
+    touch.x2 = e.touches[0].clientX;
+    touch.y2 = e.touches[0].clientY;
+    touch.t2 = e.timeStamp;
   },
 
+  onPopupTouchEnd: function (e) {
+    touch.t2 = e.timeStamp
+    let dx = touch.x2 - touch.x1
+    let dy = touch.y2 - touch.y1
+    let dt = touch.t2 - touch.t1
+    if ((Math.abs(dy) < Math.abs(dx) / 2 && dt < 250)) {
+      if (dx < -20) this.onPopupSwipeLeft(touch.id)
+      if (dx > 20) this.onPopupSwipeRight(touch.id)
+    }
+  },
+
+  onMaskTouch: function (id) {
+    this.setData({ leftOpen: '' })
+  },
+
+  onMaskSwipeLeft: function (id) {
+  },
+
+  onMaskSwipeRight: function (id) {
+  },
+
+  onPopupSwipeLeft: function (id) {
+    this.setData({ leftOpen: '' })
+  },
+
+  onPopupSwipeRight: function (id) {
+  },
+
+  onMenuTriggerTap: function (e) {
+    let leftOpen = this.data.openLeft
+    leftOpen = leftOpen ? '' : 'left-open'
+    this.setData({ leftOpen })
+  },
+
+  onMaskTap: function (e) {
+    this.setData({ leftOpen: '' })
+  },
 
   onLanguageTap: function (e) {
     let id = e.currentTarget.dataset.id
@@ -75,14 +141,13 @@ Page({
   },
 
   onLanguageChanged: function (language, cb) {
-    let phrases = Language(language)
     wx.setNavigationBarTitle({
-      title: phrases['productList'],
+      title: Phrases['productList'][language],
     })
     this.setData({
       language: language,
-      categoryEmpty: phrases['categoryEmpty'],
-      productEmpty: phrases['productEmpty'],
+      categoryEmpty: Phrases['categoryEmpty'][language],
+      productEmpty: Phrases['productEmpty'][language],
     })
     wx.setStorageSync('language', language)
 
@@ -100,35 +165,12 @@ Page({
       })
       let cid = cates[0].children[0].id
       Product.get({ cid, language }).then(function (products) {
-        let _products = []
-        for (let i in products) {
-          _products.push(products[i])
-        }
-        for (let i in products) {
-          _products.push(products[i])
-        }
-        for (let i in products) {
-          _products.push(products[i])
-        }
-        _products.pop()
         this.setData({
-          products: _products
+          products: products
         })
         cb && cb()
       }.bind(this))
     }.bind(this))
-  },
-
-  onMenuTriggerTap: function (e) {
-    let leftOpen = this.data.openLeft
-    leftOpen = leftOpen ? '' : 'left-open'
-    this.setData({ leftOpen })
-  },
-
-  onMaskTap: function (e) {
-    this.setData({
-      leftOpen: ''
-    })
   },
 
   onCateTap: function (e) {
@@ -169,19 +211,8 @@ Page({
     let language = this.data.language
     Product.get({ cid: activeChildId, language })
       .then(function (products) {
-        let _products = []
-        for (let i in products) {
-          _products.push(products[i])
-        }
-        for (let i in products) {
-          _products.push(products[i])
-        }
-        for (let i in products) {
-          _products.push(products[i])
-        }
-        _products.pop()
         this.setData({
-          products: _products
+          products: products
         })
         this.loading.hide()
       }.bind(this))
@@ -207,12 +238,12 @@ Page({
   onLoad: function (options) {
 
     this.loading = new Loading()
-    this.pageLoading = new PageLoading()
+    this.loading.show()
 
-    this.pageLoading.show()
     let language = wx.getStorageSync('language') || 'en'
     this.onLanguageChanged(language, function () {
-      this.pageLoading.hide()
+      this.setData({ ready: true })
+      this.loading.hide()
     }.bind(this))
 
   },
@@ -273,7 +304,6 @@ Page({
   选择了语言后，会把语言选项保存在localStorage中，当作全局变量。
   保存在localStorage中，也为了用户后续进入程序时，可以避开语言选择页面。
   在开发初期由于语言选择页面还未接入，为方便开发在app.js中提供默认语言'en'。
-  全局语言选项也会保存在app.language中，以方便取用。
 
   程序启动时，会一次性读入类目数据，包括所有语言的数据。
   除了下拉刷新外，此后不会再去读取类目数据了。

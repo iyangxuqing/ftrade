@@ -1,8 +1,26 @@
-import { Loading } from '../../../templates/loading/loading.js'
-import { PageLoading } from '../../../templates/loading/loading.js'
 import { Category } from '../../../utils/categorys.js'
 import { Product } from '../../../utils/products.js'
-import { Language, Languages } from '../../../utils/language.js'
+
+var Phrases = {
+  navTitle: {
+    'zh': '商品详情',
+    'en': 'Commodity details',
+    'ara': ' تفاصيل المنتج ',
+    'kor': '상품 설명',
+  },
+  pricesTitle: {
+    'zh': '批发价格',
+    'en': 'Wholesale price',
+    'ara': ' سعر الجملة ',
+    'kor': '도매 가격',
+  },
+  propsTitle: {
+    'zh': '商品属性',
+    'en': 'Commodity attribute',
+    'ara': ' السلع صفة ',
+    'kor': '상품 특성',
+  }
+}
 
 Page({
 
@@ -13,25 +31,64 @@ Page({
 
   },
 
+  onFavoriteTap: function (e) {
+    let id = e.currentTarget.dataset.id
+    console.log(id)
+    let products = this.data.products
+    for (let i in products) {
+      if (products[i].id == id) {
+        products[i].favorite = !products[i].favorite
+        break
+      }
+    }
+    this.setData({
+      products: products
+    })
+
+    let favorites = []
+    for (let i in products) {
+      if (products[i].favorite == true) {
+        favorites.push(products[i].id)
+      }
+    }
+    wx.setStorageSync('favorites', favorites)
+  },
+
   /**
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
-    let id = options.id || '1497257881135'
-    let cid = options.cid || '89'
-    Category.get().then(function(cates){
-      Product.get({cid}).then(function(products){
-        console.log(id, cid)
-        let language = wx.getStorageSync('language')
-        let product = Product.get({ id, cid, language })
-        wx.setNavigationBarTitle({
-          title: product.title,
-        })
-        this.setData({
-          product: product
-        })
+    let id = options.id
+    let cid = options.cid
+    let language = wx.getStorageSync('language') || 'en'
+    let favorites = wx.getStorageSync('favorites') || []
+    let phrases = {
+      navTitle: Phrases['navTitle'][language],
+      pricesTitle: Phrases['pricesTitle'][language],
+      propsTitle: Phrases['propsTitle'][language],
+    }
+    wx.setNavigationBarTitle({
+      title: phrases.navTitle,
+    })
 
-      }.bind(this))
+    Product.get({ cid, language }).then(function (products) {
+      let index = -1
+      for (let i in products) {
+        if (products[i].id == id) index = i
+        for (let j in favorites) {
+          if (products[i].id == favorites[j]) {
+            products[i].favorite = true
+            break
+          }
+        }
+      }
+      this.setData({
+        phrases,
+        products,
+        language,
+        ready: true,
+        current: index,
+      })
     }.bind(this))
 
   },
