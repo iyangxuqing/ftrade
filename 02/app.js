@@ -1,8 +1,10 @@
 import 'utils/util.js'
+import { http } from 'utils/http.js'
 import { Listener } from 'utils/listener.js'
 
 App({
   onLaunch: function () {
+    this.login()
     this.listener = new Listener()
 
     var language = wx.getStorageSync('language')
@@ -10,26 +12,26 @@ App({
       language = 'en'
       wx.setStorageSync('language', language)
     }
-    
+
   },
-  getUserInfo: function (cb) {
-    var that = this
-    if (this.globalData.userInfo) {
-      typeof cb == "function" && cb(this.globalData.userInfo)
-    } else {
-      //调用登录接口
-      wx.login({
-        success: function () {
-          wx.getUserInfo({
-            success: function (res) {
-              that.globalData.userInfo = res.userInfo
-              typeof cb == "function" && cb(that.globalData.userInfo)
+
+  login: function (cb) {
+    wx.login({
+      success: function (res) {
+        if (res.code) {
+          http.get({
+            url: '_ftrade/user.php?m=login',
+            data: { code: res.code }
+          }).then(function (res) {
+            if(res.token){
+              wx.setStorageSync('token', res.token)
             }
           })
         }
-      })
-    }
+      }
+    })
   },
+
   globalData: {
     userInfo: null
   }

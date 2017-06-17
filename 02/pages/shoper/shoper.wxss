@@ -1,0 +1,6 @@
+@import '/templates/toptip/toptip.wxss';
+@import '/templates/mobile/mobile.wxss';
+
+.test{
+  padding: 40rpx;
+}

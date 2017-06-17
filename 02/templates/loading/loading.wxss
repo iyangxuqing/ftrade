@@ -8,14 +8,6 @@
   transition: all 200ms ease;
 }
 
-.page-loading .loading-mask {
-  background-color: #fff;
-}
-
-page-loading .loading-mask.fade {
-  opacity: 0;
-}
-
 .loading-body {
   position: fixed;
   width: 120rpx;

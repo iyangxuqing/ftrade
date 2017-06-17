@@ -1,0 +1,17 @@
+<template name="mobile">
+  <view class="mobile">
+    <form bindsubmit="{{onNumberSubmit}}">
+      <view class="mobile-row mobile-number">
+        <input class="{{numberError}}" value="{{number}}" name="number" placeholder="输入手机号" type="number" maxlength="11" bindfocus="{{onNumberInputFocus}}" />
+        <view class="mobile-code-request">
+          <button formType="submit">{{codeRequestText}}</button>
+        </view>
+      </view>
+    </form>
+
+    <view class="mobile-row mobile-code">
+      <input class="{{codeError}}" type="number" placeholder="输入验证码" maxlength="6 " bindinput="{{onCodeInput}}" bindfocus="{{onCodeInputFocus}}" />
+      <view class="mobile-code-confirm" wx:if="{{code.length>=6}}" catchtap="{{onCodeConfirm}}">确　定</view>
+    </view>
+  </view>
+</template>
