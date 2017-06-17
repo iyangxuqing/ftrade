@@ -1,8 +1,10 @@
-import {http} from '../../utils/http.js'
+import { http } from '../../utils/http.js'
 
 let data = {
   number: '',
   code: '',
+  verified: '',
+  showCodeInput: true,
   numberError: false,
   codeError: false,
   codeRequestText: '发送验证码'
@@ -27,7 +29,7 @@ let methods = {
     }
 
     http.post({
-      url: 'sms/codeRequest.php',
+      url: '_ftrade/mobile.php?m=codeRequest',
       data: {
         tplId: 29922,
         mobile: number
@@ -36,6 +38,7 @@ let methods = {
 
     let second = 60
     page.setData({
+      'mobile.number': number,
       'mobile.codeRequestText': '60秒后重发'
     })
     let timer = setInterval(function () {
@@ -81,21 +84,29 @@ let methods = {
   onCodeConfirm: function (e) {
     let page = getCurrentPages().pop()
     let mobile = page.data.mobile
+    console.log(mobile)
     let number = mobile.number
     let code = mobile.code
     if (code == '') return;
 
     http.post({
-      url: 'sms/codeVerify.php',
-      data: { code, number },
+      url: '_ftrade/mobile.php?m=codeVerify',
+      data: { code, mobile: number },
     }).then(function (res) {
-      if(res.error){
+      if (res.mobileVerified) {
+        page.setData({
+          'mobile.verified': 'verified'
+        })
+        setTimeout(function () {
+          page.setData({
+            'mobile.showCodeInput': false
+          })
+        }, 300)
+      } else {
         page.setData({
           'mobile.codeError': 'message-error'
         })
-        page.onToptipShow('验证码输入有误')
-      } else {
-        page.onToptipShow('手机验证成功')
+        page.toptip.show('验证码输入有误')
       }
     })
   },
