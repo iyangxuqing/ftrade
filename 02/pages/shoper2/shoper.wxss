@@ -1,5 +1,4 @@
 .shop {
-  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -59,7 +58,11 @@
   flex-grow: 1;
 }
 
-.editor.shop-name input{
+.editor.shop-name {
+  width: 670rpx;
+}
+
+.editor.shop-name input {
   height: 200rpx;
   line-height: 200rpx;
   text-align: center;

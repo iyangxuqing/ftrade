@@ -36,7 +36,6 @@ Page({
     let offsetTop = e.currentTarget.offsetTop
     let offsetLeft = e.currentTarget.offsetLeft
     console.log(offsetTop, offsetLeft)
-    return
     
     this.setData({
       editor: {

@@ -24,8 +24,9 @@
       <image src="/images/icon/enter.png" />
     </view>
   </view>
-  <template is="editor" data="{{...editor, platform}}" />
 </view>
+
+<template is="editor" data="{{...editor, platform}}" />
 
 <template name="editor">
   <view class="editor {{type}} {{platform}}" wx:if="{{show}}" style="top:{{top}}px;left:{{left}}px">

@@ -84,7 +84,6 @@ let methods = {
   onCodeConfirm: function (e) {
     let page = getCurrentPages().pop()
     let mobile = page.data.mobile
-    console.log(mobile)
     let number = mobile.number
     let code = mobile.code
     if (code == '') return;
@@ -101,21 +100,26 @@ let methods = {
           page.setData({
             'mobile.showCodeInput': false
           })
-        }, 300)
+          this.success && this.success({
+            mobile: number,
+            verified: true
+          })
+        }.bind(this), 300)
       } else {
         page.setData({
           'mobile.codeError': 'message-error'
         })
         page.toptip.show('验证码输入有误')
       }
-    })
+    }.bind(this))
   },
 
 }
 
 export class Mobile {
 
-  constructor() {
+  constructor(success) {
+    this.success = success
     let page = getCurrentPages().pop()
     page.setData({
       mobile: data
