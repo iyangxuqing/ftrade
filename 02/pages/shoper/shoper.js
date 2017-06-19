@@ -1,5 +1,5 @@
-import { Toptip } from '../../templates/toptip/toptip.js'
-import { Mobile } from '../../templates/mobile/mobile.js'
+import { http } from '../../utils/http.js'
+import { Loading } from '../../templates/loading/loading.js'
 
 Page({
 
@@ -13,7 +13,9 @@ Page({
       phone: '(+086)15855556688',
       address: '国际商贸城一区123066号'
     },
-    editor: {}
+    editor: {
+      left: -1000
+    }
   },
 
   onShopLogoTap: function (e) {
@@ -30,63 +32,68 @@ Page({
   },
 
   onShopNameTap: function (e) {
-    let editor = this.editor
-    if (editor && editor.show) return
-
+    if (this.data.editor.left > -1) {
+      this.setData({ 'editor.left': -1000 })
+      return
+    }
     let offsetTop = e.currentTarget.offsetTop
     let offsetLeft = e.currentTarget.offsetLeft
-    console.log(offsetTop, offsetLeft)
-    return
-    
     this.setData({
-      editor: {
-        show: true,
-        top: offsetTop,
-        left: offsetLeft,
-        type: 'shop-name',
-        focus: true,
-        value: this.data.shop.name,
-        placeholder: '输入店铺名称',
-      }
+      'editor.type': 'shop-name',
+      'editor.value': this.data.shop.name,
+      'editor.placeholder': '输入店铺名称',
     })
+    setTimeout(function () {
+      this.setData({
+        'editor.focus': true,
+        'editor.top': offsetTop,
+        'editor.left': offsetLeft,
+      })
+    }.bind(this), 10)
   },
 
   onShopPhoneTap: function (e) {
-    let editor = this.editor
-    if (editor && editor.show) return
-
+    if (this.data.editor.left > -1) {
+      this.setData({ 'editor.left': -1000 })
+      return
+    }
     let offsetTop = e.currentTarget.offsetTop
     let offsetLeft = e.currentTarget.offsetLeft
+    console.log(offsetTop, offsetLeft)
     this.setData({
-      editor: {
-        show: true,
-        top: offsetTop,
-        left: offsetLeft,
-        type: 'shop-phone',
-        focus: true,
-        value: this.data.shop.phone,
-        placeholder: '输入电话号码',
-      }
+      'editor.type': 'shop-phone',
+      'editor.value': this.data.shop.phone,
+      'editor.placeholder': '输入电话号码',
     })
+    setTimeout(function () {
+      this.setData({
+        'editor.focus': true,
+        'editor.top': offsetTop,
+        'editor.left': offsetLeft,
+      })
+    }.bind(this), 10)
   },
 
   onShopAddressTap: function (e) {
-    let editor = this.editor
-    if (editor && editor.show) return
-
+    if (this.data.editor.left > -1) {
+      this.setData({ 'editor.left': -1000 })
+      return
+    }
     let offsetTop = e.currentTarget.offsetTop
     let offsetLeft = e.currentTarget.offsetLeft
+    console.log(offsetTop, offsetLeft)
     this.setData({
-      editor: {
-        show: true,
-        top: offsetTop,
-        left: offsetLeft,
-        type: 'shop-address',
-        focus: true,
-        value: this.data.shop.address,
-        placeholder: '输入店铺地址',
-      }
+      'editor.type': 'shop-address',
+      'editor.value': this.data.shop.address,
+      'editor.placeholder': '输入店铺地址',
     })
+    setTimeout(function () {
+      this.setData({
+        'editor.focus': true,
+        'editor.top': offsetTop,
+        'editor.left': offsetLeft,
+      })
+    }.bind(this), 10)
   },
 
   onManagementTap: function (e) {
@@ -102,9 +109,7 @@ Page({
     let value = e.detail.value
 
     setTimeout(function () {
-      this.setData({
-        'editor.show': false
-      })
+      this.setData({ 'editor.left': -1000 })
     }.bind(this), 0)
 
     if (value == '' || value == oldValue) return
@@ -124,16 +129,33 @@ Page({
         'shop.address': value
       })
     }
+
+    http.get({
+      url: '_ftrade/shop.php?m=set',
+      data: this.data.shop
+    })
   },
 
   /**
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
+    this.loading = new Loading()
+    this.loading.show()
+
     let platform = wx.getSystemInfoSync().platform
-    this.setData({
-      platform
-    })
+    this.setData({ platform })
+
+    http.get({
+      url: '_ftrade/shop.php?m=get'
+    }).then(function (res) {
+      let shop = res.shop || this.data.shop
+      this.setData({
+        shop: shop,
+        ready: true
+      })
+      this.loading.hide()
+    }.bind(this))
   },
 
   /**
