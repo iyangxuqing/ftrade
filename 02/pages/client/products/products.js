@@ -228,7 +228,7 @@ Page({
 
   onAdminTap: function (e) {
     wx.navigateTo({
-      url: '/pages/categorys/categorys',
+      url: '/pages/shoper/shoper',
     })
   },
 

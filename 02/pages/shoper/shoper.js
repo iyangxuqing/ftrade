@@ -9,9 +9,9 @@ Page({
   data: {
     shop: {
       logo: '/images/icon/logo.png',
-      name: '尹美饰品',
-      phone: '(+086)15855556688',
-      address: '国际商贸城一区123066号'
+      name: '输入店铺名称',
+      phone: '输入电话号码',
+      address: '输入店铺地址'
     },
     editor: {
       left: -1000
@@ -24,9 +24,23 @@ Page({
       sizeType: ['compressed'],
       success: function (res) {
         var tempFilePaths = res.tempFilePaths
-        this.setData({
-          'shop.logo': tempFilePaths[0]
-        })
+        this.loading.show()
+        http.upload({
+          paths: tempFilePaths
+        }).then(function (res) {
+          let logo = res.uploadedFiles[0].target
+          let shop = this.data.shop
+          shop.logo = logo
+          http.get({
+            url: '_ftrade/shop.php?m=set',
+            data: shop
+          }).then(function (res) {
+            if (res.errno === 0) {
+              this.setData({ shop })
+              this.loading.hide()
+            }
+          }.bind(this))
+        }.bind(this))
       }.bind(this)
     })
   },
@@ -59,7 +73,6 @@ Page({
     }
     let offsetTop = e.currentTarget.offsetTop
     let offsetLeft = e.currentTarget.offsetLeft
-    console.log(offsetTop, offsetLeft)
     this.setData({
       'editor.type': 'shop-phone',
       'editor.value': this.data.shop.phone,
@@ -81,7 +94,6 @@ Page({
     }
     let offsetTop = e.currentTarget.offsetTop
     let offsetLeft = e.currentTarget.offsetLeft
-    console.log(offsetTop, offsetLeft)
     this.setData({
       'editor.type': 'shop-address',
       'editor.value': this.data.shop.address,
@@ -99,6 +111,12 @@ Page({
   onManagementTap: function (e) {
     wx.navigateTo({
       url: '../categorys/categorys',
+    })
+  },
+
+  onShopTap: function(e){
+    wx.redirectTo({
+      url: '../client/products/products',
     })
   },
 
@@ -130,10 +148,16 @@ Page({
       })
     }
 
+    this.loading.show()
     http.get({
       url: '_ftrade/shop.php?m=set',
       data: this.data.shop
-    })
+    }).then(function (res) {
+      console.log(res)
+      if (res.errno === 0) {
+        this.loading.hide()
+      }
+    }.bind(this))
   },
 
   /**
@@ -149,12 +173,14 @@ Page({
     http.get({
       url: '_ftrade/shop.php?m=get'
     }).then(function (res) {
-      let shop = res.shop || this.data.shop
-      this.setData({
-        shop: shop,
-        ready: true
-      })
-      this.loading.hide()
+      if (res.errno === 0) {
+        let shop = res.shop || this.data.shop
+        this.setData({
+          shop: shop,
+          ready: true
+        })
+        this.loading.hide()
+      }
     }.bind(this))
   },
 

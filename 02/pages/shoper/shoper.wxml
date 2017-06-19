@@ -18,11 +18,21 @@
     </view>
     <view class="row-value shop-address" catchtap="onShopAddressTap">{{shop.address}}</view>
   </view>
+  <view class="row row-separator"></view>
   <view class="row" catchtap="onManagementTap">
     <view class="row-icon">
-      <image src="/images/icon/product.png" />
+      <image src="/images/icon/products.png" />
     </view>
     <view class="row-value shop-product-management">商品管理</view>
+    <view class="row-icon">
+      <image src="/images/icon/enter.png" />
+    </view>
+  </view>
+  <view class="row" catchtap="onShopTap">
+    <view class="row-icon">
+      <image src="/images/icon/home.png" />
+    </view>
+    <view class="row-value shop-home">店铺浏览</view>
     <view class="row-icon">
       <image src="/images/icon/enter.png" />
     </view>
