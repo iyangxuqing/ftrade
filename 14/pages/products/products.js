@@ -108,13 +108,15 @@ Page({
       this.setData({
         deleteId: -1
       })
-    }.bind(this), 5000)
+    }.bind(this), 6000)
   },
 
   onProductDel: function (e) {
     let id = e.currentTarget.dataset.id
     let cid = this.data.cate.id
+    console.log(id, cid)
     let products = Product.del({ id, cid })
+    console.log(products)
     this.setData({
       products: products
     })

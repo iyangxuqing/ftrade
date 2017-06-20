@@ -46,11 +46,8 @@ Page({
   },
 
   onShopNameTap: function (e) {
-    if (this.data.editor.left >= 0) {
-      this.setData({
-        'editor.left': -1000,
-        'editor.focus': false,
-      })
+    if (this.data.editor.left > -1) {
+      this.setData({ 'editor.left': -1000 })
       return
     }
     let offsetTop = e.currentTarget.offsetTop
@@ -70,11 +67,8 @@ Page({
   },
 
   onShopPhoneTap: function (e) {
-    if (this.data.editor.left >= 0) {
-      this.setData({
-        'editor.left': -1000,
-        'editor.focus': false,
-      })
+    if (this.data.editor.left > -1) {
+      this.setData({ 'editor.left': -1000 })
       return
     }
     let offsetTop = e.currentTarget.offsetTop
@@ -94,11 +88,8 @@ Page({
   },
 
   onShopAddressTap: function (e) {
-    if (this.data.editor.left >= 0) {
-      this.setData({
-        'editor.left': -1000,
-        'editor.focus': false
-      })
+    if (this.data.editor.left > -1) {
+      this.setData({ 'editor.left': -1000 })
       return
     }
     let offsetTop = e.currentTarget.offsetTop
@@ -123,7 +114,7 @@ Page({
     })
   },
 
-  onShopTap: function (e) {
+  onShopTap: function(e){
     wx.redirectTo({
       url: '../client/products/products',
     })
@@ -132,14 +123,11 @@ Page({
   onEditorBlur: function (e) {
     let editor = this.data.editor
     let type = editor.type
-    let value = e.detail.value
     let oldValue = editor.value
+    let value = e.detail.value
 
     setTimeout(function () {
-      this.setData({
-        'editor.left': -1000,
-        'editor.focus': false,
-      })
+      this.setData({ 'editor.left': -1000 })
     }.bind(this), 0)
 
     if (value == '' || value == oldValue) return
@@ -165,13 +153,23 @@ Page({
       url: '_ftrade/shop.php?m=set',
       data: this.data.shop
     }).then(function (res) {
+      console.log(res)
       if (res.errno === 0) {
         this.loading.hide()
       }
     }.bind(this))
   },
 
-  onTokenReceived: function () {
+  /**
+   * 生命周期函数--监听页面加载
+   */
+  onLoad: function (options) {
+    this.loading = new Loading()
+    this.loading.show()
+
+    let platform = wx.getSystemInfoSync().platform
+    this.setData({ platform })
+
     http.get({
       url: '_ftrade/shop.php?m=get'
     }).then(function (res) {
@@ -184,20 +182,6 @@ Page({
         this.loading.hide()
       }
     }.bind(this))
-  },
-
-  /**
-   * 生命周期函数--监听页面加载
-   */
-  onLoad: function (options) {
-    this.loading = new Loading()
-    this.loading.show()
-    getApp().listener.on('token', this.onTokenReceived)
-    let platform = wx.getSystemInfoSync().platform
-    this.setData({ platform })
-
-    let token = wx.getStorageSync('token')
-    if (token) this.onTokenReceived()
   },
 
   /**

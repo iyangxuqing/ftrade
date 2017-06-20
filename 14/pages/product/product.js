@@ -63,7 +63,7 @@ Page({
     let dx = touch.x2 - touch.x1
     let dy = touch.y2 - touch.y1
     let dt = touch.t2 - touch.t1
-    if ((Math.abs(dy) < Math.abs(dx) / 2 && dt < 250)) {
+    if ((Math.abs(dy) < Math.abs(dx) && dt < 250)) {
       if (dx < -20) this.onSwipeLeft(touch.type, touch.index)
       if (dx > 20) this.onSwipeRight(touch.type, touch.index)
     }
@@ -79,6 +79,17 @@ Page({
     this.setData({
       swipeLeftId: ''
     })
+  },
+
+  onTitleBlur: function (e) {
+    let oldTitle = this.data.product.title
+    let title = e.detail.value
+    if (oldTitle != title) {
+      hasChanged = true
+      this.setData({
+        'product.title': title
+      })
+    }
   },
 
   onImageAdd: function (e) {
@@ -105,7 +116,6 @@ Page({
               break
             }
           }
-          hasChanged = true
         }.bind(this))
       }.bind(this),
     })
@@ -140,8 +150,8 @@ Page({
               break
             }
           }
-          hasChanged = true
         }.bind(this))
+        hasChanged = true
       }.bind(this)
     })
   },
@@ -157,7 +167,7 @@ Page({
       this.setData({
         delImageIndex: -1
       })
-    }.bind(this), 5000)
+    }.bind(this), 6000)
   },
 
   onImageDel: function (e) {
@@ -171,52 +181,39 @@ Page({
     hasChanged = true
   },
 
-  onTitleBlur: function (e) {
-    let oldTitle = this.data.product.title
-    let title = e.detail.value
-    if (oldTitle != title) {
-      this.setData({
-        'product.title': title
-      })
-      hasChanged = true
-    }
-  },
-
   onItemAdd: function (e) {
-    if (this.data.editor.left >= 0) {
+    if (this.data.editor.left > 0) {
       this.setData({
         'editId': '',
-        'editor.left': -1000,
         'editor.focus': false,
+        'editor.left': -1000
       })
       return
     }
+    let type = e.currentTarget.dataset.type
     let top = e.currentTarget.offsetTop
     let left = e.currentTarget.offsetLeft
-    let type = e.currentTarget.dataset.type
     let placeholder = type == 'prices' ? '新增价格标签' : '新增商品属性'
     this.setData({
-      'editor.blur': false,
-      'editor.type': type,
-      'editor.index': -1,
-      'editor.value': '',
-      'editor.placeholder': placeholder
+      editor: {
+        top: top,
+        left: left,
+        blur: false,
+        focus: true,
+        type: type,
+        index: -1,
+        value: '',
+        placeholder: placeholder
+      }
     })
-    setTimeout(function () {
-      this.setData({
-        'editor.top': top,
-        'editor.left': left,
-        'editor.focus': true,
-      })
-    }.bind(this), 10)
   },
 
   onItemEdit: function (e) {
-    if (this.data.editor.left >= 0) {
+    if (this.data.editor.left > 0) {
       this.setData({
         'editId': '',
-        'editor.left': -1000,
         'editor.focus': false,
+        'editor.left': -1000,
       })
       return
     }
@@ -232,48 +229,40 @@ Page({
     let editId = types[0] + '-' + types[1] + '-' + index
     this.setData({
       editId: editId,
-      'editor.blur': false,
-      'editor.type': type,
-      'editor.index': index,
-      'editor.value': value,
-      'editor.placeholder': placeholder
+      editor: {
+        top: top,
+        left: left,
+        blur: false,
+        focus: true,
+        type: type,
+        index: index,
+        value: value,
+        placeholder: placeholder
+      }
     })
-    setTimeout(function () {
-      this.setData({
-        'editor.top': top,
-        'editor.left': left,
-        'editor.focus': true,
-      })
-    }.bind(this), 10)
   },
 
   onEditorBlur: function (e) {
-    /* android系统中隐藏在界面外的textarea，在界面滚动时会不断产生blur事件 */
     if (this.data.editor.blur) return
-    let editor = this.data.editor
-    editor.blur = true
+    this.data.editor.blur = true
 
-    this.setData({
-      'editId': '',
-      'editor.left': -1000,
-      'editor.focus': false,
-    })
-
-    let type = editor.type
-    let index = editor.index
+    let type = e.currentTarget.dataset.type
+    let index = e.currentTarget.dataset.index
     let value = e.detail.value
-    let oldValue = editor.value
-    if (!value || value == oldValue) return
+    let oldValue = this.data.editor.value
+    let product = this.data.product
 
-    if (type == 'title') {
+    console.log(value, oldValue)
+    if (!value || value == oldValue) {
       this.setData({
-        'product.title': value
+        'editId': '',
+        'product': product,
+        'editor.left': -1000,
       })
-      hasChanged = true
       return
     }
 
-    let product = this.data.product
+    hasChanged = true
     if (index < 0) {
       if (value) {
         product[type].push({
@@ -281,12 +270,21 @@ Page({
           value: ''
         })
       }
-    } else {
-      let types = type.split('-')
-      product[types[0]][index][types[1]] = value
+      this.setData({
+        'editId': '',
+        'product': product,
+        'editor.left': -1000,
+      })
+      return
     }
-    this.setData({ product })
-    hasChanged = true
+
+    let types = type.split('-')
+    product[types[0]][index][types[1]] = value
+    this.setData({
+      'editId': '',
+      'product': product,
+      'editor.left': -1000,
+    })
   },
 
   onItemSortUp: function (e) {
@@ -301,7 +299,6 @@ Page({
       product: product,
       swipeLeftId: -1
     })
-    hasChanged = true
   },
 
   onItemSortDown: function (e) {
@@ -316,7 +313,6 @@ Page({
       product: product,
       swipeLeftId: -1
     })
-    hasChanged = true
   },
 
   onItemDelete: function (e) {
@@ -328,34 +324,29 @@ Page({
       product: product,
       swipeLeftId: -1
     })
-    hasChanged = true
   },
 
   /**
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
-    let id = options.id
-    let cid = options.cid
-    Category.get().then(function (cates) {
-      Product.get({ cid }).then(function (products) {
-        let product = {
-          cid: cid,
-          images: [],
-          prices: [],
-          props: []
-        }
-        let cate = Category.get({ id: cid })
-        if (id) product = Product.get({ id, cid })
-        let platform = wx.getSystemInfoSync().platform
-        this.setData({
-          cate: cate,
-          product: product,
-          platform: platform
-        })
-      }.bind(this))
-    }.bind(this))
-
+    let id = options.id || '1497915544577'
+    let cid = options.cid || '89'
+    console.log(id, cid)
+    let product = {
+      cid: cid,
+      images: [],
+      prices: [],
+      props: []
+    }
+    let cate = Category.get({ id: cid })
+    if (id) product = Product.get({ id, cid })
+    let platform = wx.getSystemInfoSync().platform
+    this.setData({
+      cate: cate,
+      product: product,
+      platform: platform
+    })
   },
 
   /**

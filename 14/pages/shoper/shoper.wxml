@@ -3,13 +3,9 @@
 
 <view class="shop" wx:if="{{ready}}">
   <view class="shop-logo" catchtap="onShopLogoTap">
-    <image src="{{shop.logo}}" mode="aspectFit" />
+    <image src="{{shop.logo}}" />
   </view>
   <view class="shop-name" catchtap="onShopNameTap">{{shop.name}}</view>
-
-
-<view class="debug">{{debug}}</view>
-
   <view class="row">
     <view class="row-icon">
       <image src="/images/icon/phone.png" />

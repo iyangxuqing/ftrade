@@ -24,8 +24,8 @@ function getProducts(options) {
       }
     }
 
-    if (!__products[lang]) __products[lang] = []
-    if (!__products[lang][_cid]) __products[lang][_cid] = []
+    if(!__products[lang]) __products[lang] = []
+    if(!__products[lang][_cid]) __products[lang][_cid] = []
 
     http.get({
       url: '_ftrade/product.php?m=get',
@@ -163,12 +163,8 @@ function sort(product, sourceIndex, targetIndex, cb) {
   let lang = product.lang || 'zh'
   let _cid = '_' + product.cid
   let products = __products[lang][_cid]
-  if (sourceIndex < 0 || sourceIndex >= products.length) {
-    return products
-  }
-  if (targetIndex < 0 || targetIndex >= products.length) {
-    return products
-  }
+  if (sourceIndex < 0 || sourceIndex >= products.length) return
+  if (targetIndex < 0 || targetIndex >= products.length) return
   products.splice(sourceIndex, 1)
   products.splice(targetIndex, 0, product)
 

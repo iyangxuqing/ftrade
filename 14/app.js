@@ -12,6 +12,7 @@ App({
       language = 'en'
       wx.setStorageSync('language', language)
     }
+
   },
 
   login: function (cb) {
@@ -22,13 +23,12 @@ App({
             url: '_ftrade/user.php?m=login',
             data: { code: res.code }
           }).then(function (res) {
-            if (res.token) {
+            if(res.token){
               wx.setStorageSync('token', res.token)
-              this.listener.trigger('token', res.token)
             }
-          }.bind(this))
+          })
         }
-      }.bind(this)
+      }
     })
   },
 

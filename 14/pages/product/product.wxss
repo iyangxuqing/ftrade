@@ -2,59 +2,65 @@
   padding-bottom: 200rpx;
 }
 
-.product-images {
-  width: 100%;
-  height: 480rpx;
-  margin-top: 10rpx;
-  margin-bottom: 10rpx;
+.cate-title, .product-title {
+  display: flex;
+  align-items: center;
+  margin-bottom: 2rpx;
 }
 
-.product-images swiper {
-  width: 100%;
-  height: 100%;
-}
-
-.product-image {
-  width: 100%;
-  height: 100%;
-}
-
-.product-image-add {
-  width: 200rpx;
-  height: 200rpx;
-  padding: 30rpx;
-  margin: 140rpx auto;
-  opacity: 0.3;
-}
-
-.product-image-del {
-  position: absolute;
-  width: 100rpx;
-  height: 100rpx;
-  top: 0;
-  right: 0;
+.cate-title .label, .product-title .label {
+  height: 80rpx;
+  display: flex;
+  align-items: center;
   padding: 20rpx;
+  margin-right: 2rpx;
+  background-color: #ddd;
 }
 
-.product-title {
+.cate-title .value, .product-title .value {
+  flex-grow: 1;
+  height: 80rpx;
+  display: flex;
+  align-items: center;
   padding: 20rpx;
-  text-align: center;
-  font-size: 1.2rem;
-  background-color: #eee;
+  background-color: #ddd;
 }
 
 .head {
   height: 70rpx;
   line-height: 70rpx;
   padding-left: 20rpx;
-  background-color: #eee;
-  margin-top: 20rpx;
+  background-color: #ddd;
+  margin-top: 30rpx;
+}
+
+.product-images {
+  padding: 10rpx 0;
+  display: flex;
+  border-bottom: 1px solid #ccc;
+}
+
+.product-image {
+  flex-shrink: 0;
+  position: relative;
+  width: 126rpx;
+  height: 126rpx;
+  margin-right: 10rpx;
+}
+
+.product-image-del {
+  position: absolute;
+  width: 80rpx;
+  height: 80rpx;
+  top: -20rpx;
+  right: -20rpx;
+  padding: 20rpx;
 }
 
 .item {
   min-height: 100rpx;
   overflow: hidden;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid #ddd;
   display: flex;
   align-items: center;
 }
@@ -83,21 +89,23 @@
 
 .item-label {
   width: 50%;
-  padding: 20rpx;
+  padding: 10rpx 20rpx;
+  line-height: 1.2;
   word-wrap: break-word;
 }
 
 .item-value {
   width: 50%;
-  padding: 20rpx;
+  padding: 10rpx 20rpx;
+  line-height: 1.2;
   word-wrap: break-word;
 }
 
-.empty {
+.item-label.empty, .item-value.empty {
   color: #888;
 }
 
-.editing {
+.item-label.editing, .item-value.editing {
   opacity: 0;
 }
 
@@ -130,10 +138,8 @@
 
 .editor {
   position: absolute;
-  display: flex;
-  align-items: center;
   width: 336rpx;
-  padding: 20rpx;
+  padding: 10rpx 20rpx;
   overflow: hidden;
   background-color: #fff;
 }
@@ -143,8 +149,8 @@ textarea {
 }
 
 .ios textarea {
-  margin-top: -14rpx;
-  margin-left: -10rpx;
+  margin-top: -18rpx;
+  margin-left: -12rpx;
 }
 
 .android textarea {
