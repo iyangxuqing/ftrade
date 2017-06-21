@@ -5,44 +5,51 @@
   <view class="shop-logo" catchtap="onShopLogoTap">
     <image src="{{shop.logo}}" mode="aspectFit" />
   </view>
-  <view class="shop-name" catchtap="onShopNameTap">{{shop.name}}</view>
-  <view class="row">
-    <view class="row-icon">
-      <image src="/images/icon/phone.png" />
-    </view>
-    <view class="row-value shop-phone" catchtap="onShopPhoneTap">{{shop.phone}}</view>
-  </view>
-  <view class="row">
-    <view class="row-icon">
-      <image src="/images/icon/address.png" />
-    </view>
-    <view class="row-value shop-address" catchtap="onShopAddressTap">{{shop.address}}</view>
+
+  <view class="shop-name">
+    <input value="{{shop.name}}" placeholder="输入店铺名称" bindblur="onShopNameBlur" cursor-spacing="10" />
   </view>
 
-  <view class="row" catchtap="onManagementTap">
-    <view class="row-icon">
-      <image src="/images/icon/products.png" />
+  <view class="gap"></view>
+
+  <view class="rows">
+    <view class="row">
+      <view class="row-icon">
+        <image src="/images/icon/phone.png" />
+      </view>
+      <view class="row-value shop-phone">
+        <input value="{{shop.phone}}" placeholder="输入联系电话" bindblur="onShopPhoneBlur" cursor-spacing="10" />
+      </view>
     </view>
-    <view class="row-value shop-product-management">商品管理</view>
-    <view class="row-icon">
-      <image src="/images/icon/enter.png" />
+
+    <view class="row">
+      <view class="row-icon">
+        <image src="/images/icon/address.png" />
+      </view>
+      <view class="row-value shop-address">
+        <input value="{{shop.address}}" placeholder="输入店铺地址" bindblur="onShopAddressBlur" cursor-spacing="10" />
+      </view>
+    </view>
+
+    <view class="row" catchtap="onManagementTap">
+      <view class="row-icon">
+        <image src="/images/icon/products.png" />
+      </view>
+      <view class="row-value shop-product-management">商品管理</view>
+      <view class="row-icon">
+        <image src="/images/icon/enter.png" />
+      </view>
+    </view>
+
+    <view class="row" catchtap="onShopTap">
+      <view class="row-icon">
+        <image src="/images/icon/home.png" />
+      </view>
+      <view class="row-value shop-home">店铺浏览</view>
+      <view class="row-icon">
+        <image src="/images/icon/enter.png" />
+      </view>
     </view>
   </view>
-  <view class="row" catchtap="onShopTap">
-    <view class="row-icon">
-      <image src="/images/icon/home.png" />
-    </view>
-    <view class="row-value shop-home">店铺浏览</view>
-    <view class="row-icon">
-      <image src="/images/icon/enter.png" />
-    </view>
-  </view>
+
 </view>
-
-<template name="editor">
-  <view class="editor {{type}} {{platform}}" style="top:{{top}}px;left:{{left}}px">
-    <input focus="{{focus}}" cursor-spacing="10" value="{{value}}" placeholder="{{placeholder}}" bindblur="onEditorBlur" />
-  </view>
-</template>
-
-<template is="editor" data="{{...editor, platform}}" />

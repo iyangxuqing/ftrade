@@ -1,73 +1,67 @@
 @import '/templates/loading/loading.wxss';
 
+page {
+  height: 100%;
+}
+
 .shop {
-  margin-top: 60rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+  padding-top: 60rpx;
+  padding-bottom: 100rpx;
 }
 
 .shop-logo {
+  flex-shrink: 0;
   width: 160rpx;
   height: 160rpx;
-  margin: 0 auto;
   border-radius: 50%;
   overflow: hidden;
+  border: 1px solid #ccc;
 }
 
 .shop-name {
-  height: 200rpx;
-  line-height: 200rpx;
-  font-size: 2rem;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 160rpx;
+  font-size: 1.4rem;
   text-align: center;
-  margin-bottom: 200rpx;
+}
+
+.gap {
+  flex-grow: 1;
+  width: 100%;
+}
+
+.rows {
+  width: 100%;
 }
 
 .row {
   display: flex;
   align-items: center;
+  width: 100%;
   border-bottom: 1px solid #ccc;
 }
 
 .row-icon {
-  width: 100rpx;
+  width: 60rpx;
   height: 100rpx;
-  padding: 30rpx;
+  padding: 30rpx 10rpx;
 }
 
 .row-value {
   flex-grow: 1;
+  display: flex;
+  align-items: center;
   min-height: 100rpx;
   line-height: 100rpx;
 }
 
-.editor {
-  display: flex;
-  align-items: center;
-  position: absolute;
-  top: 0;
-  left: -1000;
-  background-color: #fff;
-}
-
-.editor input {
+input {
   width: 100%;
-}
-
-.editor.shop-name {
-  width: 670rpx;
-}
-
-.editor.shop-name input {
-  height: 84rpx;
-  text-align: center;
-}
-
-.editor.shop-phone {
-  width: 570rpx;
-  height: 100rpx;
-  line-height: 100rpx;
-}
-
-.editor.shop-address {
-  width: 570rpx;
-  height: 100rpx;
-  line-height: 100rpx;
+  padding: 20rpx 0;
 }

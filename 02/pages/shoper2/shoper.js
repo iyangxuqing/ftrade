@@ -1,15 +1,21 @@
 import { http } from '../../utils/http.js'
 import { Loading } from '../../templates/loading/loading.js'
 
-let hasChanged = false
-
 Page({
 
   /**
    * 页面的初始数据
    */
   data: {
-
+    shop: {
+      logo: '/images/icon/logo.png',
+      name: '输入店铺名称',
+      phone: '输入电话号码',
+      address: '输入店铺地址'
+    },
+    editor: {
+      left: -1000
+    }
   },
 
   onShopLogoTap: function (e) {
@@ -18,52 +24,97 @@ Page({
       sizeType: ['compressed'],
       success: function (res) {
         var tempFilePaths = res.tempFilePaths
-        this.setData({
-          'shop.logo': tempFilePaths[0]
-        })
-        hasChanged = true
+        this.loading.show()
         http.upload({
           paths: tempFilePaths
         }).then(function (res) {
           let logo = res.uploadedFiles[0].target
-          this.data.shop.logo_remote = logo
+          let shop = this.data.shop
+          shop.logo = logo
+          http.get({
+            url: '_ftrade/shop.php?m=set',
+            data: shop
+          }).then(function (res) {
+            if (res.errno === 0) {
+              this.setData({ shop })
+              this.loading.hide()
+            }
+          }.bind(this))
         }.bind(this))
       }.bind(this)
     })
   },
 
-  onShopNameBlur: function (e) {
-    let value = e.detail.value
-    let oldValue = this.data.shop.name
-    if (value == oldValue) return
-    if (value == '') value = oldValue
+  onShopNameTap: function (e) {
+    if (this.data.editor.left >= 0) {
+      this.setData({
+        'editor.left': -1000,
+        'editor.focus': false,
+      })
+      return
+    }
+    let offsetTop = e.currentTarget.offsetTop
+    let offsetLeft = e.currentTarget.offsetLeft
     this.setData({
-      'shop.name': value
+      'editor.type': 'shop-name',
+      'editor.value': this.data.shop.name,
+      'editor.placeholder': '输入店铺名称',
     })
-    if (value != oldValue) hasChanged = true
-
+    setTimeout(function () {
+      this.setData({
+        'editor.focus': true,
+        'editor.top': offsetTop,
+        'editor.left': offsetLeft,
+      })
+    }.bind(this), 10)
   },
 
-  onShopPhoneBlur: function (e) {
-    let value = e.detail.value
-    let oldValue = this.data.shop.phone
-    if (value == oldValue) return
-    if (value == '') value = oldValue
+  onShopPhoneTap: function (e) {
+    if (this.data.editor.left >= 0) {
+      this.setData({
+        'editor.left': -1000,
+        'editor.focus': false,
+      })
+      return
+    }
+    let offsetTop = e.currentTarget.offsetTop
+    let offsetLeft = e.currentTarget.offsetLeft
     this.setData({
-      'shop.phone': value
+      'editor.type': 'shop-phone',
+      'editor.value': this.data.shop.phone,
+      'editor.placeholder': '输入电话号码',
     })
-    if (value != oldValue) hasChanged = true
+    setTimeout(function () {
+      this.setData({
+        'editor.focus': true,
+        'editor.top': offsetTop,
+        'editor.left': offsetLeft,
+      })
+    }.bind(this), 10)
   },
 
-  onShopAddressBlur: function (e) {
-    let value = e.detail.value
-    let oldValue = this.data.shop.address
-    if (value == oldValue) return
-    if (value == '') value = oldValue
+  onShopAddressTap: function (e) {
+    if (this.data.editor.left >= 0) {
+      this.setData({
+        'editor.left': -1000,
+        'editor.focus': false
+      })
+      return
+    }
+    let offsetTop = e.currentTarget.offsetTop
+    let offsetLeft = e.currentTarget.offsetLeft
     this.setData({
-      'shop.address': value
+      'editor.type': 'shop-address',
+      'editor.value': this.data.shop.address,
+      'editor.placeholder': '输入店铺地址',
     })
-    if (value != oldValue) hasChanged = true
+    setTimeout(function () {
+      this.setData({
+        'editor.focus': true,
+        'editor.top': offsetTop,
+        'editor.left': offsetLeft,
+      })
+    }.bind(this), 10)
   },
 
   onManagementTap: function (e) {
@@ -108,42 +159,31 @@ Page({
         'shop.address': value
       })
     }
+
+    this.loading.show()
+    http.get({
+      url: '_ftrade/shop.php?m=set',
+      data: this.data.shop
+    }).then(function (res) {
+      if (res.errno === 0) {
+        this.loading.hide()
+      }
+    }.bind(this))
   },
 
   onTokenReceived: function () {
-    this.loadShop()
-  },
-
-  loadShop: function (cb) {
-    this.loading.show()
     http.get({
       url: '_ftrade/shop.php?m=get'
     }).then(function (res) {
       if (res.errno === 0) {
-        let shop = res.shop || {}
+        let shop = res.shop || this.data.shop
         this.setData({
           shop: shop,
           ready: true
         })
         this.loading.hide()
-        cb && cb(shop)
       }
     }.bind(this))
-  },
-
-  saveShop: function (cb) {
-    let shop = this.data.shop
-    if (shop.logo_remote) {
-      shop.logo = shop.logo_remote
-    }
-    console.log(shop)
-    delete shop.logo_remote
-    http.get({
-      url: '_ftrade/shop.php?m=set',
-      data: shop
-    }).then(function (res) {
-      cb && cb(res)
-    })
   },
 
   /**
@@ -151,12 +191,13 @@ Page({
    */
   onLoad: function (options) {
     this.loading = new Loading()
+    this.loading.show()
     getApp().listener.on('token', this.onTokenReceived)
     let platform = wx.getSystemInfoSync().platform
     this.setData({ platform })
 
     let token = wx.getStorageSync('token')
-    if (token) this.loadShop()
+    if (token) this.onTokenReceived()
   },
 
   /**
@@ -177,14 +218,14 @@ Page({
    * 生命周期函数--监听页面隐藏
    */
   onHide: function () {
-    if (hasChanged) this.saveShop()
+
   },
 
   /**
    * 生命周期函数--监听页面卸载
    */
   onUnload: function () {
-    if (hasChanged) this.saveShop()
+
   },
 
   /**

@@ -1,0 +1,34 @@
+<view class="container">
+  <view class="label">
+    <view class="value">
+      <view class="title">{{title}}</view>
+      <view class="subTitle">{{subTitle}}</view>
+    </view>
+    <view class="logo">
+      <image src="{{logo}}"></image>
+    </view>
+  </view>
+  <view class="body">
+  <view class="collection">
+    <block wx:for="{{collections}}" wx:key="">
+      <view class="item">
+        <view class="text">{{item.text}}</view>
+        <view class="icon">
+          <image src="{{item.icon}}"></image>
+        </view>
+      </view>
+    </block>
+    </view>
+    <block wx:for="{{icons}}" wx:key="">
+      <view class="item">
+        <view class="ico">
+          <image src="{{item.ico}}"></image>
+        </view>
+        <view class="text">{{item.text}}</view>
+        <view class="icon">
+          <image src="{{item.icon}}"></image>
+        </view>
+      </view>
+    </block>
+  </view>
+</view>
