@@ -1,3 +1,5 @@
+@import '/templates/loading/loading.wxss';
+
 .product {
   padding-bottom: 200rpx;
 }
@@ -24,7 +26,6 @@
   height: 200rpx;
   padding: 30rpx;
   margin: 140rpx auto;
-  opacity: 0.3;
 }
 
 .product-image-del {
@@ -37,15 +38,18 @@
 }
 
 .product-title {
-  padding: 20rpx;
   text-align: center;
-  font-size: 1.2rem;
+  font-size: 1.1rem;
   background-color: #eee;
 }
 
+.product-title input{
+  padding: 20rpx;
+}
+
 .head {
-  height: 70rpx;
-  line-height: 70rpx;
+  height: 90rpx;
+  line-height: 90rpx;
   padding-left: 20rpx;
   background-color: #eee;
   margin-top: 20rpx;

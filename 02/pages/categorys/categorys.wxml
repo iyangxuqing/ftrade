@@ -1,8 +1,15 @@
-<template is="categorys" data="{{cates, swipeLeftId, expandId, dataReady}}" />
+<import src="/templates/loading/loading.wxml" />
 
-<view class="editor {{platform}}" style="top:{{editor.top}}px;left:{{editor.left}}px;">
-  <input value="{{editor.data.value}}" bindblur="onEditorBlur" cursor-spacing="10" maxlength="20" focus="{{editor.focus}}" placeholder="{{editor.placeholder}}" />
+<view class="container" wx:if="{{ready}}">
+  <template is="categorys" data="{{cates, swipeLeftId, expandId}}" />
+  <template is="editor" data="{{...editor, platform}}" />
 </view>
+
+<template name="editor">
+  <view class="editor {{platform}}" style="top:{{top}}px;left:{{left}}px">
+    <input value="{{data.value}}" bindblur="onEditorBlur" cursor-spacing="10" maxlength="20" focus="{{focus}}" placeholder="{{placeholder}}" />
+  </view>
+</template>
 
 <template name="categorys">
   <view class="categorys">
@@ -12,15 +19,15 @@
         <block wx:for="{{cate.children}}" wx:key="">
           <template is="category" data="{{...item, swipeLeftId}}" />
         </block>
-        <template is="category-new" data="{{pid:cate.id, placeholder:'新增子类目', dataReady:dataReady}}" />
+        <template is="category-new" data="{{pid:cate.id, placeholder:'新增子类目'}}" />
       </view>
     </block>
-    <template is="category-new" data="{{pid:0, placeholder:'新增类目', dataReady:dataReady}}" />
+    <template is="category-new" data="{{pid:0, placeholder:'新增类目'}}" />
   </view>
 </template>
 
 <template name="category-new">
-  <view class="category category-new" wx:if="{{dataReady}}">
+  <view class="category category-new">
     <view class="thumb"></view>
     <view class="title" data-pid="{{pid}}" catchtap="onCateAdd">{{placeholder}}</view>
   </view>

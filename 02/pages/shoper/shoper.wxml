@@ -6,10 +6,6 @@
     <image src="{{shop.logo}}" mode="aspectFit" />
   </view>
   <view class="shop-name" catchtap="onShopNameTap">{{shop.name}}</view>
-
-
-<view class="debug">{{debug}}</view>
-
   <view class="row">
     <view class="row-icon">
       <image src="/images/icon/phone.png" />
@@ -22,7 +18,7 @@
     </view>
     <view class="row-value shop-address" catchtap="onShopAddressTap">{{shop.address}}</view>
   </view>
-  <view class="row row-separator"></view>
+
   <view class="row" catchtap="onManagementTap">
     <view class="row-icon">
       <image src="/images/icon/products.png" />

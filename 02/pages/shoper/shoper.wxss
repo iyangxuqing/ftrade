@@ -38,11 +38,6 @@
   line-height: 100rpx;
 }
 
-.row-separator{
-  height: 60rpx;
-  border: 0;
-}
-
 .editor {
   display: flex;
   align-items: center;

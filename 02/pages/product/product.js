@@ -1,6 +1,7 @@
 import { http } from '../../utils/http.js'
 import { Category } from '../../utils/categorys.js'
 import { Product } from '../../utils/products.js'
+import { Loading } from '../../templates/loading/loading.js'
 
 var touch = {}
 var imageLongTap = false
@@ -10,14 +11,6 @@ var hasChanged = false
 Page({
 
   data: {
-    cata: {
-      id: '',
-      title: '',
-      thumb: '',
-      pid: '',
-      ptitle: '',
-      pthumb: ''
-    },
     product: {
       id: '',
       cid: '',
@@ -172,9 +165,13 @@ Page({
   },
 
   onTitleBlur: function (e) {
-    let oldTitle = this.data.product.title
     let title = e.detail.value
-    if (oldTitle != title) {
+    let oldTitle = this.data.product.title
+    if (title == '' || title == oldTitle) {
+      this.setData({
+        'product.title': oldTitle
+      })
+    } else {
       this.setData({
         'product.title': title
       })
@@ -335,8 +332,17 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
+    // 单页测试用
+    if ('id' in options == false && 'cid' in options == false) {
+      options.id = '1497952809611'
+      options.cid = '89'
+    }
+
     let id = options.id
     let cid = options.cid
+    this.loading = new Loading()
+    this.loading.show()
+
     Category.get().then(function (cates) {
       Product.get({ cid }).then(function (products) {
         let product = {
@@ -345,14 +351,14 @@ Page({
           prices: [],
           props: []
         }
-        let cate = Category.get({ id: cid })
         if (id) product = Product.get({ id, cid })
         let platform = wx.getSystemInfoSync().platform
         this.setData({
-          cate: cate,
+          ready: true,
           product: product,
           platform: platform
         })
+        this.loading.hide()
       }.bind(this))
     }.bind(this))
 

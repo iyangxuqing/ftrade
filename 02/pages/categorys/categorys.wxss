@@ -1,3 +1,4 @@
+@import '/templates/loading/loading.wxss';
 
 .categorys {
   margin-top: 10rpx;

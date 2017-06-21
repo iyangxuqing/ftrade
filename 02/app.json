@@ -1,12 +1,12 @@
 {
   "pages": [
     "pages/shoper/shoper",
+    "pages/categorys/categorys",
+    "pages/product/product",
     "pages/mobile/mobile",
     "pages/client/products/products",
     "pages/client/product/product",
-    "pages/categorys/categorys",
     "pages/products/products",
-    "pages/product/product",
     "pages/index/index",
     "pages/test/test",
     "pages/logs/logs"

@@ -1,3 +1,4 @@
+import { Loading } from '../../templates/loading/loading.js'
 import { Category } from '../../utils/categorys.js'
 
 var touch = {}
@@ -70,9 +71,10 @@ Page({
   },
 
   onCateAdd: function (e) {
-    if (this.data.editor.left > 0) {
+    if (this.data.editor.left >= 0) {
       this.setData({
-        'editor.left': -1000
+        'editor.left': -1000,
+        'editor.focus': false,
       })
       return
     }
@@ -92,9 +94,10 @@ Page({
   },
 
   onTitleEdit: function (e) {
-    if (this.data.editor.left > 0) {
+    if (this.data.editor.left >= 0) {
       this.setData({
-        'editor.left': -1000
+        'editor.left': -1000,
+        'editor.focus': false,
       })
       return
     }
@@ -117,26 +120,20 @@ Page({
   onEditorBlur: function (e) {
     let id = this.data.editor.data.id
     let pid = this.data.editor.data.pid
-    let oldValue = this.data.editor.data.value
     let value = e.detail.value
-    if (value == '' || value == oldValue) {
-      this.setData({
-        'editor.left': -1000
-      })
-      return
-    }
+    let oldValue = this.data.editor.data.value
+    this.setData({
+      'editor.left': -1000,
+      'editor.focus': false,
+    })
+    if (value == '' || value == oldValue) return
+
     if (!id) {
       let cates = Category.add({ pid, title: value })
-      this.setData({
-        cates: cates,
-        'editor.left': -1000
-      })
+      this.setData({ cates })
     } else {
       let cates = Category.set({ id, pid, title: value })
-      this.setData({
-        'cates': cates,
-        'editor.left': -1000
-      })
+      this.setData({ cates })
     }
   },
 
@@ -210,15 +207,19 @@ Page({
   * 生命周期函数--监听页面加载
   */
   onLoad: function (options) {
+
+    this.loading = new Loading()
+    this.loading.show()
+
     let platform = wx.getSystemInfoSync().platform
-    this.setData({
-      platform: platform
-    })
-    Category.get().then(function (res) {
+    this.setData({ platform })
+
+    Category.get().then(function (cates) {
       this.setData({
-        cates: res,
-        dataReady: true
+        cates: cates,
+        ready: true,
       })
+      this.loading.hide()
     }.bind(this))
   },
 
@@ -254,6 +255,7 @@ Page({
    * 页面相关事件处理函数--监听用户下拉动作
    */
   onPullDownRefresh: function () {
+    this.loading.show()
     Category.get({
       cache: false
     }).then(function (res) {
@@ -261,6 +263,7 @@ Page({
       this.setData({
         cates: res
       })
+      this.loading.hide()
     }.bind(this))
   },
 

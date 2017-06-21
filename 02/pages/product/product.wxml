@@ -1,8 +1,11 @@
-<view class="product">
+<import src="/templates/loading/loading.wxml" />
+<template is="loading" data="{{...loading}}" />
+
+<view class="product" wx:if="{{ready}}">
 
   <view class="product-images">
     <swiper indicator-dots="{{product.images.length}}">
-      <block wx:for="{{product.images}}" wx:key="" wx:if="product.images.length">
+      <block wx:for="{{product.images}}" wx:key="">
         <swiper-item>
           <view class="product-image" data-index="{{index}}" catchtap="onImageTap" catchlongtap="onImageLongTap">
             <view class="product-image-del" data-index="{{index}}" catchtap="onImageDel" wx:if="{{delImageIndex==index}}">
@@ -12,11 +15,13 @@
           </view>
         </swiper-item>
       </block>
-      <swiper-item>
-        <view class="product-image-add" catchtap="onImageAdd">
-          <image src="/images/icon/camera.png" />
-        </view>
-      </swiper-item>
+      <block wx:if="{{product.images.length<5}}">
+        <swiper-item>
+          <view class="product-image-add" catchtap="onImageAdd">
+            <image src="/images/icon/camera.png" />
+          </view>
+        </swiper-item>
+      </block>
     </swiper>
   </view>
 
