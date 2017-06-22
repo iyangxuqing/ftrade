@@ -343,15 +343,15 @@ Page({
     this.loading = new Loading()
     this.loading.show()
 
-    Category.getCategorys('zh').then(function (cates) {
-      Product.getProducts(cid, 'zh').then(function (products) {
+    Category.get().then(function (cates) {
+      Product.get({ cid }).then(function (products) {
         let product = {
           cid: cid,
           images: [],
           prices: [],
           props: []
         }
-        if (id) product = Product.getProduct(id, cid, 'zh')
+        if (id) product = Product.get({ id, cid })
         let platform = wx.getSystemInfoSync().platform
         this.setData({
           ready: true,

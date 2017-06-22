@@ -1,0 +1,67 @@
+@import '/templates/loading/loading.wxss';
+
+page {
+  height: 100%;
+}
+
+.shop {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+  padding-top: 60rpx;
+  padding-bottom: 100rpx;
+}
+
+.shop-logo {
+  flex-shrink: 0;
+  width: 160rpx;
+  height: 160rpx;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 1px solid #ccc;
+}
+
+.shop-name {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 160rpx;
+  font-size: 1.4rem;
+  text-align: center;
+}
+
+.gap {
+  flex-grow: 1;
+  width: 100%;
+}
+
+.rows {
+  width: 100%;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  border-bottom: 1px solid #ccc;
+}
+
+.row-icon {
+  width: 60rpx;
+  height: 100rpx;
+  padding: 30rpx 10rpx;
+}
+
+.row-value {
+  flex-grow: 1;
+  display: flex;
+  align-items: center;
+  min-height: 100rpx;
+  line-height: 100rpx;
+}
+
+input {
+  width: 100%;
+  padding: 20rpx 0;
+}

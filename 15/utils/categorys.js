@@ -1,62 +1,62 @@
 import { http } from 'http.js'
 
-function getCategorysSync(lang = 'zh') {
-  let cates = wx.getStorageSync('localCategorys')
-  return cates[lang]
+export var __cates = []
+
+/*
+  获取类目信息，options中存在id字段时，只获取单个类目信息，无id字段时则获取全部类目信息。cache字段用来控制是否从缓存中读取。
+ */
+function get(options = {}) {
+  let defaults = { language: 'zh', cache: true }
+  options = Object.assign(defaults, options)
+  if ('id' in options) {
+    return getCategory(options)
+  } else {
+    return getCategorys(options)
+  }
 }
 
-function getCategorys(lang = 'zh', cache = true) {
+/*
+  取得所有类目信息，包括子类目，cache=true时，如果内存中已有数据则使用内存数据
+*/
+function getCategorys(options) {
   return new Promise(function (resolve, reject) {
-    let cates = wx.getStorageSync('localCategorys')
-    if (cates && cache) {
-      resolve(cates[lang])
-    } else {
-      getCategorysFromServer().then(function (cates) {
-        wx.setStorageSync('localCategorys', cates)
-        resolve(cates[lang])
-      })
+    if (options.cache && __cates.length > 0) {
+      resolve(__cates[options.language])
+      return
     }
-  })
-}
 
-function getCategorysFromServer() {
-  return new Promise(function (resolve, reject) {
-    let cates = {} //最终得到的层级类目数据
-    let _cates = [] //临时类目数据
     http.get({
       url: '_ftrade/category.php?m=get'
     }).then(function (res) {
       if (res.categorys) {
-        // res.categorys 数据库原始记录
-        for (let i in res.categorys) {
-          // 对title进行编码转义
-          let cate = res.categorys[i]
+        let cates = res.categorys
+        let _cates = []
+        for (let i in cates) {
+          let cate = cates[i]
           cate.title = cate.title.escape(false)
-
-          // 按语言类别进行分组
           let lang = cate.lang
           if (!_cates[lang]) _cates[lang] = []
           _cates[lang].push(cate)
         }
-        // 构造层级化的类目数据
         for (let lang in _cates) {
-          cates[lang] = []
+          let cates = []
           for (let i in _cates[lang]) {
             let cate = _cates[lang][i]
             let pid = cate.pid
             if (pid == 0) {
               cate.children = []
-              cates[lang].push(cate)
+              cates.push(cate)
             } else {
-              for (let j in cates[lang]) {
-                if (cates[lang][j].id == pid) {
-                  cates[lang][j].children.push(cate)
+              for (let j in cates) {
+                if (cates[j].id == pid) {
+                  cates[j].children.push(cate)
                 }
               }
             }
           }
+          __cates[lang] = cates
         }
-        resolve(cates)
+        resolve(__cates[options.language])
       }
     })
   })
@@ -64,14 +64,15 @@ function getCategorysFromServer() {
 
 /*
   由类目id取得该类目信息，供products、product等页面调用
+  options.id, options.language
 */
-function getCategory(id, lang = 'zh') {
-  let cates = getCategorysSync(lang)
+function getCategory(options) {
+  let cates = __cates[options.language]
   for (let i in cates) {
     for (let j in cates[i].children) {
-      if (cates[i].children[j].id == id) {
+      if (cates[i].children[j].id == options.id) {
         return {
-          id: id,
+          id: options.id,
           title: cates[i].children[j].title,
           thumb: cates[i].children[j].thumb,
           pid: cates[i].id,
@@ -84,7 +85,8 @@ function getCategory(id, lang = 'zh') {
 }
 
 function add(cate, cb) {
-  let cates = getCategorysSync(cate.lang)
+  let lang = cate.lang || 'zh'
+  let cates = __cates[lang]
   let max = -1
   if (cate.pid == 0) {
     for (let i in cates) {
@@ -142,7 +144,8 @@ function set(cate, cb) {
 }
 
 function setTitle(cate, cb) {
-  let cates = getCategorysSync(cate.lang)
+  let lang = cate.lang || 'zh'
+  let cates = __cates[lang]
   if (cate.pid == 0) {
     for (let i in cates) {
       if (cates[i].id == cate.id) {
@@ -181,7 +184,8 @@ function setTitle(cate, cb) {
 }
 
 function setThumb(cate, cb) {
-  let cates = getCategorysSync(cate.lang)
+  let lang = cate.lang || 'zh'
+  let cates = __cates[lang]
   let _cate = null
   if (cate.pid == 0) {
     for (let i in cates) {
@@ -232,7 +236,8 @@ function del(cate) {
       if (res.error) {
         resolve(res)
       } else {
-        let cates = getCategorysSync(cate.lang)
+        let lang = cate.lang || 'zh'
+        let cates = __cates[lang]
         if (cate.pid == 0) {
           for (let i in cates) {
             if (cates[i].id == cate.id) {
@@ -260,7 +265,8 @@ function del(cate) {
 }
 
 function sort(cate, up = false) {
-  let cates = getCategorysSync(cate.lang)
+  let lang = cate.lang || 'zh'
+  let cates = __cates[lang]
   if (cate.pid == 0) {
     for (let i in cates) {
       if (cates[i].id == cate.id) {
@@ -334,8 +340,7 @@ function sort(cate, up = false) {
 }
 
 export var Category = {
-  getCategorys: getCategorys,
-  getCategory: getCategory,
+  get: get,
   add: add,
   set: set,
   del: del,

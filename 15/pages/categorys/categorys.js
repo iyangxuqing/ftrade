@@ -214,7 +214,7 @@ Page({
     let platform = wx.getSystemInfoSync().platform
     this.setData({ platform })
 
-    Category.getCategorys('zh').then(function (cates) {
+    Category.get().then(function (cates) {
       this.setData({
         cates: cates,
         ready: true,

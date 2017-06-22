@@ -1,37 +1,40 @@
 import { http } from 'http.js'
 
-function getProductsSync(cid, lang = 'zh') {
-  let products = wx.getStorageSync('localProducts')
-  return products[lang]['_' + cid]
+export var __products = []
+
+function get(options) {
+  let defaults = { language: 'zh', cache: true }
+  options = Object.assign(defaults, options)
+  if ('id' in options && 'cid' in options) {
+    return getProduct(options)
+  } else if ('cid' in options) {
+    return getProducts(options)
+  }
 }
 
-function getProducts(cid, lang = 'zh', cache = true) {
+function getProducts(options) {
   return new Promise(function (resolve, reject) {
-    let _cid = '_' + cid
-    let products = wx.getStorageSync('localProducts')
-    if (!products) products = {}
-    if (!products[lang]) products[lang] = {}
-    if (cache && products[lang][_cid]) {
-      resolve(products[lang][_cid])
-    } else {
-      getProductsFromServer(options).then(function (res) {
-        let products = res
-        resolve(products[lang][_cid])
-      })
+    let lang = options.language
+    let _cid = '_' + options.cid
+
+    if (options.cache) {
+      if (__products[lang] && __products[lang][_cid]) {
+        resolve(__products[lang][_cid])
+        return
+      }
     }
-  })
-}
 
-function getProductsFromServer(cid) {
-  return new Promise(function (resolve, reject) {
-    let products = wx.getStorageSync('localProducts') || {}
+    if (!__products[lang]) __products[lang] = []
+    if (!__products[lang][_cid]) __products[lang][_cid] = []
+
     http.get({
       url: '_ftrade/product.php?m=get',
-      data: { cid: cid }
+      data: { cid: options.cid }
     }).then(function (res) {
       if (res.products) {
-        for (let i in res.products) {
-          let product = res.products[i]
+        let products = res.products
+        for (let i in products) {
+          let product = products[i]
           product.images = JSON.parse(product.images)
           product.prices = JSON.parse(product.prices)
           product.props = JSON.parse(product.props)
@@ -48,21 +51,23 @@ function getProductsFromServer(cid) {
             prop.value = prop.value.escape(false)
           }
 
-          let _cid = '_' + cid
           let lang = product.lang
-          if (!products[lang]) products[lang] = {}
-          if (!products[lang][_cid]) products[lang][_cid] = []
-          products[lang][_cid].push(product)
+          if (!__products[lang]) __products[lang] = []
+          if (!__products[lang][_cid]) __products[lang][_cid] = []
+          __products[lang][_cid].push(product)
         }
-        wx.setStorageSync('localProducts', products)
-        resolve(products)
+        resolve(__products[options.language][_cid])
       }
     })
   })
 }
 
-function getProduct(id, cid, lang = 'zh') {
-  let products = getProductsSync(cid, lang)
+function getProduct(options) {
+  let id = options.id
+  let cid = options.cid
+  let lang = options.language
+  let _cid = '_' + options.cid
+  let products = __products[lang][_cid]
   for (let i in products) {
     if (products[i].id == id) {
       return products[i]
@@ -73,8 +78,9 @@ function getProduct(id, cid, lang = 'zh') {
 function set(product, cb) {
   let id = product.id
   let cid = product.cid
-  let lang = product.lang
-  let products = getProductsSync(cid, lang)
+  let lang = product.lang || 'zh'
+  let _cid = '_' + product.cid
+  let products = __products[lang][_cid]
   if (!id) {
     let max = -1
     for (let i in products) {
@@ -132,15 +138,15 @@ function set(product, cb) {
 function del(product, cb) {
   let id = product.id
   let cid = product.cid
-  let lang = product.lang
-  let products = getProductsSync(cid, lang);
+  let lang = product.lang || 'zh'
+  let _cid = '_' + product.cid
+  let products = __products[lang][_cid]
   for (let i in products) {
     if (products[i].id == id) {
       products.splice(i, 1)
       break
     }
   }
-
   http.get({
     url: '_ftrade/product.php?m=del',
     data: { id: id }
@@ -154,9 +160,9 @@ function del(product, cb) {
 }
 
 function sort(product, sourceIndex, targetIndex, cb) {
-  let cid = product.cid
-  let lang = product.lang
-  let products = getProductsSync(cid, lang)
+  let lang = product.lang || 'zh'
+  let _cid = '_' + product.cid
+  let products = __products[lang][_cid]
   if (sourceIndex < 0 || sourceIndex >= products.length) {
     return products
   }
@@ -187,8 +193,7 @@ function sort(product, sourceIndex, targetIndex, cb) {
 }
 
 export var Product = {
-  getProducts: getProducts,
-  getProduct: getProduct,
+  get: get,
   set: set,
   del: del,
   sort: sort

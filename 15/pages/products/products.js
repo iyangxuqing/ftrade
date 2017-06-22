@@ -140,11 +140,11 @@ Page({
     getApp().listener.on('products', this.onProductsUpdate)
 
     let cid = options.cid
-    let cate = Category.getCategory(cid)
+    let cate = Category.get({ id: cid })
     this.setData({
       cate: cate
     })
-    Product.getProducts(cid).then(function (res) {
+    Product.get({ cid }).then(function (res) {
       this.setData({
         products: res
       })
