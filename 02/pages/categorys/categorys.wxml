@@ -29,7 +29,7 @@
 <template name="category-new">
   <view class="category category-new">
     <view class="thumb"></view>
-    <view class="title" data-pid="{{pid}}" catchtap="onCateAdd">{{placeholder}}</view>
+    <view class="title title-value" data-pid="{{pid}}" catchtap="onCateAdd">{{placeholder}}</view>
   </view>
 </template>
 
@@ -41,7 +41,7 @@
           <image src="{{thumb || '/images/icon/image.png'}}" />
         </view>
         <view class="title">
-          <view data-id="{{id}}" data-pid="{{pid}}" data-title="{{title}}" catchtap="onTitleEdit">{{title}}</view>
+          <view class="title-value" data-id="{{id}}" data-pid="{{pid}}" data-title="{{title}}" catchtap="onTitleEdit">{{title}}</view>
         </view>
         <view class="icon" wx:if="{{children}}" data-id="{{id}}" catchtap="onCateExpand">
           <image src="/images/icon/packup.png" wx:if="{{expand}}" />

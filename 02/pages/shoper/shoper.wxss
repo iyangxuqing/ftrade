@@ -60,8 +60,3 @@ page {
   min-height: 100rpx;
   line-height: 100rpx;
 }
-
-input {
-  width: 100%;
-  padding: 20rpx 0;
-}

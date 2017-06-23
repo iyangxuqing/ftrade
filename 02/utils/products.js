@@ -14,7 +14,7 @@ function getProducts(cid, lang = 'zh', cache = true) {
     if (cache && products[lang][_cid]) {
       resolve(products[lang][_cid])
     } else {
-      getProductsFromServer(options).then(function (res) {
+      getProductsFromServer(cid).then(function (res) {
         let products = res
         resolve(products[lang][_cid])
       })
@@ -24,7 +24,7 @@ function getProducts(cid, lang = 'zh', cache = true) {
 
 function getProductsFromServer(cid) {
   return new Promise(function (resolve, reject) {
-    let products = wx.getStorageSync('localProducts') || {}
+    let products = {}
     http.get({
       url: '_ftrade/product.php?m=get',
       data: { cid: cid }
@@ -48,14 +48,18 @@ function getProductsFromServer(cid) {
             prop.value = prop.value.escape(false)
           }
 
-          let _cid = '_' + cid
           let lang = product.lang
-          if (!products[lang]) products[lang] = {}
-          if (!products[lang][_cid]) products[lang][_cid] = []
-          products[lang][_cid].push(product)
+          if (!products[lang]) products[lang] = []
+          products[lang].push(product)
         }
-        wx.setStorageSync('localProducts', products)
-        resolve(products)
+
+        let Products = wx.getStorageSync('localProducts') || {}
+        for (let lang in products) {
+          if (!Products[lang]) Products[lang] = {}
+          Products[lang]['_' + cid] = products[lang]
+        }
+        wx.setStorageSync('localProducts', Products)
+        resolve(Products)
       }
     })
   })
@@ -73,8 +77,10 @@ function getProduct(id, cid, lang = 'zh') {
 function set(product, cb) {
   let id = product.id
   let cid = product.cid
-  let lang = product.lang
-  let products = getProductsSync(cid, lang)
+  let lang = product.lang || 'zh'
+  let Products = wx.getStorageSync('localProducts')
+
+  let products = Products[lang]['_' + cid] || []
   if (!id) {
     let max = -1
     for (let i in products) {
@@ -91,7 +97,12 @@ function set(product, cb) {
       }
     }
   }
+  Products[lang]['_' + cid] = products
+  wx.setStorageSync('localProducts', Products)
+  cb && cb(products, product)
+  getApp().listener.trigger('products', products, product)
 
+  /* server */
   let _product = JSON.parse(JSON.stringify(product))
   _product.title = _product.title.escape()
   for (let i in _product.prices) {
@@ -121,19 +132,23 @@ function set(product, cb) {
   http.get({
     url: url,
     data: _product
-  }).then(function (res) {
+  })
+  /*
+  .then(function (res) {
     if (!res.error) {
       cb && cb(products, product)
       getApp().listener.trigger('products', products, product)
     }
   })
+  */
 }
 
 function del(product, cb) {
   let id = product.id
   let cid = product.cid
-  let lang = product.lang
-  let products = getProductsSync(cid, lang);
+  let lang = product.lang || 'zh'
+  let Products = wx.getStorageSync('localProducts')
+  let products = Products[lang]['_' + cid]
   for (let i in products) {
     if (products[i].id == id) {
       products.splice(i, 1)
@@ -150,13 +165,17 @@ function del(product, cb) {
       getApp().listener.trigger('products', products, product)
     }
   })
+
+  Products[lang]['_' + cid] = products
+  wx.setStorageSync('localProducts', Products)
   return products
 }
 
 function sort(product, sourceIndex, targetIndex, cb) {
   let cid = product.cid
-  let lang = product.lang
-  let products = getProductsSync(cid, lang)
+  let lang = product.lang || 'zh'
+  let Products = wx.getStorageSync('localProducts')
+  let products = Products[lang]['_' + cid]
   if (sourceIndex < 0 || sourceIndex >= products.length) {
     return products
   }
@@ -166,6 +185,7 @@ function sort(product, sourceIndex, targetIndex, cb) {
   products.splice(sourceIndex, 1)
   products.splice(targetIndex, 0, product)
 
+  /* server start */
   for (let i in products) {
     if (products[i].sort != i) {
       products[i].sort = i
@@ -183,6 +203,10 @@ function sort(product, sourceIndex, targetIndex, cb) {
       })
     }
   }
+  /* server end */
+
+  Products[lang]['_' + cid] = products
+  wx.setStorageSync('localProducts', Products)
   return products
 }
 

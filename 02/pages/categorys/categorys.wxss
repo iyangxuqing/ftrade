@@ -30,6 +30,11 @@
   flex-grow: 1;
 }
 
+.category .title-value {
+  padding-top: 20rpx;
+  padding-bottom: 20rpx;
+}
+
 .category .icon {
   width: 150rpx;
   height: 120rpx;

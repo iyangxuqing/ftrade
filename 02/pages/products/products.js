@@ -183,15 +183,7 @@ Page({
    * 页面相关事件处理函数--监听用户下拉动作
    */
   onPullDownRefresh: function () {
-    Product.get({
-      cache: false,
-      cid: this.data.cate.id
-    }).then(function (res) {
-      wx.stopPullDownRefresh()
-      this.setData({
-        products: res
-      })
-    }.bind(this))
+
   },
 
   /**

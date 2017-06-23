@@ -1,4 +1,5 @@
 import { http } from 'http.js'
+import { Product } from 'products.js'
 
 function getCategorysSync(lang = 'zh') {
   let cates = wx.getStorageSync('localCategorys')
@@ -22,7 +23,7 @@ function getCategorys(lang = 'zh', cache = true) {
 function getCategorysFromServer() {
   return new Promise(function (resolve, reject) {
     let cates = {} //最终得到的层级类目数据
-    let _cates = [] //临时类目数据
+    let _cates = {} //临时类目数据
     http.get({
       url: '_ftrade/category.php?m=get'
     }).then(function (res) {
@@ -63,7 +64,7 @@ function getCategorysFromServer() {
 }
 
 /*
-  由类目id取得该类目信息，供products、product等页面调用
+  由类目id取得该类目信息，供products等页面调用
 */
 function getCategory(id, lang = 'zh') {
   let cates = getCategorysSync(lang)
@@ -72,9 +73,9 @@ function getCategory(id, lang = 'zh') {
       if (cates[i].children[j].id == id) {
         return {
           id: id,
+          pid: cates[i].id,
           title: cates[i].children[j].title,
           thumb: cates[i].children[j].thumb,
-          pid: cates[i].id,
           ptitle: cates[i].title,
           pthumb: cates[i].thumb,
         }
@@ -84,7 +85,10 @@ function getCategory(id, lang = 'zh') {
 }
 
 function add(cate, cb) {
-  let cates = getCategorysSync(cate.lang)
+  let Cates = wx.getStorageSync('localCategorys')
+  let lang = cate.lang || 'zh'
+  let cates = Cates[lang]
+
   let max = -1
   if (cate.pid == 0) {
     for (let i in cates) {
@@ -119,6 +123,7 @@ function add(cate, cb) {
     }
   }
 
+  /* server start */
   http.get({
     url: '_ftrade/category.php?m=add',
     data: {
@@ -132,17 +137,18 @@ function add(cate, cb) {
       cb && cb(cates)
     }
   })
+  /* server end */
 
+  Cates[cate.lang] = cates
+  wx.setStorageSync('localCategorys', Cates)
   return cates
 }
 
-function set(cate, cb) {
-  if ('title' in cate) return setTitle(cate, cb)
-  if ('thumb' in cate) return setThumb(cate, cb)
-}
-
 function setTitle(cate, cb) {
-  let cates = getCategorysSync(cate.lang)
+  let Cates = wx.getStorageSync('localCategorys')
+  let lang = cate.lang || 'zh'
+  let cates = Cates[lang]
+
   if (cate.pid == 0) {
     for (let i in cates) {
       if (cates[i].id == cate.id) {
@@ -164,6 +170,7 @@ function setTitle(cate, cb) {
     }
   }
 
+  /* server start */
   http.get({
     url: '_ftrade/category.php?m=set',
     data: {
@@ -176,63 +183,112 @@ function setTitle(cate, cb) {
       cb && cb(cates)
     }
   })
+  /* server end */
 
+  Cates[lang] = cates
+  wx.setStorageSync('localCategorys', Cates)
   return cates
 }
 
 function setThumb(cate, cb) {
-  let cates = getCategorysSync(cate.lang)
-  let _cate = null
-  if (cate.pid == 0) {
-    for (let i in cates) {
-      if (cates[i].id == cate.id) {
-        _cate = cates[i]
-        break
-      }
-    }
-  } else {
-    for (let i in cates) {
-      if (cates[i].id == cate.pid) {
-        for (let j in cates[i].children) {
-          if (cates[i].children[j].id == cate.id) {
-            _cate = cates[i].children[j]
+  return new Promise(function (resolve, reject) {
+    http.upload({
+      paths: new Array(cate.thumb)
+    }).then(function (res) {
+      cate.thumb = res.uploadedFiles[0].target
+      let Cates = wx.getStorageSync('localCategorys')
+      let lang = cate.lang || 'zh'
+      let cates = Cates[lang]
+      if (cate.pid == 0) {
+        for (let i in cates) {
+          if (cates[i].id == cate.id) {
+            cates[i].thumb = cate.thumb
             break
           }
         }
-        break;
+      } else {
+        for (let i in cates) {
+          if (cates[i].id == cate.pid) {
+            for (let j in cates[i].children) {
+              if (cates[i].children[j].id == cate.id) {
+                cates[i].children[j] = cate.thumb
+                break
+              }
+            }
+            break;
+          }
+        }
       }
-    }
-  }
-  _cate.thumb = cate.thumb
+      Cates[lang] = cates
+      wx.setStorageSync('localCategorys', Cates)
+      resolve(cates)
 
-  http.upload({
-    paths: new Array(cate.thumb)
-  }).then(function (res) {
-    cate.thumb = res.uploadedFiles[0].target
-    http.get({
-      url: '_ftrade/category.php?m=set',
-      data: cate
-    }).then(function (res) {
-      if (!res.error) {
-        _cate.thumb = cate.thumb
-        cb && cb(cates)
-      }
+      /* server start */
+      http.get({
+        url: '_ftrade/category.php?m=set',
+        data: cate
+      }).then(function (res) {
+        if (!res.error) {
+          cb && cb(cates)
+        }
+      })
+      /* server end */
+
     })
   })
+}
 
-  return cates
+function testDelete(cate) {
+  return new Promise(function (resolve, reject) {
+    let Cates = wx.getStorageSync('localCategorys')
+    let lang = cate.lang || 'zh'
+    let cates = Cates[lang]
+    if (cate.pid == 0) {
+      for (let i in cates) {
+        if (cates[i].id == cate.id) {
+          if (cates[i].children.length > 0) {
+            resolve({
+              errno: -1,
+              error: '该类目下存在子类目，不可删除。'
+            })
+          } else {
+            resolve({
+              errno: 0,
+              error: ''
+            })
+          }
+          break
+        }
+      }
+    } else {
+      Product.getProducts(cate.id, lang).then(function (products) {
+        console.log(products, products.length)
+        if (products.length > 0) {
+          resolve({
+            errno: -2,
+            error: '该类目下存在商品，不可删除。'
+          })
+        } else {
+          resolve({
+            errno: 0,
+            error: ''
+          })
+        }
+      })
+    }
+  })
 }
 
 function del(cate) {
   return new Promise(function (resolve, reject) {
-    http.get({
-      url: '_ftrade/category.php?m=del',
-      data: cate
-    }).then(function (res) {
+    let Cates = wx.getStorageSync('localCategorys')
+    let lang = cate.lang || 'zh'
+    let cates = Cates[lang]
+
+    testDelete(cate).then(function (res) {
       if (res.error) {
         resolve(res)
       } else {
-        let cates = getCategorysSync(cate.lang)
         if (cate.pid == 0) {
           for (let i in cates) {
             if (cates[i].id == cate.id) {
@@ -254,13 +310,26 @@ function del(cate) {
           }
         }
         resolve(cates)
+        Cates[lang] = cates
+        wx.setStorageSync('localCategorys', Cates)
       }
     })
+
+    /* server start */
+    http.get({
+      url: '_ftrade/category.php?m=del',
+      data: cate
+    })
+    /* server end */
+
   })
 }
 
 function sort(cate, up = false) {
-  let cates = getCategorysSync(cate.lang)
+  let Cates = wx.getStorageSync('localCategorys')
+  let lang = cate.lang || 'zh'
+  let cates = Cates[lang]
+
   if (cate.pid == 0) {
     for (let i in cates) {
       if (cates[i].id == cate.id) {
@@ -330,14 +399,18 @@ function sort(cate, up = false) {
       }
     }
   }
+
+  Cates[lang] = cates
+  wx.setStorageSync('localCategorys', Cates)
   return cates
 }
 
 export var Category = {
   getCategorys: getCategorys,
   getCategory: getCategory,
+  setTitle: setTitle,
+  setThumb: setThumb,
   add: add,
-  set: set,
   del: del,
   sort: sort,
 }

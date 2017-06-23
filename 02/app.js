@@ -12,6 +12,9 @@ App({
       language = 'en'
       wx.setStorageSync('language', language)
     }
+
+    // wx.clearStorageSync()
+
   },
 
   login: function (cb) {

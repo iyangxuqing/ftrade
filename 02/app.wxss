@@ -14,6 +14,12 @@ image {
   display: block;
 }
 
+input {
+  width: 100%;
+  padding-top: 20rpx;
+  padding-bottom: 20rpx;
+}
+
 ::-webkit-scrollbar {
   display: none;
   width: 0;

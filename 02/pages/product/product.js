@@ -332,36 +332,25 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
-    // 单页测试用
-    if ('id' in options == false && 'cid' in options == false) {
-      options.id = '1497952809611'
-      options.cid = '89'
-    }
-
     let id = options.id
     let cid = options.cid
     this.loading = new Loading()
     this.loading.show()
 
-    Category.getCategorys('zh').then(function (cates) {
-      Product.getProducts(cid, 'zh').then(function (products) {
-        let product = {
-          cid: cid,
-          images: [],
-          prices: [],
-          props: []
-        }
-        if (id) product = Product.getProduct(id, cid, 'zh')
-        let platform = wx.getSystemInfoSync().platform
-        this.setData({
-          ready: true,
-          product: product,
-          platform: platform
-        })
-        this.loading.hide()
-      }.bind(this))
-    }.bind(this))
-
+    let product = {
+      cid: cid,
+      images: [],
+      prices: [],
+      props: []
+    }
+    if (id) product = Product.getProduct(id, cid, 'zh')
+    let platform = wx.getSystemInfoSync().platform
+    this.setData({
+      ready: true,
+      product: product,
+      platform: platform
+    })
+    this.loading.hide()
   },
 
   /**

@@ -132,7 +132,7 @@ Page({
       let cates = Category.add({ pid, title: value })
       this.setData({ cates })
     } else {
-      let cates = Category.set({ id, pid, title: value })
+      let cates = Category.setTitle({ id, pid, title: value })
       this.setData({ cates })
     }
   },
@@ -144,10 +144,11 @@ Page({
       count: 1,
       success: function (res) {
         let thumb = res.tempFilePaths[0]
-        let cates = Category.set({ id, pid, thumb })
-        this.setData({
-          cates: cates
-        })
+        this.loading.show()
+        Category.setThumb({ id, pid, thumb }).then(function (cates) {
+          this.setData({ cates })
+          this.loading.hide()
+        }.bind(this))
       }.bind(this)
     })
   },
@@ -256,13 +257,14 @@ Page({
    */
   onPullDownRefresh: function () {
     this.loading.show()
-    Category.get({
+    Category.getCategorys({
       cache: false
     }).then(function (res) {
-      wx.stopPullDownRefresh()
       this.setData({
         cates: res
       })
+      wx.removeStorageSync('localProducts')
+      wx.stopPullDownRefresh()
       this.loading.hide()
     }.bind(this))
   },

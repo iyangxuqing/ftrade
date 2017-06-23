@@ -33,16 +33,16 @@
     <view class="head-title">价格标签</view>
   </view>
   <template is="items" data="{{items:product.prices, type:'prices', swipeLeftId, editId, labelholder:'输入价格标签', valueholder:'输入价格(元)'}}" />
-  <view class="item item-new">
-    <view class="item-label" data-type="prices" data-index="-1" catchtap="onItemAdd">新增价格标签</view>
+  <view class="item">
+    <view class="item-label item-new-label" data-type="prices" data-index="-1" catchtap="onItemAdd">新增价格标签</view>
   </view>
 
   <view class="head">
     <view class="head-title">商品属性</view>
   </view>
   <template is="items" data="{{items:product.props, type:'props', swipeLeftId, editId, labelholder:'输入商品属性', valueholder:'输入属性值'}}" />
-  <view class="item item-new">
-    <view class="item-label" data-type="props" data-index="-1" catchtap="onItemAdd">新增商品属性</view>
+  <view class="item">
+    <view class="item-label item-new-label" data-type="props" data-index="-1" catchtap="onItemAdd">新增商品属性</view>
   </view>
 
 </view>
