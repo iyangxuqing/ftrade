@@ -110,6 +110,7 @@ function add(cate, cb) {
   }
   cate.id = Date.now()
   cate.sort = Number(max) + 1
+  cate.thumb = ''
 
   if (cate.pid == 0) {
     cate.children = []
@@ -124,19 +125,21 @@ function add(cate, cb) {
   }
 
   /* server start */
-  http.get({
-    url: '_ftrade/category.php?m=add',
-    data: {
-      id: cate.id,
-      pid: cate.pid,
-      sort: cate.sort,
-      title: cate.title.escape()
-    }
-  }).then(function (res) {
-    if (!res.error) {
-      cb && cb(cates)
-    }
-  })
+  if (getApp().user.role == 'admin') {
+    http.get({
+      url: '_ftrade/category.php?m=add',
+      data: {
+        id: cate.id,
+        pid: cate.pid,
+        sort: cate.sort,
+        title: cate.title.escape()
+      }
+    }).then(function (res) {
+      if (!res.error) {
+        cb && cb(cates)
+      }
+    })
+  }
   /* server end */
 
   Cates[cate.lang] = cates
@@ -171,18 +174,20 @@ function setTitle(cate, cb) {
   }
 
   /* server start */
-  http.get({
-    url: '_ftrade/category.php?m=set',
-    data: {
-      id: cate.id,
-      pid: cate.pid,
-      title: cate.title.escape()
-    }
-  }).then(function (res) {
-    if (!res.error) {
-      cb && cb(cates)
-    }
-  })
+  if (getApp().user.role == 'admin') {
+    http.get({
+      url: '_ftrade/category.php?m=set',
+      data: {
+        id: cate.id,
+        pid: cate.pid,
+        title: cate.title.escape()
+      }
+    }).then(function (res) {
+      if (!res.error) {
+        cb && cb(cates)
+      }
+    })
+  }
   /* server end */
 
   Cates[lang] = cates
@@ -211,7 +216,7 @@ function setThumb(cate, cb) {
           if (cates[i].id == cate.pid) {
             for (let j in cates[i].children) {
               if (cates[i].children[j].id == cate.id) {
-                cates[i].children[j] = cate.thumb
+                cates[i].children[j].thumb = cate.thumb
                 break
               }
             }
@@ -224,14 +229,16 @@ function setThumb(cate, cb) {
       resolve(cates)
 
       /* server start */
-      http.get({
-        url: '_ftrade/category.php?m=set',
-        data: cate
-      }).then(function (res) {
-        if (!res.error) {
-          cb && cb(cates)
-        }
-      })
+      if (getApp().user.role == 'admin') {
+        http.get({
+          url: '_ftrade/category.php?m=set',
+          data: cate
+        }).then(function (res) {
+          if (!res.error) {
+            cb && cb(cates)
+          }
+        })
+      }
       /* server end */
 
     })
@@ -262,7 +269,6 @@ function testDelete(cate) {
       }
     } else {
       Product.getProducts(cate.id, lang).then(function (products) {
-        console.log(products, products.length)
         if (products.length > 0) {
           resolve({
             errno: -2,
@@ -316,10 +322,12 @@ function del(cate) {
     })
 
     /* server start */
-    http.get({
-      url: '_ftrade/category.php?m=del',
-      data: cate
-    })
+    if (getApp().user.role == 'admin') {
+      http.get({
+        url: '_ftrade/category.php?m=del',
+        data: cate
+      })
+    }
     /* server end */
 
   })
@@ -372,33 +380,37 @@ function sort(cate, up = false) {
       }
     }
   }
-  /* server */
-  for (let i in cates) {
-    if (cates[i].sort != i) {
-      cates[i].sort = i
-      http.get({
-        url: '_ftrade/category.php?m=set',
-        data: { id: cates[i].id, sort: i }
-      }).then(function (res) {
-        if (!res.error) {
-          cates[i].sort = i
-        }
-      })
-    }
-    for (let j in cates[i].children) {
-      if (cates[i].children[j].sort != j) {
-        cates[i].children[j].sort = j
+
+  /* server start */
+  if (getApp().user.role == 'admin') {
+    for (let i in cates) {
+      if (cates[i].sort != i) {
+        cates[i].sort = i
         http.get({
           url: '_ftrade/category.php?m=set',
-          data: { id: cates[i].children[j].id, sort: j }
+          data: { id: cates[i].id, sort: i }
         }).then(function (res) {
           if (!res.error) {
-            cates[i].children[j].sort = j
+            cates[i].sort = i
           }
         })
       }
+      for (let j in cates[i].children) {
+        if (cates[i].children[j].sort != j) {
+          cates[i].children[j].sort = j
+          http.get({
+            url: '_ftrade/category.php?m=set',
+            data: { id: cates[i].children[j].id, sort: j }
+          }).then(function (res) {
+            if (!res.error) {
+              cates[i].children[j].sort = j
+            }
+          })
+        }
+      }
     }
   }
+  /* server end */
 
   Cates[lang] = cates
   wx.setStorageSync('localCategorys', Cates)

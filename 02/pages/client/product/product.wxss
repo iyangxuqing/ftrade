@@ -41,19 +41,14 @@ page {
 
 .favorite {
   position: absolute;
-  right: 20rpx;
-  bottom: -20rpx;
+  right: 30rpx;
+  bottom: 0rpx;
 }
 
 .favorite-icon {
   width: 100rpx;
   height: 100rpx;
-  padding: 24rpx;
-  opacity: 0.5;
-}
-
-.favorite-icon.hl {
-  opacity: 1;
+  padding: 10rpx;
 }
 
 .items-head {

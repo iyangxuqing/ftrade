@@ -33,7 +33,6 @@ Page({
 
   onFavoriteTap: function (e) {
     let id = e.currentTarget.dataset.id
-    console.log(id)
     let products = this.data.products
     for (let i in products) {
       if (products[i].id == id) {
@@ -71,7 +70,7 @@ Page({
       title: phrases.navTitle,
     })
 
-    Product.get({ cid, language }).then(function (products) {
+    Product.getProducts(cid, language).then(function (products) {
       let index = -1
       for (let i in products) {
         if (products[i].id == id) index = i

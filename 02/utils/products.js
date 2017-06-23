@@ -12,11 +12,11 @@ function getProducts(cid, lang = 'zh', cache = true) {
     if (!products) products = {}
     if (!products[lang]) products[lang] = {}
     if (cache && products[lang][_cid]) {
-      resolve(products[lang][_cid])
+      resolve(products[lang][_cid] || [])
     } else {
       getProductsFromServer(cid).then(function (res) {
         let products = res
-        resolve(products[lang][_cid])
+        resolve(products[lang][_cid] || [])
       })
     }
   })
@@ -102,45 +102,40 @@ function set(product, cb) {
   cb && cb(products, product)
   getApp().listener.trigger('products', products, product)
 
-  /* server */
-  let _product = JSON.parse(JSON.stringify(product))
-  _product.title = _product.title.escape()
-  for (let i in _product.prices) {
-    _product.prices[i].label = _product.prices[i].label.escape()
-    _product.prices[i].value = _product.prices[i].value.escape()
-  }
-  for (let i in _product.props) {
-    _product.props[i].label = _product.props[i].label.escape()
-    _product.props[i].value = _product.props[i].value.escape()
-  }
-
-  if (_product.title.length > 20) {
-    _product.title = _product.title.substr(0, 20)
-  }
-  while (JSON.stringify(_product.images).length >= 500) {
-    _product.images.pop()
-  }
-  while (JSON.stringify(_product.prices).length >= 200) {
-    _product.prices.pop()
-  }
-  while (JSON.stringify(_product.props).length >= 500) {
-    _product.props.pop()
-  }
-
-  let url = '_ftrade/product.php?m=add'
-  if (id) url = '_ftrade/product.php?m=set'
-  http.get({
-    url: url,
-    data: _product
-  })
-  /*
-  .then(function (res) {
-    if (!res.error) {
-      cb && cb(products, product)
-      getApp().listener.trigger('products', products, product)
+  /* server start */
+  if (getApp().user.role == 'admin') {
+    let _product = JSON.parse(JSON.stringify(product))
+    _product.title = _product.title.escape()
+    for (let i in _product.prices) {
+      _product.prices[i].label = _product.prices[i].label.escape()
+      _product.prices[i].value = _product.prices[i].value.escape()
     }
-  })
-  */
+    for (let i in _product.props) {
+      _product.props[i].label = _product.props[i].label.escape()
+      _product.props[i].value = _product.props[i].value.escape()
+    }
+
+    if (_product.title.length > 20) {
+      _product.title = _product.title.substr(0, 20)
+    }
+    while (JSON.stringify(_product.images).length >= 500) {
+      _product.images.pop()
+    }
+    while (JSON.stringify(_product.prices).length >= 200) {
+      _product.prices.pop()
+    }
+    while (JSON.stringify(_product.props).length >= 500) {
+      _product.props.pop()
+    }
+
+    let url = '_ftrade/product.php?m=add'
+    if (id) url = '_ftrade/product.php?m=set'
+    http.get({
+      url: url,
+      data: _product
+    })
+  }
+  /* server end */
 }
 
 function del(product, cb) {
@@ -156,15 +151,19 @@ function del(product, cb) {
     }
   }
 
-  http.get({
-    url: '_ftrade/product.php?m=del',
-    data: { id: id }
-  }).then(function (res) {
-    if (!res.error) {
-      cb && cb(products, product)
-      getApp().listener.trigger('products', products, product)
-    }
-  })
+  /* server start */
+  if (getApp().user.role == 'admin') {
+    http.get({
+      url: '_ftrade/product.php?m=del',
+      data: { id: id }
+    }).then(function (res) {
+      if (!res.error) {
+        cb && cb(products, product)
+        getApp().listener.trigger('products', products, product)
+      }
+    })
+  }
+  /* server end */
 
   Products[lang]['_' + cid] = products
   wx.setStorageSync('localProducts', Products)
@@ -186,21 +185,23 @@ function sort(product, sourceIndex, targetIndex, cb) {
   products.splice(targetIndex, 0, product)
 
   /* server start */
-  for (let i in products) {
-    if (products[i].sort != i) {
-      products[i].sort = i
-      http.get({
-        url: '_ftrade/product.php?m=set',
-        data: {
-          id: products[i].id,
-          sort: products[i].sort
-        }
-      }).then(function (res) {
-        if (!res.error) {
-          cb && cb(products, product)
-          getApp().listener.trigger('products', products)
-        }
-      })
+  if (getApp().user.role == 'adimi') {
+    for (let i in products) {
+      if (products[i].sort != i) {
+        products[i].sort = i
+        http.get({
+          url: '_ftrade/product.php?m=set',
+          data: {
+            id: products[i].id,
+            sort: products[i].sort
+          }
+        }).then(function (res) {
+          if (!res.error) {
+            cb && cb(products, product)
+            getApp().listener.trigger('products', products)
+          }
+        })
+      }
     }
   }
   /* server end */

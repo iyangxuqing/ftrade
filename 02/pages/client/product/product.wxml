@@ -23,10 +23,10 @@
       </swiper>
       <view class="favorite" data-id="{{id}}" catchtap="onFavoriteTap">
         <view class="favorite-icon" wx:if="{{!favorite}}">
-          <image src="/images/icon/favorite.png" />
+          <image src="/images/icon/star-gray.png" />
         </view>
-        <view class="favorite-icon hl" wx:if="{{favorite}}">
-          <image src="/images/icon/favorite-red.png" />
+        <view class="favorite-icon" wx:if="{{favorite}}">
+          <image src="/images/icon/star-red.png" />
         </view>
       </view>
     </view>

@@ -151,7 +151,7 @@ Page({
     })
     wx.setStorageSync('language', language)
 
-    Category.get({ language }).then(function (cates) {
+    Category.getCategorys(language).then(function (cates) {
       let activeId = cates[0].id
       for (let i in cates) {
         // 有的类目可能在其下面还没建子类目
@@ -164,7 +164,7 @@ Page({
         cates: cates
       })
       let cid = cates[0].children[0].id
-      Product.get({ cid, language }).then(function (products) {
+      Product.getProducts(cid, language).then(function (products) {
         this.setData({
           products: products
         })
@@ -209,7 +209,7 @@ Page({
 
     this.loading.show()
     let language = this.data.language
-    Product.get({ cid: activeChildId, language })
+    Product.getProducts(activeChildId, language)
       .then(function (products) {
         this.setData({
           products: products
@@ -228,8 +228,7 @@ Page({
 
   onAdminTap: function (e) {
     let user = getApp().user
-    console.log(user)
-    if(user.mobileVerified==true){
+    if (user.mobileVerified == true) {
       wx.redirectTo({
         url: '/pages/shoper/shoper',
       })
@@ -240,7 +239,7 @@ Page({
     }
   },
 
-  onLogin: function(){
+  onLogin: function () {
 
   },
 
@@ -250,7 +249,6 @@ Page({
   onLoad: function (options) {
 
     getApp().listener.on('login', this.onLogin)
-
     this.loading = new Loading()
     this.loading.show()
 

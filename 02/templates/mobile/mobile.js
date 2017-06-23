@@ -101,8 +101,9 @@ let methods = {
             'mobile.showCodeInput': false
           })
           this.success && this.success({
-            mobile: number,
-            verified: true
+            role: res.role,
+            mobile: res.mobile,
+            mobileVerified: true,
           })
         }.bind(this), 300)
       } else {

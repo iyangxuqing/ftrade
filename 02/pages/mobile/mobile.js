@@ -11,7 +11,11 @@ Page({
   },
 
   onMobileVerified: function (options) {
-    if(options.verified){
+    if(options.mobileVerified){
+      let user = getApp().user
+      user.role = options.role
+      user.mobile = options.mobile
+      user.mobileVerified = options.mobileVerified
       setTimeout(function(){
         wx.redirectTo({
           url: '../shoper/shoper',

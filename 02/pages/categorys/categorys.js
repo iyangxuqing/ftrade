@@ -256,17 +256,22 @@ Page({
    * 页面相关事件处理函数--监听用户下拉动作
    */
   onPullDownRefresh: function () {
-    this.loading.show()
-    Category.getCategorys({
-      cache: false
-    }).then(function (res) {
-      this.setData({
-        cates: res
-      })
-      wx.removeStorageSync('localProducts')
-      wx.stopPullDownRefresh()
-      this.loading.hide()
-    }.bind(this))
+    if (getApp().user.role == 'admin') {
+      console.log(getApp().user)
+      this.loading.show()
+      Category.getCategorys('zh', false).then(function (res) {
+        this.setData({
+          cates: res
+        })
+        wx.removeStorageSync('localProducts')
+        wx.stopPullDownRefresh()
+        this.loading.hide()
+      }.bind(this))
+    } else {
+      setTimeout(function () {
+        wx.stopPullDownRefresh()
+      }, 2000)
+    }
   },
 
   /**

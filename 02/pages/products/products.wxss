@@ -13,17 +13,23 @@
   display: flex;
   flex-wrap: wrap;
   position: relative;
+  /*margin-left: -10rpx;*//*margin-right: -10rpx;*/
   padding-bottom: 200rpx;
-  margin-bottom: 0rpx;
 }
 
 .product {
-  width: 220rpx;
+  /*width: 220rpx;*/
+  width: 200rpx;
   display: flex;
   flex-direction: column;
   flex-wrap: wrap;
   position: relative;
-  padding: 10rpx;
+  padding: 10rpx 0;
+}
+
+.product:nth-of-type(3n+2) {
+  margin-left: 35rpx;
+  margin-right: 35rpx;
 }
 
 .product.moving {
@@ -42,6 +48,7 @@
 }
 
 .product-title {
+  width: 200rpx;
   height: 60rpx;
   line-height: 60rpx;
   text-align: center;
