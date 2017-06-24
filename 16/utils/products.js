@@ -5,7 +5,7 @@ function getProductsSync(cid, lang = 'zh') {
   return products[lang]['_' + cid]
 }
 
-function getProducts(cid, lang = 'zh', cache = false) {
+function getProducts(cid, lang = 'zh', cache = true) {
   return new Promise(function (resolve, reject) {
     let _cid = '_' + cid
     let products = wx.getStorageSync('localProducts')
@@ -14,17 +14,9 @@ function getProducts(cid, lang = 'zh', cache = false) {
     if (cache && products[lang][_cid]) {
       resolve(products[lang][_cid] || [])
     } else {
-      getProductsFromServer(cid).then(function (products) {
-        let Products = wx.getStorageSync('localProducts')
-        if (products.length == 0) {
-          products[lang] = []
-        }
-        for (let lang in products) {
-          if (!Products[lang]) Products[lang] = {}
-          Products[lang][_cid] = products[lang]
-        }
-        wx.setStorageSync('localProducts', Products)
-        resolve(products[lang])
+      getProductsFromServer(cid).then(function (res) {
+        let products = res
+        resolve(products[lang][_cid] || [])
       })
     }
   })
@@ -37,42 +29,37 @@ function getProductsFromServer(cid) {
       url: '_ftrade/product.php?m=get',
       data: { cid: cid }
     }).then(function (res) {
-      if (res.errno == 0) {
+      if (res.products) {
         for (let i in res.products) {
           let product = res.products[i]
-          let id = product.id
-          let cid = product.cid
-          let sort = product.sort
-          let images = JSON.parse(product.images)
-          let _title = JSON.parse(product.title)
-          let _prices = JSON.parse(product.prices)
-          let _props = JSON.parse(product.props)
-          for (let lang in _title) {
-            if (!products[lang]) products[lang] = []
-            let title = _title[lang] || ''
-            title = title.escape(false)
-            let __prices = _prices[lang] || []
-            let prices = []
-            for (let n = 0; n < __prices.length; n += 2) {
-              prices.push({
-                label: __prices[Number(n) + 0].escape(false),
-                value: __prices[Number(n) + 1].escape(false),
-              })
-            }
-            let __props = _props[lang] || []
-            let props = []
-            for (let n = 0; n < __props.length; n += 2) {
-              props.push({
-                label: __props[Number(n) + 0].escape(false),
-                value: __props[Number(n) + 1].escape(false),
-              })
-            }
-            products[lang].push({
-              id, cid, title, images, prices, props, sort
-            })
+          product.images = JSON.parse(product.images)
+          product.prices = JSON.parse(product.prices)
+          product.props = JSON.parse(product.props)
+
+          product.title = product.title.escape(false)
+          for (let i in product.prices) {
+            let price = product.prices[i]
+            price.label = price.label.escape(false)
+            price.value = price.value.escape(false)
           }
+          for (let i in product.props) {
+            let prop = product.props[i]
+            prop.label = prop.label.escape(false)
+            prop.value = prop.value.escape(false)
+          }
+
+          let lang = product.lang
+          if (!products[lang]) products[lang] = []
+          products[lang].push(product)
         }
-        resolve(products)
+
+        let Products = wx.getStorageSync('localProducts') || {}
+        for (let lang in products) {
+          if (!Products[lang]) Products[lang] = {}
+          Products[lang]['_' + cid] = products[lang]
+        }
+        wx.setStorageSync('localProducts', Products)
+        resolve(Products)
       }
     })
   })
@@ -97,11 +84,10 @@ function set(product, cb) {
   if (!id) {
     let max = -1
     for (let i in products) {
-      if (Number(products[i].sort) > max) max = products[i].sort
+      if (products[i].sort > max) max = products[i].sort
     }
     product.id = Date.now()
     product.sort = Number(max) + 1
-    console.log(product.sort)
     products.push(product)
   } else {
     for (let i in products) {
@@ -119,7 +105,6 @@ function set(product, cb) {
   /* server start */
   if (getApp().user.role == 'admin') {
     let _product = JSON.parse(JSON.stringify(product))
-    _product.lang = lang
     _product.title = _product.title.escape()
     for (let i in _product.prices) {
       _product.prices[i].label = _product.prices[i].label.escape()
@@ -200,7 +185,7 @@ function sort(product, sourceIndex, targetIndex, cb) {
   products.splice(targetIndex, 0, product)
 
   /* server start */
-  if (getApp().user.role == 'admin') {
+  if (getApp().user.role == 'adimi') {
     for (let i in products) {
       if (products[i].sort != i) {
         products[i].sort = i

@@ -6,7 +6,7 @@ function getCategorysSync(lang = 'zh') {
   return cates[lang]
 }
 
-function getCategorys(lang = 'zh', cache = false) {
+function getCategorys(lang = 'zh', cache = true) {
   return new Promise(function (resolve, reject) {
     let cates = wx.getStorageSync('localCategorys')
     if (cates && cache) {
@@ -27,32 +27,31 @@ function getCategorysFromServer() {
     http.get({
       url: '_ftrade/category.php?m=get'
     }).then(function (res) {
-      if (res.errno === 0) {
+      if (res.categorys) {
+        // res.categorys 数据库原始记录
         for (let i in res.categorys) {
-          let category = res.categorys[i]
-          let id = category.id
-          let pid = category.pid
-          let thumb = category.thumb
-          let sort = category.sort
-          let titles = JSON.parse(category.title)
-          for (let lang in titles) {
-            if (!_cates[lang]) _cates[lang] = []
-            let title = titles[lang]
-            _cates[lang].push({ id, pid, title, thumb, sort })
-          }
+          // 对title进行编码转义
+          let cate = res.categorys[i]
+          cate.title = cate.title.escape(false)
+
+          // 按语言类别进行分组
+          let lang = cate.lang
+          if (!_cates[lang]) _cates[lang] = []
+          _cates[lang].push(cate)
         }
+        // 构造层级化的类目数据
         for (let lang in _cates) {
           cates[lang] = []
           for (let i in _cates[lang]) {
             let cate = _cates[lang][i]
-            if (cate.pid == 0) {
+            let pid = cate.pid
+            if (pid == 0) {
               cate.children = []
               cates[lang].push(cate)
             } else {
               for (let j in cates[lang]) {
-                if (cate.pid == cates[lang][j].id) {
+                if (cates[lang][j].id == pid) {
                   cates[lang][j].children.push(cate)
-                  break
                 }
               }
             }
@@ -87,8 +86,8 @@ function getCategory(id, lang = 'zh') {
 
 function add(cate, cb) {
   let Cates = wx.getStorageSync('localCategorys')
-  if (!cate.lang) cate.lang = 'zh'
-  let cates = Cates[cate.lang]
+  let lang = cate.lang || 'zh'
+  let cates = Cates[lang]
 
   let max = -1
   if (cate.pid == 0) {
@@ -132,7 +131,6 @@ function add(cate, cb) {
       data: {
         id: cate.id,
         pid: cate.pid,
-        lang: cate.lang,
         sort: cate.sort,
         title: cate.title.escape()
       }
@@ -151,8 +149,8 @@ function add(cate, cb) {
 
 function setTitle(cate, cb) {
   let Cates = wx.getStorageSync('localCategorys')
-  if (!cate.lang) cate.lang = 'zh'
-  let cates = Cates[cate.lang]
+  let lang = cate.lang || 'zh'
+  let cates = Cates[lang]
 
   if (cate.pid == 0) {
     for (let i in cates) {
@@ -182,7 +180,6 @@ function setTitle(cate, cb) {
       data: {
         id: cate.id,
         pid: cate.pid,
-        lang: cate.lang,
         title: cate.title.escape()
       }
     }).then(function (res) {
@@ -193,7 +190,7 @@ function setTitle(cate, cb) {
   }
   /* server end */
 
-  Cates[cate.lang] = cates
+  Cates[lang] = cates
   wx.setStorageSync('localCategorys', Cates)
   return cates
 }

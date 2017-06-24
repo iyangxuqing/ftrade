@@ -205,7 +205,7 @@ Page({
         'editor.left': left,
         'editor.focus': true,
       })
-    }.bind(this), 0)
+    }.bind(this), 10)
   },
 
   onItemEdit: function (e) {
@@ -241,7 +241,7 @@ Page({
         'editor.left': left,
         'editor.focus': true,
       })
-    }.bind(this), 0)
+    }.bind(this), 10)
   },
 
   onEditorBlur: function (e) {
