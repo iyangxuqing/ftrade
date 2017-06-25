@@ -1,3 +1,4 @@
+import { Loading } from '../../templates/loading/loading.js'
 import { Category } from '../../utils/categorys.js'
 import { Product } from '../../utils/products.js'
 
@@ -138,16 +139,19 @@ Page({
    */
   onLoad: function (options) {
     getApp().listener.on('products', this.onProductsUpdate)
+    this.loading = new Loading()
 
     let cid = options.cid
     let cate = Category.getCategory(cid)
-    this.setData({
-      cate: cate
-    })
-    Product.getProducts(cid).then(function (res) {
+    this.setData({ cate })
+
+    this.loading.show()
+    Product.getProducts(cid).then(function (products) {
       this.setData({
-        products: res
+        products,
+        ready: true,
       })
+      this.loading.hide()
     }.bind(this))
   },
 

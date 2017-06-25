@@ -1,3 +1,5 @@
+@import '/templates/loading/loading.wxss';
+
 .cate {
   margin-bottom: 20rpx;
 }

@@ -1,18 +1,21 @@
 import { http } from 'http.js'
 import { Product } from 'products.js'
 
-function getCategorysSync(lang = 'zh') {
-  let cates = wx.getStorageSync('localCategorys')
-  return cates[lang]
-}
-
 function getCategorys(lang = 'zh', cache = false) {
   return new Promise(function (resolve, reject) {
-    let cates = wx.getStorageSync('localCategorys')
-    if (cates && cache) {
+    let cates = wx.getStorageSync('localCategorys') || {}
+    if (cates[lang] && cache) {
       resolve(cates[lang])
     } else {
       getCategorysFromServer().then(function (cates) {
+        /**
+         * 注意空数据的处理
+         * 在新用户创建时，用户的类别数据是空的。
+         * 也有些语言，由于翻译的滞后，可能数据为空。
+         * 空数据也是一种有效数据，所以用[]来表示，而不能用null来表示。
+         * null表示数据读取不到，不是有效数据。
+         */
+        if (!cates[lang]) cates[lang] = []
         wx.setStorageSync('localCategorys', cates)
         resolve(cates[lang])
       })
@@ -22,22 +25,29 @@ function getCategorys(lang = 'zh', cache = false) {
 
 function getCategorysFromServer() {
   return new Promise(function (resolve, reject) {
-    let cates = {} //最终得到的层级类目数据
-    let _cates = {} //临时类目数据
+    let cates = {}
     http.get({
       url: '_ftrade/category.php?m=get'
     }).then(function (res) {
       if (res.errno === 0) {
+        let _cates = {}
         for (let i in res.categorys) {
           let category = res.categorys[i]
           let id = category.id
           let pid = category.pid
           let thumb = category.thumb
           let sort = category.sort
+          // fix me 这里的title需要转义回来
           let titles = JSON.parse(category.title)
           for (let lang in titles) {
             if (!_cates[lang]) _cates[lang] = []
-            let title = titles[lang]
+            /**
+             * 用户输入的数据，可能包含单引号、双引号、反斜杠、换行符等，
+             * 这些字符会使sql语句执行错误，或者使json转换发生错误，
+             * 因此在送去服务器前会它们进行转义，数据库保存的是转义后的字符，
+             * 从服务器读取到数据后，则需要反转义来正确显示其本来的面目。
+             */
+            let title = titles[lang].escape(false)
             _cates[lang].push({ id, pid, title, thumb, sort })
           }
         }
@@ -64,8 +74,21 @@ function getCategorysFromServer() {
   })
 }
 
-/*
-  由类目id取得该类目信息，供products等页面调用
+/**
+ * 在什么情况下可以使用getCategorysSync？
+ * 只有在确保当前场景下数据已经准备好，
+ * 如果数据未准备好，不可能来到当前场景时，
+ * 为了代码简化，可以使用getCategorysSync。
+ */
+function getCategorysSync(lang = 'zh') {
+  let cates = wx.getStorageSync('localCategorys')
+  return cates[lang]
+}
+
+/**
+ * 由类目id取得该类目信息，供products等页面调用。
+ * 由于在那样的使用场景下，categorys数据肯定已经在本地准备好了，
+ * 所以可以使用同步的方式来提供数据。
 */
 function getCategory(id, lang = 'zh') {
   let cates = getCategorysSync(lang)
@@ -85,6 +108,10 @@ function getCategory(id, lang = 'zh') {
   }
 }
 
+/**
+ * 增加一个新类目，可以是一级类目或子类目
+ * cb为写服务器后调用的回调函数
+ */
 function add(cate, cb) {
   let Cates = wx.getStorageSync('localCategorys')
   if (!cate.lang) cate.lang = 'zh'
@@ -93,16 +120,16 @@ function add(cate, cb) {
   let max = -1
   if (cate.pid == 0) {
     for (let i in cates) {
-      if (cates[i].sort > max) {
-        max = cates[i].sort
+      if (Number(cates[i].sort) > max) {
+        max = Number(cates[i].sort)
       }
     }
   } else {
     for (let i in cates) {
       if (cates[i].id == cate.pid) {
         for (let j in cates[i].children) {
-          if (cates[i].children[j].sort > max) {
-            max = cates[i].children[j].sort
+          if (Number(cates[i].children[j].sort) > max) {
+            max = Number(cates[i].children[j].sort)
           }
         }
         break
@@ -110,7 +137,7 @@ function add(cate, cb) {
     }
   }
   cate.id = Date.now()
-  cate.sort = Number(max) + 1
+  cate.sort = max + 1
   cate.thumb = ''
 
   if (cate.pid == 0) {
@@ -134,12 +161,11 @@ function add(cate, cb) {
         pid: cate.pid,
         lang: cate.lang,
         sort: cate.sort,
+        /* 对输入中的单引号、双引号、反斜杠、换行符进行转义 */
         title: cate.title.escape()
       }
     }).then(function (res) {
-      if (!res.error) {
-        cb && cb(cates)
-      }
+      cb && cb(cates)
     })
   }
   /* server end */
@@ -186,9 +212,7 @@ function setTitle(cate, cb) {
         title: cate.title.escape()
       }
     }).then(function (res) {
-      if (!res.error) {
-        cb && cb(cates)
-      }
+      cb && cb(cates)
     })
   }
   /* server end */
@@ -235,11 +259,13 @@ function setThumb(cate, cb) {
       if (getApp().user.role == 'admin') {
         http.get({
           url: '_ftrade/category.php?m=set',
-          data: cate
-        }).then(function (res) {
-          if (!res.error) {
-            cb && cb(cates)
+          data: {
+            id: cate.id,
+            pid: cate.pid,
+            thumb: cate.thumb
           }
+        }).then(function (res) {
+          cb && cb(cates)
         })
       }
       /* server end */
@@ -248,6 +274,14 @@ function setThumb(cate, cb) {
   })
 }
 
+/**
+ * 用于检测类目是否可以被删除，
+ * 这里主要用于前端数据检测，看在前端的缓存数据中，
+ * 要被删除的类目是否包含子类目或下属商品。
+ * 在演示版本中，由于用户不被允许操作数据库数据，
+ * 所以前端缓存数据和后台服务器数据是不一致的，
+ * 所以需要进行前端数据检测。
+ */
 function testDelete(cate) {
   return new Promise(function (resolve, reject) {
     let Cates = wx.getStorageSync('localCategorys')
@@ -297,6 +331,13 @@ function del(cate) {
     testDelete(cate).then(function (res) {
       if (res.error) {
         resolve(res)
+        /**
+         * 这里检测到前端不可被删除后，需要直接退出，
+         * 因为后面代码中有服务端代码，如果不直接退出，
+         * 非演示类用户会继续执行服务器代码，
+         * 这时会在界面上提示两次不可删除。
+         */
+        return
       } else {
         if (cate.pid == 0) {
           for (let i in cates) {
@@ -329,6 +370,15 @@ function del(cate) {
       http.get({
         url: '_ftrade/category.php?m=del',
         data: cate
+      }).then(function (res) {
+        /**
+         * 如果后台数据库检测中该类目不可被删除，
+         * 则返回错误信息，信息中包含不可被删除的原因，
+         * 不可被删除的原因需要在界面上进行提示。
+         */
+        if (res.error) {
+          resolve(res)
+        }
       })
     }
     /* server end */
@@ -393,7 +443,7 @@ function sort(cate, up = false) {
           url: '_ftrade/category.php?m=set',
           data: { id: cates[i].id, sort: i }
         }).then(function (res) {
-          if (!res.error) {
+          if (res.errno === 0) {
             cates[i].sort = i
           }
         })
@@ -405,7 +455,7 @@ function sort(cate, up = false) {
             url: '_ftrade/category.php?m=set',
             data: { id: cates[i].children[j].id, sort: j }
           }).then(function (res) {
-            if (!res.error) {
+            if (res.errno === 0) {
               cates[i].children[j].sort = j
             }
           })

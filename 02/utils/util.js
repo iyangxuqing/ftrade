@@ -1,3 +1,8 @@
+/**
+ * fix me utils/categorys.js中读取到的category.title需要反转义
+ * 
+ */
+
 function formatTime(date) {
   var year = date.getFullYear()
   var month = date.getMonth() + 1

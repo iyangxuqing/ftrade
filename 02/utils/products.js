@@ -1,27 +1,26 @@
 import { http } from 'http.js'
 
-function getProductsSync(cid, lang = 'zh') {
-  let products = wx.getStorageSync('localProducts')
-  return products[lang]['_' + cid]
-}
-
 function getProducts(cid, lang = 'zh', cache = false) {
   return new Promise(function (resolve, reject) {
-    let _cid = '_' + cid
-    let products = wx.getStorageSync('localProducts')
-    if (!products) products = {}
-    if (!products[lang]) products[lang] = {}
-    if (cache && products[lang][_cid]) {
-      resolve(products[lang][_cid] || [])
+    let products = wx.getStorageSync('localProducts') || {}
+    if (products[lang] && products[lang]['_' + cid] && cache) {
+      resolve(products[lang][_cid])
     } else {
       getProductsFromServer(cid).then(function (products) {
-        let Products = wx.getStorageSync('localProducts')
-        if (products.length == 0) {
+        /**
+         * 需要对空数据进行处理，
+         * 当该类目刚新建时，读取该类目下的商品，就得到的是空数据，
+         * 由于翻译的滞后性，当某产品的某种语言未被翻译时，
+         * 该语言下也会出现空数据。
+         * 注意空数据和null的区别，空数据是有效数据。
+         */
+        if (!products[lang]) {
           products[lang] = []
         }
+        let Products = wx.getStorageSync('localProducts') || {}
         for (let lang in products) {
           if (!Products[lang]) Products[lang] = {}
-          Products[lang][_cid] = products[lang]
+          Products[lang]['_' + cid] = products[lang]
         }
         wx.setStorageSync('localProducts', Products)
         resolve(products[lang])
@@ -32,41 +31,50 @@ function getProducts(cid, lang = 'zh', cache = false) {
 
 function getProductsFromServer(cid) {
   return new Promise(function (resolve, reject) {
+    /**
+     * 所有语言下的该cid类目的产品数据，构造为：
+     * products = {
+     *  'zh': [],
+     *  'en': [],
+     * }
+     */
     let products = {}
     http.get({
       url: '_ftrade/product.php?m=get',
       data: { cid: cid }
     }).then(function (res) {
-      if (res.errno == 0) {
+      if (res.errno === 0) {
         for (let i in res.products) {
           let product = res.products[i]
           let id = product.id
           let cid = product.cid
           let sort = product.sort
           let images = JSON.parse(product.images)
-          let _title = JSON.parse(product.title)
-          let _prices = JSON.parse(product.prices)
-          let _props = JSON.parse(product.props)
-          for (let lang in _title) {
+          let title = JSON.parse(product.title)
+          let prices = JSON.parse(product.prices)
+          let props = JSON.parse(product.props)
+          for (let lang in title) {
             if (!products[lang]) products[lang] = []
-            let title = _title[lang] || ''
-            title = title.escape(false)
-            let __prices = _prices[lang] || []
-            let prices = []
-            for (let n = 0; n < __prices.length; n += 2) {
-              prices.push({
-                label: __prices[Number(n) + 0].escape(false),
-                value: __prices[Number(n) + 1].escape(false),
+            let _title = title[lang].escape(false)
+            let _prices = prices[lang]
+            let __prices = []
+            for (let n = 0; n < _prices.length; n += 2) {
+              __prices.push({
+                label: _prices[Number(n) + 0].escape(false),
+                value: _prices[Number(n) + 1].escape(false),
               })
             }
-            let __props = _props[lang] || []
-            let props = []
-            for (let n = 0; n < __props.length; n += 2) {
+            let _props = props[lang]
+            let __props = []
+            for (let n = 0; n < _props.length; n += 2) {
               props.push({
-                label: __props[Number(n) + 0].escape(false),
-                value: __props[Number(n) + 1].escape(false),
+                label: _props[Number(n) + 0].escape(false),
+                value: _props[Number(n) + 1].escape(false),
               })
             }
+            title = _title
+            prices = __prices
+            props = __props
             products[lang].push({
               id, cid, title, images, prices, props, sort
             })
@@ -76,6 +84,17 @@ function getProductsFromServer(cid) {
       }
     })
   })
+}
+
+/**
+ * 只有在确保本地存在该类目下产品数据的情况下，
+ * 才可以使用getProductsSync同步取得产品数据，
+ * 所有使用了getProductsSync函数的方法，也必须在同样的场景下应用。
+ * 提供同步数据获取方法的目的是为了在数据明确存在时，简化相关代码。
+ */
+function getProductsSync(cid, lang = 'zh') {
+  let products = wx.getStorageSync('localProducts')
+  return products[lang]['_' + cid]
 }
 
 function getProduct(id, cid, lang = 'zh') {
@@ -91,18 +110,25 @@ function set(product, cb) {
   let id = product.id
   let cid = product.cid
   let lang = product.lang || 'zh'
-  let Products = wx.getStorageSync('localProducts')
+  /**
+   * 在增加或编辑产品信息时，调用set(product)方法
+   * 在这时，该产品所属于的类目数据一定已经存在，
+   * 所以此时可以使用同步方法取得数据。
+   */
+  let products = getProductsSync(cid, lang)
 
-  let products = Products[lang]['_' + cid] || []
+  let url = ''
   if (!id) {
     let max = -1
     for (let i in products) {
-      if (Number(products[i].sort) > max) max = products[i].sort
+      if (Number(products[i].sort) > max) {
+        max = Number(products[i].sort)
+      }
     }
     product.id = Date.now()
-    product.sort = Number(max) + 1
-    console.log(product.sort)
+    product.sort = max + 1
     products.push(product)
+    url = '_ftrade/product.php?m=add'
   } else {
     for (let i in products) {
       if (products[i].id == id) {
@@ -110,44 +136,54 @@ function set(product, cb) {
         break
       }
     }
+    url = '_ftrade/product.php?m=set'
   }
+
+  let Products = wx.getStorageSync('localProducts')
   Products[lang]['_' + cid] = products
   wx.setStorageSync('localProducts', Products)
-  cb && cb(products, product)
   getApp().listener.trigger('products', products, product)
 
   /* server start */
   if (getApp().user.role == 'admin') {
-    let _product = JSON.parse(JSON.stringify(product))
-    _product.lang = lang
-    _product.title = _product.title.escape()
-    for (let i in _product.prices) {
-      _product.prices[i].label = _product.prices[i].label.escape()
-      _product.prices[i].value = _product.prices[i].value.escape()
+    let id = product.id
+    console.log(id, product)
+    let cid = product.cid
+    let sort = product.sort
+    let title = product.title.escape()
+    let images = product.images
+    let prices = product.prices
+    for (let i in prices) {
+      prices[i].label = prices[i].label.escape()
+      prices[i].value = prices[i].value.escape()
     }
-    for (let i in _product.props) {
-      _product.props[i].label = _product.props[i].label.escape()
-      _product.props[i].value = _product.props[i].value.escape()
-    }
-
-    if (_product.title.length > 20) {
-      _product.title = _product.title.substr(0, 20)
-    }
-    while (JSON.stringify(_product.images).length >= 500) {
-      _product.images.pop()
-    }
-    while (JSON.stringify(_product.prices).length >= 200) {
-      _product.prices.pop()
-    }
-    while (JSON.stringify(_product.props).length >= 500) {
-      _product.props.pop()
+    let props = product.props
+    for (let i in props) {
+      props[i].label = props[i].label.escape()
+      props[i].value = props[i].value.escape()
     }
 
-    let url = '_ftrade/product.php?m=add'
-    if (id) url = '_ftrade/product.php?m=set'
+    /**
+     * 控制一下单种语言下各属性的长度，免得撑破数据库设计的字段长度
+     */
+    if (title.length > 20) {
+      title = title.substr(0, 20)
+    }
+    while (JSON.stringify(images).length >= 500) {
+      images.pop()
+    }
+    while (JSON.stringify(prices).length >= 200) {
+      prices.pop()
+    }
+    while (JSON.stringify(props).length >= 500) {
+      props.pop()
+    }
+
     http.get({
       url: url,
-      data: _product
+      data: { id, cid, title, images, prices, props, sort, lang }
+    }).then(function (res) {
+      cb && cb(res)
     })
   }
   /* server end */
