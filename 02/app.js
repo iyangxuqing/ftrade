@@ -4,14 +4,13 @@ import { Listener } from 'utils/listener.js'
 
 App({
   onLaunch: function () {
+
     this.login()
     this.listener = new Listener()
 
     var language = wx.getStorageSync('language')
-    if (!language) {
-      language = 'en'
-      wx.setStorageSync('language', language)
-    }
+    if (!language) wx.setStorageSync('language', 'en')
+    
   },
 
   login: function (cb) {

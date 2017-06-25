@@ -67,7 +67,7 @@ function getProductsFromServer(cid) {
             let _props = props[lang]
             let __props = []
             for (let n = 0; n < _props.length; n += 2) {
-              props.push({
+              __props.push({
                 label: _props[Number(n) + 0].escape(false),
                 value: _props[Number(n) + 1].escape(false),
               })
@@ -147,7 +147,6 @@ function set(product, cb) {
   /* server start */
   if (getApp().user.role == 'admin') {
     let id = product.id
-    console.log(id, product)
     let cid = product.cid
     let sort = product.sort
     let title = product.title.escape()

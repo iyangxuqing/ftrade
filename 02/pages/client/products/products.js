@@ -152,6 +152,10 @@ Page({
     wx.setStorageSync('language', language)
 
     Category.getCategorys(language).then(function (cates) {
+      if(cates.length==0){
+        cb && cb()
+        return
+      }
       let activeId = cates[0].id
       for (let i in cates) {
         // 有的类目可能在其下面还没建子类目
