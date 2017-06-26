@@ -37,7 +37,6 @@ function getCategorysFromServer() {
           let pid = category.pid
           let thumb = category.thumb
           let sort = category.sort
-          // fix me 这里的title需要转义回来
           let titles = JSON.parse(category.title)
           for (let lang in titles) {
             if (!_cates[lang]) _cates[lang] = []

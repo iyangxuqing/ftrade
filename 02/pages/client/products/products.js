@@ -163,14 +163,13 @@ Page({
           cates[i].activeId = cates[i].children[0].id
         }
       }
-      this.setData({
-        activeId: activeId,
-        cates: cates
-      })
+
       let cid = cates[0].children[0].id
       Product.getProducts(cid, language).then(function (products) {
         this.setData({
-          products: products
+          cates: cates,
+          products: products,
+          activeId: activeId,
         })
         cb && cb()
       }.bind(this))

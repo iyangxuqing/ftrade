@@ -50,31 +50,30 @@ function getProductsFromServer(cid) {
           let cid = product.cid
           let sort = product.sort
           let images = JSON.parse(product.images)
-          let title = JSON.parse(product.title)
-          let prices = JSON.parse(product.prices)
-          let props = JSON.parse(product.props)
-          for (let lang in title) {
+          let multi_title = JSON.parse(product.title)
+          let multi_prices = JSON.parse(product.prices)
+          let multi_props = JSON.parse(product.props)
+          for (let lang in multi_title) {
             if (!products[lang]) products[lang] = []
-            let _title = title[lang].escape(false)
-            let _prices = prices[lang]
-            let __prices = []
-            for (let n = 0; n < _prices.length; n += 2) {
-              __prices.push({
-                label: _prices[Number(n) + 0].escape(false),
-                value: _prices[Number(n) + 1].escape(false),
+            let title = multi_title[lang].escape(false)
+            let prices = multi_prices[lang]
+            let _prices = []
+            for (let n = 0; n < prices.length; n += 2) {
+              _prices.push({
+                label: prices[Number(n) + 0].escape(false),
+                value: prices[Number(n) + 1].escape(false),
               })
             }
-            let _props = props[lang]
-            let __props = []
-            for (let n = 0; n < _props.length; n += 2) {
-              __props.push({
-                label: _props[Number(n) + 0].escape(false),
-                value: _props[Number(n) + 1].escape(false),
+            let props = multi_props[lang]
+            let _props = []
+            for (let n = 0; n < props.length; n += 2) {
+              _props.push({
+                label: props[Number(n) + 0].escape(false),
+                value: props[Number(n) + 1].escape(false),
               })
             }
-            title = _title
-            prices = __prices
-            props = __props
+            prices = _prices
+            props = _props
             products[lang].push({
               id, cid, title, images, prices, props, sort
             })
