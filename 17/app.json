@@ -1,5 +1,6 @@
 {
   "pages": [
+    "pages/test-json/test-json",
     "pages/client/products/products",
     "pages/client/product/product",
     "pages/categorys/categorys",

@@ -1,0 +1,55 @@
+<import src="/templates/loading/loading.wxml" />
+<template is="loading" data="{{...loading}}" />
+
+<view class="shop" wx:if="{{ready}}">
+  <view class="shop-logo" catchtap="onShopLogoTap">
+    <image src="{{shop.logo}}" mode="aspectFit" />
+  </view>
+
+  <view class="shop-name">
+    <input value="{{shop.name}}" placeholder="输入店铺名称" bindblur="onShopNameBlur" cursor-spacing="10" />
+  </view>
+
+  <view class="gap"></view>
+
+  <view class="rows">
+    <view class="row">
+      <view class="row-icon">
+        <image src="/images/icon/phone.png" />
+      </view>
+      <view class="row-value shop-phone">
+        <input value="{{shop.phone}}" placeholder="输入联系电话" bindblur="onShopPhoneBlur" cursor-spacing="10" />
+      </view>
+    </view>
+
+    <view class="row">
+      <view class="row-icon">
+        <image src="/images/icon/address.png" />
+      </view>
+      <view class="row-value shop-address">
+        <input value="{{shop.address}}" placeholder="输入店铺地址" bindblur="onShopAddressBlur" cursor-spacing="10" />
+      </view>
+    </view>
+
+    <view class="row" catchtap="onManagementTap">
+      <view class="row-icon">
+        <image src="/images/icon/products.png" />
+      </view>
+      <view class="row-value shop-product-management">商品管理</view>
+      <view class="row-icon">
+        <image src="/images/icon/enter.png" />
+      </view>
+    </view>
+
+    <view class="row" catchtap="onShopTap">
+      <view class="row-icon">
+        <image src="/images/icon/home.png" />
+      </view>
+      <view class="row-value shop-home">店铺浏览</view>
+      <view class="row-icon">
+        <image src="/images/icon/enter.png" />
+      </view>
+    </view>
+  </view>
+
+</view>

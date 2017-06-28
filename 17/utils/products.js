@@ -50,26 +50,26 @@ function getProductsFromServer(cid) {
           let cid = product.cid
           let sort = product.sort
           let images = JSON.parse(product.images)
-          let multi_title = product.title.json()
-          let multi_prices = product.prices.json()
-          let multi_props = product.props.json()
+          let multi_title = JSON.parse(product.title)
+          let multi_prices = JSON.parse(product.prices)
+          let multi_props = JSON.parse(product.props)
           for (let lang in multi_title) {
             if (!products[lang]) products[lang] = []
-            let title = multi_title[lang]
+            let title = multi_title[lang].escape(false)
             let prices = multi_prices[lang]
             let _prices = []
             for (let n = 0; n < prices.length; n += 2) {
               _prices.push({
-                label: prices[Number(n) + 0],
-                value: prices[Number(n) + 1],
+                label: prices[Number(n) + 0].escape(false),
+                value: prices[Number(n) + 1].escape(false),
               })
             }
             let props = multi_props[lang]
             let _props = []
             for (let n = 0; n < props.length; n += 2) {
               _props.push({
-                label: props[Number(n) + 0],
-                value: props[Number(n) + 1],
+                label: props[Number(n) + 0].escape(false),
+                value: props[Number(n) + 1].escape(false),
               })
             }
             prices = _prices
@@ -148,10 +148,18 @@ function set(product, cb) {
     let id = product.id
     let cid = product.cid
     let sort = product.sort
-    let title = product.title
+    let title = product.title.escape()
     let images = product.images
     let prices = product.prices
+    for (let i in prices) {
+      prices[i].label = prices[i].label.escape()
+      prices[i].value = prices[i].value.escape()
+    }
     let props = product.props
+    for (let i in props) {
+      props[i].label = props[i].label.escape()
+      props[i].value = props[i].value.escape()
+    }
 
     /**
      * 控制一下单种语言下各属性的长度，免得撑破数据库设计的字段长度

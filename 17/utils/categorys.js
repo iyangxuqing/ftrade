@@ -37,10 +37,16 @@ function getCategorysFromServer() {
           let pid = category.pid
           let thumb = category.thumb
           let sort = category.sort
-          let titles = category.title.json()
+          let titles = JSON.parse(category.title)
           for (let lang in titles) {
             if (!_cates[lang]) _cates[lang] = []
-            let title = titles[lang]
+            /**
+             * 用户输入的数据，可能包含单引号、双引号、反斜杠、换行符等，
+             * 这些字符会使sql语句执行错误，或者使json转换发生错误，
+             * 因此在送去服务器前会它们进行转义，数据库保存的是转义后的字符，
+             * 从服务器读取到数据后，则需要反转义来正确显示其本来的面目。
+             */
+            let title = titles[lang].escape(false)
             _cates[lang].push({ id, pid, title, thumb, sort })
           }
         }
@@ -154,7 +160,8 @@ function add(cate, cb) {
         pid: cate.pid,
         lang: cate.lang,
         sort: cate.sort,
-        title: cate.title
+        /* 对输入中的单引号、双引号、反斜杠、换行符进行转义 */
+        title: cate.title.escape()
       }
     }).then(function (res) {
       cb && cb(cates)
@@ -201,7 +208,7 @@ function setTitle(cate, cb) {
         id: cate.id,
         pid: cate.pid,
         lang: cate.lang,
-        title: cate.title
+        title: cate.title.escape()
       }
     }).then(function (res) {
       cb && cb(cates)
