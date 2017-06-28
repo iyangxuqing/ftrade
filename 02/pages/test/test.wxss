@@ -1,5 +1,0 @@
-.test{
-  padding: 20rpx;
-  text-align: center;
-  border: 1px solid #ccc;
-}

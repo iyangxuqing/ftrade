@@ -116,26 +116,25 @@ function set(product, cb) {
    */
   let products = getProductsSync(cid, lang)
 
-  let url = ''
-  if (!id) {
+  let index = -1
+  for (let i in products) {
+    if (products[i].id == id) {
+      index = i
+      break
+    }
+  }
+
+  if (index < 0) {
     let max = -1
     for (let i in products) {
       if (Number(products[i].sort) > max) {
         max = Number(products[i].sort)
       }
     }
-    product.id = Date.now()
     product.sort = max + 1
     products.push(product)
-    url = '_ftrade/product.php?m=add'
   } else {
-    for (let i in products) {
-      if (products[i].id == id) {
-        products[i] = product
-        break
-      }
-    }
-    url = '_ftrade/product.php?m=set'
+        products[index] = product
   }
 
   let Products = wx.getStorageSync('localProducts')
@@ -152,10 +151,7 @@ function set(product, cb) {
     let images = product.images
     let prices = product.prices
     let props = product.props
-
-    /**
-     * 控制一下单种语言下各属性的长度，免得撑破数据库设计的字段长度
-     */
+    // 控制一下单种语言下各属性的长度，免得撑破数据库设计的字段长度
     if (title.length > 20) {
       title = title.substr(0, 20)
     }
@@ -170,7 +166,7 @@ function set(product, cb) {
     }
 
     http.get({
-      url: url,
+      url: '_ftrade/product.php?m=set',
       data: { id, cid, title, images, prices, props, sort, lang }
     }).then(function (res) {
       cb && cb(res)

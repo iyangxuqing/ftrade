@@ -1,5 +1,0 @@
-<view class="test" catchtap="onTestTap">test</view>
-
-<view class="image" style="height:240px">
-  <image src="{{image}}" />
-</view>

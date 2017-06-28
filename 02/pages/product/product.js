@@ -83,23 +83,20 @@ Page({
       sizeType: ['compressed'],
       success: function (res) {
         var tempFilePaths = res.tempFilePaths
-        let images = this.data.product.images
+        let product = this.data.product
+        let images = product.images
         images.push(tempFilePaths[0])
+        let index = images.length - 1
         this.setData({
           'product.images': images
         })
-        http.upload({
-          paths: tempFilePaths
-        }).then(function (res) {
-          for (let i in images) {
-            if (images[i] == res.uploadedFiles[0].source) {
-              images[i] = res.uploadedFiles[0].target
-              this.data.product.images[i] = images[i]
-              break
-            }
-          }
-          hasChanged = true
+        http.cosUpload({
+          source: tempFilePaths[0],
+          target: product.id + '_' + index + '.jpg'
+        }).then(function (picUrl) {
+          this.data.product.images[index] = picUrl
         }.bind(this))
+        hasChanged = true
       }.bind(this),
     })
   },
@@ -118,23 +115,19 @@ Page({
       sizeType: ['compressed'],
       success: function (res) {
         var tempFilePaths = res.tempFilePaths
-        let images = this.data.product.images
+        let product = this.data.product
+        let images = product.images
         images[index] = tempFilePaths[0]
         this.setData({
           'product.images': images
         })
-        http.upload({
-          paths: tempFilePaths
-        }).then(function (res) {
-          for (let i in images) {
-            if (images[i] == res.uploadedFiles[0].source) {
-              images[i] = res.uploadedFiles[0].target
-              this.data.product.images[i] = images[i]
-              break
-            }
-          }
-          hasChanged = true
+        http.cosUpload({
+          source: tempFilePaths[0],
+          target: product.id + '_' + index + '.jpg'
+        }).then(function (picUrl) {
+          this.data.product.images[index] = picUrl
         }.bind(this))
+        hasChanged = true
       }.bind(this)
     })
   },
@@ -343,7 +336,11 @@ Page({
       prices: [],
       props: []
     }
-    if (id) product = Product.getProduct(id, cid, 'zh')
+    if (id) {
+      product = Product.getProduct(id, cid, 'zh')
+    } else {
+      product.id = Date.now()
+    }
     let platform = wx.getSystemInfoSync().platform
     this.setData({
       ready: true,
