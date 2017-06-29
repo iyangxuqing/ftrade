@@ -132,46 +132,67 @@ function upload(options) {
 
 function cosUpload(options) {
   return new Promise(function (resolve, reject) {
-    let filePath = options.source
-    let filename = 'ftrade/' + config.sid + '/' + options.target
+    let source = options.source
+    let target = config.sid + '/' + options.target
     http.get({
       url: '_ftrade/cos.php?m=signature',
-      data: {
-        filename: filename
-      }
+      data: { filename: target }
     }).then(function (res) {
       let url = res.url
       let sign = res.multi_signature
       wx.uploadFile({
         url: url,
         name: 'filecontent',
-        filePath: filePath,
+        filePath: source,
         header: {
           Authorization: sign,
-          'sid': config.sid,
-          'version': config.version,
-          'token': wx.getStorageSync('token')
         },
         formData: {
           op: 'upload',
           insertOnly: 0,
         },
         success: function (res) {
-          if (res.statusCode == 200) {
+          if (res.statusCode === 200) {
             let data = JSON.parse(res.data)
             if (data.message && data.message == 'SUCCESS') {
-              let url = data.data.url
-              let access_url = data.data.access_url
-              let source_url = data.data.source_url
-              let resource_path = data.data.resource_path
-              let picUrl = config.picUrl + filename
-              resolve(picUrl)
+              let host = config.youImage.host
+              let mode = config.youImage.mode_w300
+              let url = host + target + mode
+              resolve({ url, target, mode, errno: 0, error: '' })
             }
           }
         },
-        fail: function (res) {
-          reject(res)
-        }
+      })
+    })
+  })
+}
+
+function cosDelete(options) {
+  return new Promise(function (resolve, reject) {
+    http.get({
+      url: '_ftrade/cos.php?m=signature',
+      data: {
+        filename: options.filename
+      }
+    }).then(function (res) {
+      let url = res.url
+      let sign = res.once_signature
+      wx.request({
+        url: url,
+        header: {
+          'Content-Type': 'application/json',
+          'Authorization': sign,
+        },
+        method: 'POST',
+        data: { op: "delete" },
+        success: function (res) {
+          if (res.statusCode === 200) {
+            let data = res.data
+            if (data.message && data.message === 'SUCCESS') {
+              resolve({ errno: 0, error: '' })
+            }
+          }
+        },
       })
     })
   })
@@ -227,5 +248,6 @@ export var http = {
   post: post,
   upload: upload,
   cosUpload: cosUpload,
+  cosDelete: cosDelete,
   ossUpload: ossUpload,
 };

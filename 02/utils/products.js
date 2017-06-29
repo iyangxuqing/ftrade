@@ -1,3 +1,4 @@
+let config = require('config.js')
 import { http } from 'http.js'
 
 function getProducts(cid, lang = 'zh', cache = false) {
@@ -50,6 +51,9 @@ function getProductsFromServer(cid) {
           let cid = product.cid
           let sort = product.sort
           let images = JSON.parse(product.images)
+          for (let i in images) {
+            
+          }
           let multi_title = product.title.json()
           let multi_prices = product.prices.json()
           let multi_props = product.props.json()
@@ -123,7 +127,6 @@ function set(product, cb) {
       break
     }
   }
-
   if (index < 0) {
     let max = -1
     for (let i in products) {
@@ -134,7 +137,7 @@ function set(product, cb) {
     product.sort = max + 1
     products.push(product)
   } else {
-        products[index] = product
+    products[index] = product
   }
 
   let Products = wx.getStorageSync('localProducts')
@@ -155,7 +158,8 @@ function set(product, cb) {
     if (title.length > 20) {
       title = title.substr(0, 20)
     }
-    while (JSON.stringify(images).length >= 500) {
+
+    while (JSON.stringify(images).length >= 1000) {
       images.pop()
     }
     while (JSON.stringify(prices).length >= 200) {

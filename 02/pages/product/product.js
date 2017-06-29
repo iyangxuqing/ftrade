@@ -9,7 +9,6 @@ var delImageShowTimer = null
 var hasChanged = false
 
 Page({
-
   data: {
     product: {
       id: '',
@@ -74,33 +73,6 @@ Page({
     })
   },
 
-  onImageAdd: function (e) {
-    this.setData({
-      delImageIndex: -1
-    })
-    wx.chooseImage({
-      count: 1,
-      sizeType: ['compressed'],
-      success: function (res) {
-        var tempFilePaths = res.tempFilePaths
-        let product = this.data.product
-        let images = product.images
-        images.push(tempFilePaths[0])
-        let index = images.length - 1
-        this.setData({
-          'product.images': images
-        })
-        http.cosUpload({
-          source: tempFilePaths[0],
-          target: product.id + '_' + index + '.jpg'
-        }).then(function (picUrl) {
-          this.data.product.images[index] = picUrl
-        }.bind(this))
-        hasChanged = true
-      }.bind(this),
-    })
-  },
-
   onImageTap: function (e) {
     if (imageLongTap) {
       imageLongTap = false
@@ -117,15 +89,24 @@ Page({
         var tempFilePaths = res.tempFilePaths
         let product = this.data.product
         let images = product.images
-        images[index] = tempFilePaths[0]
-        this.setData({
-          'product.images': images
-        })
+        if (index == -1) {
+          index = product.images.length
+        }
+        // images[index] = tempFilePaths[0]
+        // this.setData({
+        //   'product.images': images
+        // })
         http.cosUpload({
           source: tempFilePaths[0],
-          target: product.id + '_' + index + '.jpg'
-        }).then(function (picUrl) {
-          this.data.product.images[index] = picUrl
+          target: Date.now() + '.jpg'
+        }).then(function (res) {
+          if (res.errno === 0) {
+            console.log(res.url)
+            images[index] = res.url
+            this.setData({
+              'product.images': images
+            })
+          }
         }.bind(this))
         hasChanged = true
       }.bind(this)
@@ -149,6 +130,14 @@ Page({
   onImageDel: function (e) {
     let index = e.currentTarget.dataset.index
     let images = this.data.product.images
+    let image = images[index]
+    image = image.split('?')[0]
+    image = image.split('.com/')[1]
+    let filename = image
+    http.cosDelete({ filename }).then(function (res) {
+      console.log(res)
+    })
+
     images.splice(index, 1)
     this.setData({
       delImageIndex: -1,
@@ -334,7 +323,7 @@ Page({
       cid: cid,
       images: [],
       prices: [],
-      props: []
+      props: [],
     }
     if (id) {
       product = Product.getProduct(id, cid, 'zh')
