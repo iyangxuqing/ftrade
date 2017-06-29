@@ -92,23 +92,20 @@ Page({
         if (index == -1) {
           index = product.images.length
         }
-        // images[index] = tempFilePaths[0]
-        // this.setData({
-        //   'product.images': images
-        // })
+        this.loading.show()
         http.cosUpload({
           source: tempFilePaths[0],
           target: Date.now() + '.jpg'
         }).then(function (res) {
           if (res.errno === 0) {
-            console.log(res.url)
             images[index] = res.url
             this.setData({
               'product.images': images
             })
+            hasChanged = true
+            this.loading.hide()
           }
         }.bind(this))
-        hasChanged = true
       }.bind(this)
     })
   },
@@ -130,20 +127,19 @@ Page({
   onImageDel: function (e) {
     let index = e.currentTarget.dataset.index
     let images = this.data.product.images
-    let image = images[index]
-    image = image.split('?')[0]
-    image = image.split('.com/')[1]
-    let filename = image
-    http.cosDelete({ filename }).then(function (res) {
-      console.log(res)
-    })
-
     images.splice(index, 1)
     this.setData({
       delImageIndex: -1,
       'product.images': images,
     })
     hasChanged = true
+
+    // let filename = images[index]
+    // filename = filename.split('?')[0]
+    // filename = filename.split('.com/')[1]
+    // http.cosDelete({ filename }).then(function (res) {
+    //   console.log(res)
+    // })
   },
 
   onTitleBlur: function (e) {
@@ -244,13 +240,13 @@ Page({
     let oldValue = editor.value
     if (!value || value == oldValue) return
 
-    if (type == 'title') {
-      this.setData({
-        'product.title': value
-      })
-      hasChanged = true
-      return
-    }
+    // if (type == 'title') {
+    //   this.setData({
+    //     'product.title': value
+    //   })
+    //   hasChanged = true
+    //   return
+    // }
 
     let product = this.data.product
     if (index < 0) {
@@ -357,6 +353,7 @@ Page({
    * 生命周期函数--监听页面隐藏
    */
   onHide: function (e) {
+    this.loading.hide()
   },
 
   /**

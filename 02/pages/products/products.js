@@ -129,6 +129,7 @@ Page({
   },
 
   onProductsUpdate: function (products, product) {
+    console.log('aaa', products)
     this.setData({
       products: products
     })

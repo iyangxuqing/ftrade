@@ -198,56 +198,10 @@ function cosDelete(options) {
   })
 }
 
-function ossUpload(options) {
-  return new Promise(function (resolve, reject) {
-    let dir = options.dir
-    let filePath = options.sourcePath
-    let targetPath = options.targetPath
-    http.get({
-      url: '_ftrade/oss.php?m=postObject',
-      data: {
-        dir: 'ftrade/',
-        file: targetPath,
-      }
-    }).then(function (res) {
-      if (res.signature) {
-        let url = res.host
-        let key = res.dir + targetPath
-        let OSSAccessKeyId = res.accessid
-        let policy = res.policy
-        let signature = res.signature
-        wx.uploadFile({
-          url: url,
-          name: 'file',
-          filePath: filePath,
-          formData: {
-            key,
-            policy,
-            signature,
-            OSSAccessKeyId,
-          },
-          success: function (res) {
-            if (res.statusCode && res.statusCode == 204) {
-              resolve({
-                sourcePath: filePath,
-                targetPath: url + "/" + key,
-              })
-            }
-          },
-          fail: function (res) {
-            reject(res)
-          }
-        })
-      }
-    })
-  })
-}
-
 export var http = {
   get: get,
   post: post,
   upload: upload,
   cosUpload: cosUpload,
   cosDelete: cosDelete,
-  ossUpload: ossUpload,
 };

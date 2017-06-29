@@ -52,7 +52,7 @@ function getProductsFromServer(cid) {
           let sort = product.sort
           let images = JSON.parse(product.images)
           for (let i in images) {
-            
+            images[i] = images[i] + config.youImage.mode_w300
           }
           let multi_title = product.title.json()
           let multi_prices = product.prices.json()
@@ -151,7 +151,12 @@ function set(product, cb) {
     let cid = product.cid
     let sort = product.sort
     let title = product.title
-    let images = product.images
+    let images = []
+    let mode = config.youImage.mode_w300
+    for (let i in product.images) {
+      let image = product.images[i].replace(mode, '')
+      images.push(image)
+    }
     let prices = product.prices
     let props = product.props
     // 控制一下单种语言下各属性的长度，免得撑破数据库设计的字段长度
@@ -159,7 +164,7 @@ function set(product, cb) {
       title = title.substr(0, 20)
     }
 
-    while (JSON.stringify(images).length >= 1000) {
+    while (JSON.stringify(images).length >= 500) {
       images.pop()
     }
     while (JSON.stringify(prices).length >= 200) {
@@ -168,6 +173,8 @@ function set(product, cb) {
     while (JSON.stringify(props).length >= 500) {
       props.pop()
     }
+
+    console.log(product)
 
     http.get({
       url: '_ftrade/product.php?m=set',
