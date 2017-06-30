@@ -1,0 +1,199 @@
+@import '/templates/loading/loading.wxss';
+
+page {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  padding: 0;
+  margin: 0;
+}
+
+.container {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.page {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.page.left-open {
+  transform: translate3d(500rpx, 0, 0);
+}
+
+.page-mask {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1000;
+}
+
+.page-header {
+  flex-shrink: 0;
+  width: 100%;
+}
+
+.page-content {
+  flex-grow: 1;
+  width: 100%;
+  height: 100%;
+  padding-left: 40rpx;
+  padding-right: 40rpx;
+  overflow: hidden;
+  overflow-y: auto;
+}
+
+.page-header-1 {
+  display: flex;
+  padding-right: 40rpx;
+  border-top: 1px solid #ccc;
+  border-bottom: 1px solid #ccc;
+}
+
+.page-header-2 {
+  min-height: 148rpx;
+  padding: 10rpx 20rpx 10rpx 40rpx;
+  border-bottom: 1px solid #ccc;
+}
+
+.menu-trigger {
+  flex-shrink: 0;
+  width: 100rpx;
+  height: 100rpx;
+  padding: 20rpx;
+  margin-left: -10rpx;
+}
+
+.categorys-level1 {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 100rpx;
+  overflow: hidden;
+  overflow-x: auto;
+}
+
+.categorys-level2 {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+}
+
+.category-level1 {
+  flex-shrink: 0;
+  min-width: 100rpx;
+  line-height: 100rpx;
+  padding-right: 40rpx;
+  color: #111;
+}
+
+.category-level2 {
+  min-width: 100rpx;
+  line-height: 64rpx;
+  padding-right: 40rpx;
+  font-size: 0.85rem;
+  color: #333;
+}
+
+.active {
+  color: blue;
+}
+
+.products {
+  display: flex;
+  flex-wrap: wrap;
+  padding-top: 40rpx;
+  padding-bottom: 40rpx;
+}
+
+.product {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  width: 200rpx;
+}
+
+.product:nth-of-type(3n+2) {
+  margin-left: 35rpx;
+  margin-right: 35rpx;
+}
+
+.line {
+  width: 100%;
+  height: 60rpx;
+  display: block;
+  margin-top: 20rpx;
+  margin-bottom: 40rpx;
+  background-color: #eee;
+}
+
+.product-image {
+  width: 200rpx;
+  height: 200rpx;
+  background-image: url(http://yixing01-images.stor.sinaapp.com/public/image.png);
+  background-size: 80%;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.product-title {
+  height: 60rpx;
+  line-height: 60rpx;
+  text-align: center;
+  font-size: 0.85em;
+  color: #333;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.ara .product-title {
+  display: flex;
+  flex-direction: row-reverse;
+}
+
+.empty {
+  padding-top: 20rpx;
+  font-size: 0.85rem;
+  color: #666;
+}
+
+/* popup */
+
+.popup {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 500rpx;
+  height: 100%;
+  background-color: #eee;
+  transition: all 0.3s ease;
+  transform: translate3d(-500rpx, 0, 0);
+  z-index: 2001;
+}
+
+.popup.left-open {
+  transform: translate3d(0, 0, 0);
+}
+
+.languages {
+  padding: 100rpx 0;
+}
+
+.language {
+  padding: 20rpx 40rpx;
+}
+
+.admin {
+  padding: 20rpx 40rpx;
+  margin-top: 400rpx;
+}

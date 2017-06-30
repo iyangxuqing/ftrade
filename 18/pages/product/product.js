@@ -78,94 +78,34 @@ Page({
       imageLongTap = false
       return
     }
-
     this.setData({
       delImageIndex: -1
     })
-
     let index = e.currentTarget.dataset.index
-    let ctx = wx.createCanvasContext('canvas')
-    let canvasWidth = 300
-    let canvasHeight = 300
-
     wx.chooseImage({
       count: 1,
       sizeType: ['compressed'],
       success: function (res) {
-        let tempFilePath = res.tempFilePaths[0]
+        var tempFilePaths = res.tempFilePaths
         let product = this.data.product
         let images = product.images
         if (index == -1) {
           index = product.images.length
         }
-
-        let platform = wx.getSystemInfoSync().platform
-        if (platform === 'devtools') {
-          this.loading.show()
-          http.cosUpload({
-            source: tempFilePath,
-            target: Date.now() + '.jpg'
-          }).then(function (res) {
-            if (res.errno === 0) {
-              images[index] = res.url
-              this.setData({
-                'product.images': images
-              })
-              hasChanged = true
-              this.loading.hide()
-            }
-          }.bind(this))
-        } else {
-          wx.getImageInfo({
-            src: tempFilePath,
-            success: function (res) {
-              let x = 0
-              let y = 0
-              let width = res.width //原图宽
-              let height = res.height //原图高
-              let rate = width / canvasWidth //以宽为基准的缩放比例
-              let width2 = canvasWidth //校正后的宽
-              let height2 = height / rate //校正后的高
-              if (height2 >= canvasHeight) {
-                x = 0
-                y = (canvasHeight - height2) / 2
-              } else {
-                rate = height / canvasHeight //以高为基准的缩放比例
-                width2 = width / rate //校正后的宽
-                height2 = canvasHeight //校正后的高
-                x = (canvasWidth - width2) / 2
-                y = 0
-              }
-              ctx.drawImage(tempFilePath, x, y, width2, height2)
-              ctx.draw()
-              wx.canvasToTempFilePath({
-                canvasId: 'canvas',
-                x: 0,
-                y: 0,
-                width: canvasWidth,
-                height: canvasHeight,
-                destWidth: canvasWidth,
-                destHeight: canvasHeight,
-                success: function (res) {
-                  this.loading.show()
-                  http.cosUpload({
-                    source: res.tempFilePath,
-                    target: Date.now() + '.jpg'
-                  }).then(function (res) {
-                    if (res.errno === 0) {
-                      images[index] = res.url
-                      this.setData({
-                        'product.images': images
-                      })
-                      hasChanged = true
-                      this.loading.hide()
-                    }
-                  }.bind(this))
-                }.bind(this)
-              })
-            }.bind(this)
-          })
-        }
+        this.loading.show()
+        http.cosUpload({
+          source: tempFilePaths[0],
+          target: Date.now() + '.jpg'
+        }).then(function (res) {
+          if (res.errno === 0) {
+            images[index] = res.url
+            this.setData({
+              'product.images': images
+            })
+            hasChanged = true
+            this.loading.hide()
+          }
+        }.bind(this))
       }.bind(this)
     })
   },
@@ -197,7 +137,9 @@ Page({
     // let filename = images[index]
     // filename = filename.split('?')[0]
     // filename = filename.split('.com/')[1]
-    // http.cosDelete({ filename }).then(function(res){})
+    // http.cosDelete({ filename }).then(function (res) {
+    //   console.log(res)
+    // })
   },
 
   onTitleBlur: function (e) {
