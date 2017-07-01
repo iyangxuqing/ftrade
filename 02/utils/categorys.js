@@ -1,7 +1,7 @@
 import { http } from 'http.js'
 import { Product } from 'products.js'
 
-function getCategorys(lang = 'zh', cache = false) {
+function getCategorys(lang = 'zh', cache = true) {
   return new Promise(function (resolve, reject) {
     let cates = wx.getStorageSync('localCategorys') || {}
     if (cates[lang] && cache) {

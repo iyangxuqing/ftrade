@@ -1,11 +1,11 @@
 let config = require('config.js')
 import { http } from 'http.js'
 
-function getProducts(cid, lang = 'zh', cache = false) {
+function getProducts(cid, lang = 'zh', cache = true) {
   return new Promise(function (resolve, reject) {
     let products = wx.getStorageSync('localProducts') || {}
     if (products[lang] && products[lang]['_' + cid] && cache) {
-      resolve(products[lang][_cid])
+      resolve(products[lang]['_' + cid])
     } else {
       getProductsFromServer(cid).then(function (products) {
         /**
@@ -23,7 +23,12 @@ function getProducts(cid, lang = 'zh', cache = false) {
           if (!Products[lang]) Products[lang] = {}
           Products[lang]['_' + cid] = products[lang]
         }
+        console.log('77777777777777')
+        console.log(JSON.stringify(Products).length)
+
+        console.log(wx.getStorageInfoSync())
         wx.setStorageSync('localProducts', Products)
+        console.log('888888888888888')
         resolve(products[lang])
       })
     }
@@ -44,6 +49,7 @@ function getProductsFromServer(cid) {
       url: '_ftrade/product.php?m=get',
       data: { cid: cid }
     }).then(function (res) {
+      console.log(res)
       if (res.errno === 0) {
         for (let i in res.products) {
           let product = res.products[i]
@@ -85,6 +91,8 @@ function getProductsFromServer(cid) {
         }
         resolve(products)
       }
+    }).catch(function(res){
+      consloe.log(res)
     })
   })
 }
@@ -184,6 +192,19 @@ function set(product, cb) {
   /* server end */
 }
 
+function setImages(product, cb) {
+  /* server start */
+  if (getApp().user.role == 'admin') {
+    http.get({
+      url: '_ftrade/product.php?m=setImages',
+      data: product
+    }).then(function (res) {
+      cb && cb(res)
+    })
+  }
+  /* server end */
+}
+
 function del(product, cb) {
   let id = product.id
   let cid = product.cid
@@ -260,6 +281,8 @@ function sort(product, sourceIndex, targetIndex, cb) {
 export var Product = {
   getProducts: getProducts,
   getProduct: getProduct,
+  getProductsSync: getProductsSync,
+  setImages: setImages,
   set: set,
   del: del,
   sort: sort

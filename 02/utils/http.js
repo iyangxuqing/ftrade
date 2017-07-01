@@ -140,7 +140,6 @@ function cosUpload(options) {
     }).then(function (res) {
       let url = res.url
       let sign = res.multi_signature
-      console.log(url)
       wx.uploadFile({
         url: url,
         name: 'filecontent',
@@ -159,7 +158,13 @@ function cosUpload(options) {
               let host = config.youImage.host
               let mode = config.youImage.mode_w300
               let url = host + target + mode
-              resolve({ url, target, mode, errno: 0, error: '' })
+              resolve({
+                url,
+                mode,
+                target,
+                errno: 0,
+                error: '',
+              })
             }
           }
         },
