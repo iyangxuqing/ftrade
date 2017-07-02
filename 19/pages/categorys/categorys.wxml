@@ -28,7 +28,7 @@
 
 <template name="category-new">
   <view class="category category-new">
-    <view class="icon icon-left"></view>
+    <view class="thumb"></view>
     <view class="title title-value" data-pid="{{pid}}" catchtap="onCateAdd">{{placeholder}}</view>
   </view>
 </template>
@@ -37,11 +37,17 @@
   <view class="category" data-id="{{id}}" data-pid="{{pid}}" bindtouchstart="touchstart" bindtouchmove="touchmove" bindtouchend="touchend">
     <view class="category-inner {{swipeLeftId==id?'swipeleft':''}}">
       <view class="left">
-        <view class="icon icon-left {{expandId==id?'expanded':''}}">
-          <image wx:if="{{children}}" src="/images/icon/enter.png" data-id="{{id}}" catchtap="onCateExpand" />
+        <view class="thumb" data-id="{{id}}" data-pid="{{pid}}" catchtap="onThumbEdit">
+          <image src="{{thumb || '/images/icon/image.png'}}" />
         </view>
-        <view class="title" data-id="{{id}}" data-pid="{{pid}}" data-title="{{title}}" catchtap="onTitleEdit">{{title}}</view>
-        <view class="icon icon-right" wx:if="{{!children}}" data-id="{{id}}" data-pid="{{pid}}" catchtap="onNavProducts">
+        <view class="title">
+          <view class="title-value" data-id="{{id}}" data-pid="{{pid}}" data-title="{{title}}" catchtap="onTitleEdit">{{title}}</view>
+        </view>
+        <view class="icon" wx:if="{{children}}" data-id="{{id}}" catchtap="onCateExpand">
+          <image src="/images/icon/packup.png" wx:if="{{expand}}" />
+          <image src="/images/icon/unfold.png" wx:else />
+        </view>
+        <view class="icon" wx:if="{{!children}}" data-id="{{id}}" data-pid="{{pid}}" catchtap="onNavProducts">
           <image src="/images/icon/enter.png" />
         </view>
       </view>

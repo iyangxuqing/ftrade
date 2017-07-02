@@ -23,7 +23,6 @@ function getProducts(cid, lang = 'zh', cache = true) {
           if (!Products[lang]) Products[lang] = {}
           Products[lang]['_' + cid] = products[lang]
         }
-        getApp().products = Products
         resolve(products[lang])
       })
     }

@@ -242,7 +242,7 @@ Page({
    * 生命周期函数--监听页面隐藏
    */
   onHide: function () {
-    this.loading.hide()
+
   },
 
   /**
@@ -257,11 +257,13 @@ Page({
    */
   onPullDownRefresh: function () {
     if (getApp().user.role == 'admin') {
+      console.log(getApp().user)
       this.loading.show()
       Category.getCategorys('zh', false).then(function (res) {
         this.setData({
           cates: res
         })
+        wx.removeStorageSync('localProducts')
         wx.stopPullDownRefresh()
         this.loading.hide()
       }.bind(this))

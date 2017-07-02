@@ -1,0 +1,38 @@
+.toptip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 90rpx;
+  background-color: rgba(255, 0, 0, 0.8);
+  z-index: 1000;
+}
+
+.toptip {
+  transition: all 300ms ease;
+  transform: translate3d(0, -90rpx, 0);
+}
+
+.toptip.show {
+  transform: translate3d(0, 0, 0);
+}
+
+.toptip-title {
+  flex-grow: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+}
+
+.toptip-icon {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100rpx;
+  height: 100%;
+}

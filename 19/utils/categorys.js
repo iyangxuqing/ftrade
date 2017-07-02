@@ -3,7 +3,7 @@ import { Product } from 'products.js'
 
 function getCategorys(lang = 'zh', cache = true) {
   return new Promise(function (resolve, reject) {
-    let cates = getApp().cates || {}
+    let cates = wx.getStorageSync('localCategorys') || {}
     if (cates[lang] && cache) {
       resolve(cates[lang])
     } else {
@@ -16,7 +16,7 @@ function getCategorys(lang = 'zh', cache = true) {
          * null表示数据读取不到，不是有效数据。
          */
         if (!cates[lang]) cates[lang] = []
-        getApp().cates = cates
+        wx.setStorageSync('localCategorys', cates)
         resolve(cates[lang])
       })
     }
@@ -74,7 +74,7 @@ function getCategorysFromServer() {
  * 为了代码简化，可以使用getCategorysSync。
  */
 function getCategorysSync(lang = 'zh') {
-  let cates = getApp().cates
+  let cates = wx.getStorageSync('localCategorys')
   return cates[lang]
 }
 
@@ -106,7 +106,7 @@ function getCategory(id, lang = 'zh') {
  * cb为写服务器后调用的回调函数
  */
 function add(cate, cb) {
-  let Cates = getApp().cates
+  let Cates = wx.getStorageSync('localCategorys')
   if (!cate.lang) cate.lang = 'zh'
   let cates = Cates[cate.lang]
 
@@ -163,11 +163,12 @@ function add(cate, cb) {
   /* server end */
 
   Cates[cate.lang] = cates
+  wx.setStorageSync('localCategorys', Cates)
   return cates
 }
 
 function setTitle(cate, cb) {
-  let Cates = getApp().cates
+  let Cates = wx.getStorageSync('localCategorys')
   if (!cate.lang) cate.lang = 'zh'
   let cates = Cates[cate.lang]
 
@@ -209,7 +210,60 @@ function setTitle(cate, cb) {
   /* server end */
 
   Cates[cate.lang] = cates
+  wx.setStorageSync('localCategorys', Cates)
   return cates
+}
+
+function setThumb(cate, cb) {
+  return new Promise(function (resolve, reject) {
+    http.upload({
+      paths: new Array(cate.thumb)
+    }).then(function (res) {
+      cate.thumb = res.uploadedFiles[0].target
+      let Cates = wx.getStorageSync('localCategorys')
+      let lang = cate.lang || 'zh'
+      let cates = Cates[lang]
+      if (cate.pid == 0) {
+        for (let i in cates) {
+          if (cates[i].id == cate.id) {
+            cates[i].thumb = cate.thumb
+            break
+          }
+        }
+      } else {
+        for (let i in cates) {
+          if (cates[i].id == cate.pid) {
+            for (let j in cates[i].children) {
+              if (cates[i].children[j].id == cate.id) {
+                cates[i].children[j].thumb = cate.thumb
+                break
+              }
+            }
+            break;
+          }
+        }
+      }
+      Cates[lang] = cates
+      wx.setStorageSync('localCategorys', Cates)
+      resolve(cates)
+
+      /* server start */
+      if (getApp().user.role == 'admin') {
+        http.get({
+          url: '_ftrade/category.php?m=set',
+          data: {
+            id: cate.id,
+            pid: cate.pid,
+            thumb: cate.thumb
+          }
+        }).then(function (res) {
+          cb && cb(cates)
+        })
+      }
+      /* server end */
+
+    })
+  })
 }
 
 /**
@@ -222,7 +276,7 @@ function setTitle(cate, cb) {
  */
 function testDelete(cate) {
   return new Promise(function (resolve, reject) {
-    let Cates = getApp().cates
+    let Cates = wx.getStorageSync('localCategorys')
     let lang = cate.lang || 'zh'
     let cates = Cates[lang]
     if (cate.pid == 0) {
@@ -262,7 +316,7 @@ function testDelete(cate) {
 
 function del(cate) {
   return new Promise(function (resolve, reject) {
-    let Cates = getApp().cates
+    let Cates = wx.getStorageSync('localCategorys')
     let lang = cate.lang || 'zh'
     let cates = Cates[lang]
 
@@ -299,6 +353,7 @@ function del(cate) {
         }
         resolve(cates)
         Cates[lang] = cates
+        wx.setStorageSync('localCategorys', Cates)
       }
     })
 
@@ -324,7 +379,7 @@ function del(cate) {
 }
 
 function sort(cate, up = false) {
-  let Cates = getApp().cates
+  let Cates = wx.getStorageSync('localCategorys')
   let lang = cate.lang || 'zh'
   let cates = Cates[lang]
 
@@ -403,6 +458,7 @@ function sort(cate, up = false) {
   /* server end */
 
   Cates[lang] = cates
+  wx.setStorageSync('localCategorys', Cates)
   return cates
 }
 
@@ -410,6 +466,7 @@ export var Category = {
   getCategorys: getCategorys,
   getCategory: getCategory,
   setTitle: setTitle,
+  setThumb: setThumb,
   add: add,
   del: del,
   sort: sort,
