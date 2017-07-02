@@ -48,13 +48,66 @@ Page({
     })
   },
 
+  cosDel: function (youImages, productImages, index, cb) {
+    let self = this
+    let find = false
+    if (index >= youImages.length) {
+      cb && cb('end')
+      return
+    }
+    let name = youImages[index]
+    for (let j in productImages) {
+      let image = productImages[j]
+      if (image.indexOf(name) >= 0) {
+        find = true
+        break
+      }
+    }
+    if (find) {
+      console.log('used image', index, name)
+      self.cosDel(youImages, productImages, index + 1, cb)
+    } else {
+      try {
+        http.cosDelete({
+          filename: config.sid + '/' + name
+        }).then(function (res) {
+          console.log('delete unused image', index, name)
+          self.cosDel(youImages, productImages, index + 1, cb)
+        })
+      } catch(e){
+        console.log(e)
+      }
+    }
+  },
+
   /**
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
+    let youImages = []
+    let productImages = []
+    let self = this
     this.cosList({
       success: function (res) {
-        console.log(res)
+        for (let i in res) {
+          youImages.push(res[i].name)
+        }
+        http.get({
+          url: '_ftrade/product.php?m=getAll'
+        }).then(function (res) {
+          let products = res.products
+          for (let i in products) {
+            products[i].images = JSON.parse(products[i].images)
+            for (let j in products[i].images) {
+              productImages.push(products[i].images[j])
+            }
+          }
+          console.log(youImages.length)
+          console.log(productImages.length)
+          self.cosDel(youImages, productImages, 0, function (res) {
+            console.log(res)
+          })
+        })
       }
     })
   },
