@@ -4,19 +4,19 @@ import { Product } from '../../../utils/products.js'
 var Phrases = {
   navTitle: {
     'zh': '商品详情',
-    'en': 'Commodity details',
+    'en': 'Commodity Details',
     'ara': ' تفاصيل المنتج ',
     'kor': '상품 설명',
   },
   pricesTitle: {
     'zh': '批发价格',
-    'en': 'Wholesale price',
+    'en': 'Wholesale Price',
     'ara': ' سعر الجملة ',
     'kor': '도매 가격',
   },
   propsTitle: {
     'zh': '商品属性',
-    'en': 'Commodity attribute',
+    'en': 'Commodity Attribute',
     'ara': ' السلع صفة ',
     'kor': '상품 특성',
   }
@@ -24,9 +24,6 @@ var Phrases = {
 
 Page({
 
-  /**
-   * 页面的初始数据
-   */
   data: {
 
   },
@@ -110,7 +107,7 @@ Page({
    * 生命周期函数--监听页面隐藏
    */
   onHide: function () {
-
+    this.loading.hide()
   },
 
   /**

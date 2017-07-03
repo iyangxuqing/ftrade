@@ -54,14 +54,41 @@
   <!-- popup -->
 
   <view class="popup {{leftOpen}}" bindtouchstart="onPopupTouchStart" bindtouchmove="onPopupTouchMove" bindtouchend="onPopupTouchEnd">
-
-    <view class="languages">
-      <block wx:for="{{languages}}" wx:key="">
-        <view class="language" catchtap="onLanguageTap" data-id="{{index}}">{{item}}</view>
-      </block>
+    <view class="head">
+      <view class="shop-logo" catchlongtap="onAdminTap">
+        <image src="{{shop.logo||''}}" />
+      </view>
+      <view class="shop-name">
+        {{shop.name || '尹美饰品'}}
+      </view>
     </view>
 
-    <view class="admin" catchtap="onAdminTap">后台管理</view>
+    <view class="content">
+      <view class="languages">
+        <block wx:for="{{languages}}" wx:key="">
+          <view class="language {{language==index?'active':''}}" catchtap="onLanguageTap" data-id="{{index}}">{{item}}</view>
+        </block>
+      </view>
+    </view>
+
+    <view class="foot">
+      <view class="shop-contact">
+        <view class="icon">
+          <image src="/images/icon/phone.png" />
+        </view>
+        <view class="text">
+          {{shop.phone || '158-1234-5678'}}
+        </view>
+      </view>
+      <view class="shop-address">
+        <view class="icon">
+          <image src="/images/icon/home.png" />
+        </view>
+        <view class="text">
+          {{shop.address || '国际商贸城二区123456号'}}
+        </view>
+      </view>
+    </view>
 
   </view>
 

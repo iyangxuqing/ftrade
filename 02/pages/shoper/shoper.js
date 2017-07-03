@@ -1,4 +1,5 @@
 import { http } from '../../utils/http.js'
+import { Shop } from '../../utils/shop.js'
 import { Loading } from '../../templates/loading/loading.js'
 
 let hasChanged = false
@@ -17,17 +18,17 @@ Page({
       count: 1,
       sizeType: ['compressed'],
       success: function (res) {
-        var tempFilePaths = res.tempFilePaths
-        this.setData({
-          'shop.logo': tempFilePaths[0]
-        })
-        hasChanged = true
-        http.upload({
-          paths: tempFilePaths
+        var tempFilePath = res.tempFilePaths[0]
+        http.cosUpload({
+          source: tempFilePath,
+          target: 'images/shoplogo.png'
         }).then(function (res) {
-          let logo = res.uploadedFiles[0].target
-          this.data.shop.logo_remote = logo
+          let url = res.url
+          this.setData({
+            'shop.logo': url + "&t=" + Date.now()
+          })
         }.bind(this))
+        hasChanged = true
       }.bind(this)
     })
   },
@@ -78,71 +79,59 @@ Page({
     })
   },
 
-  onEditorBlur: function (e) {
-    let editor = this.data.editor
-    let type = editor.type
-    let value = e.detail.value
-    let oldValue = editor.value
+  // onEditorBlur: function (e) {
+  //   let editor = this.data.editor
+  //   let type = editor.type
+  //   let value = e.detail.value
+  //   let oldValue = editor.value
 
-    setTimeout(function () {
-      this.setData({
-        'editor.left': -1000,
-        'editor.focus': false,
-      })
-    }.bind(this), 0)
+  //   setTimeout(function () {
+  //     this.setData({
+  //       'editor.left': -1000,
+  //       'editor.focus': false,
+  //     })
+  //   }.bind(this), 0)
 
-    if (value == '' || value == oldValue) return
+  //   if (value == '' || value == oldValue) return
 
-    if (type == 'shop-name') {
-      this.setData({
-        'shop.name': value
-      })
-    }
-    if (type == 'shop-phone') {
-      this.setData({
-        'shop.phone': value
-      })
-    }
-    if (type == 'shop-address') {
-      this.setData({
-        'shop.address': value
-      })
-    }
-  },
+  //   if (type == 'shop-name') {
+  //     this.setData({
+  //       'shop.name': value
+  //     })
+  //   }
+  //   if (type == 'shop-phone') {
+  //     this.setData({
+  //       'shop.phone': value
+  //     })
+  //   }
+  //   if (type == 'shop-address') {
+  //     this.setData({
+  //       'shop.address': value
+  //     })
+  //   }
+  // },
 
   onLogin: function () {
     this.loadShop()
   },
 
-  loadShop: function (cb) {
+  loadShop: function () {
     this.loading.show()
-    http.get({
-      url: '_ftrade/shop.php?m=get'
-    }).then(function (res) {
-      if (res.errno === 0) {
-        let shop = res.shop || {}
-        if (!shop.mobile) shop.phone = getApp().user.mobile
-        this.setData({
-          shop: shop,
-          ready: true
-        })
-        this.loading.hide()
-        cb && cb(shop)
-      }
+    Shop.get().then(function (shop) {
+      this.setData({
+        shop: shop,
+        ready: true
+      })
+      this.loading.hide()
     }.bind(this))
   },
 
   saveShop: function (cb) {
     let shop = this.data.shop
-    if (shop.logo_remote) {
-      shop.logo = shop.logo_remote
-    }
-    delete shop.logo_remote
-    http.get({
-      url: '_ftrade/shop.php?m=set',
-      data: shop
-    }).then(function (res) {
-      cb && cb(res)
+    Shop.set(shop).then(function(){
+      let app = getApp()
+      app.shop = shop
+      app.listener.trigger('shopUpdate')
     })
   },
 

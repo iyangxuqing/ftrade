@@ -130,6 +130,12 @@ function upload(options) {
   })
 }
 
+/**
+ * options = {
+ *  source,
+ *  target
+ * }
+ */
 function cosUpload(options) {
   return new Promise(function (resolve, reject) {
     let source = options.source

@@ -8,8 +8,8 @@ App({
     this.login()
     this.listener = new Listener()
 
-    var language = wx.getStorageSync('language')
-    if (!language) wx.setStorageSync('language', 'en')
+    var language = wx.getStorageSync('language') || 'en'
+    this.language = language
     
   },
 

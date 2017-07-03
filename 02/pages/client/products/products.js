@@ -1,7 +1,7 @@
-import { Loading } from '../../../templates/loading/loading.js'
-
-import { Category } from '../../../utils/categorys.js'
+import { Shop } from '../../../utils/shop.js'
 import { Product } from '../../../utils/products.js'
+import { Category } from '../../../utils/categorys.js'
+import { Loading } from '../../../templates/loading/loading.js'
 
 var Phrases = {
   'languages': {
@@ -12,15 +12,9 @@ var Phrases = {
   },
   'productList': {
     'zh': '商品列表',
-    'en': 'Product list',
+    'en': 'Product List',
     'ara': ' قائمة المنتجات ',
     'kor': '상품 목록',
-  },
-  'productDetails': {
-    'zh': '商品详情',
-    'en': 'Commodity details',
-    'ara': ' تفاصيل المنتج ',
-    'kor': '상품 설명',
   },
   'categoryEmpty': {
     'zh': '该类目下没有子类目',
@@ -40,10 +34,8 @@ var touch = {}
 
 Page({
 
-  /**
-   * 页面的初始数据
-   */
   data: {
+    leftOpen: '',
     languages: Phrases['languages']
   },
 
@@ -149,10 +141,15 @@ Page({
       categoryEmpty: Phrases['categoryEmpty'][language],
       productEmpty: Phrases['productEmpty'][language],
     })
+    getApp().language = language
     wx.setStorageSync('language', language)
 
+    // Shop.get(language).then(function (shop) {
+    //   this.setData({ shop })
+    // }.bind(this))
+
     Category.getCategorys(language).then(function (cates) {
-      if(cates.length==0){
+      if (cates.length == 0) {
         cb && cb()
         return
       }
@@ -246,16 +243,27 @@ Page({
 
   },
 
+  onShopUpdate: function () {
+    let shop = getApp().shop
+    this.setData({ shop })
+  },
+
   /**
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
 
     getApp().listener.on('login', this.onLogin)
+    getApp().listener.on('shopUpdate', this.onShopUpdate)
+
     this.loading = new Loading()
     this.loading.show()
 
-    let language = wx.getStorageSync('language') || 'en'
+    Shop.get().then(function (shop) {
+      this.setData({ shop })
+    }.bind(this))
+
+    let language = getApp().language
     this.onLanguageChanged(language, function () {
       this.setData({ ready: true })
       this.loading.hide()
@@ -281,7 +289,7 @@ Page({
    * 生命周期函数--监听页面隐藏
    */
   onHide: function () {
-
+    this.loading.hide()
   },
 
   /**
@@ -312,16 +320,3 @@ Page({
 
   }
 })
-
-/* 数据传输 */
-/*
-  程序启动时，会有一个语言选择页面，当作程序封面页。
-  选择了语言后，会把语言选项保存在localStorage中，当作全局变量。
-  保存在localStorage中，也为了用户后续进入程序时，可以避开语言选择页面。
-  在开发初期由于语言选择页面还未接入，为方便开发在app.js中提供默认语言'en'。
-
-  程序启动时，会一次性读入类目数据，包括所有语言的数据。
-  除了下拉刷新外，此后不会再去读取类目数据了。
-  类目数据是程序架构关键，数据量也不大，如果读入不成功，程序就不再运行。
-
-*/
