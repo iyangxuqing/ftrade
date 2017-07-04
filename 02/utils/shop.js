@@ -12,11 +12,14 @@ function getShop(lang = 'zh') {
       }).then(function (res) {
         if (res.errno === 0) {
           let shop = res.shop || {}
-          let logo = shop.logo + config.youImage.mode_w300
-          let name = shop.name.json() || []
+          let name = shop.name || '[]'
+          name = name.json()
+          let logo = shop.logo
+          if(logo) logo = logo + config.youImage.mode_w300
           let phone = shop.phone
           if (!phone) phone = getApp().user.mobile
-          let address = shop.address.json() || []
+          let address = shop.address || '[]'
+          address = address.json()
           shop = {}
           for (let i in name) {
             shop[i] = {
