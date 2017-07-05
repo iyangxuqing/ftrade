@@ -1,12 +1,12 @@
 import { http } from '../../utils/http.js'
 import { Category } from '../../utils/categorys.js'
 import { Product } from '../../utils/products.js'
-import { Loading } from '../../templates/loading/loading.js'
 
-var touch = {}
-var imageLongTap = false
-var delImageShowTimer = null
-var hasChanged = false
+let touch = {}
+let imageLongTap = false
+let delImageShowTimer = null
+let hasChanged = false
+let app = getApp()
 
 Page({
   data: {
@@ -101,7 +101,6 @@ Page({
 
         let platform = wx.getSystemInfoSync().platform
         if (platform === 'devtools') {
-          this.loading.show()
           http.cosUpload({
             source: tempFilePath,
             target: Date.now() + '.jpg'
@@ -112,7 +111,6 @@ Page({
                 'product.images': images
               })
               hasChanged = true
-              this.loading.hide()
             }
           }.bind(this))
         } else {
@@ -147,7 +145,6 @@ Page({
                 destWidth: canvasWidth,
                 destHeight: canvasHeight,
                 success: function (res) {
-                  this.loading.show()
                   http.cosUpload({
                     source: res.tempFilePath,
                     target: Date.now() + '.jpg'
@@ -158,7 +155,6 @@ Page({
                         'product.images': images
                       })
                       hasChanged = true
-                      this.loading.hide()
                     }
                   }.bind(this))
                 }.bind(this)
@@ -370,8 +366,6 @@ Page({
   onLoad: function (options) {
     let id = options.id
     let cid = options.cid
-    this.loading = new Loading()
-    this.loading.show()
 
     let product = {
       cid: cid,
@@ -390,7 +384,6 @@ Page({
       product: product,
       platform: platform
     })
-    this.loading.hide()
   },
 
   /**
@@ -411,7 +404,7 @@ Page({
    * 生命周期函数--监听页面隐藏
    */
   onHide: function (e) {
-    this.loading.hide()
+
   },
 
   /**

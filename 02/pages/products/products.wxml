@@ -1,6 +1,3 @@
-<import src="/templates/loading/loading.wxml" />
-<template is="loading" data="{{...loading}}" />
-
 <view class="container" wx:if="{{ready}}">
 
   <view class="cate">

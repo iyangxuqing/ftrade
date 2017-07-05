@@ -34,7 +34,7 @@ function get(options) {
       },
       data: options.data,
       success: function (res) {
-        if (res.statusCode === 200 && res.errMsg === 'request:ok') {
+        if (res.statusCode == 200 && res.errMsg == 'request:ok') {
           if (res.data.errno === 0) {
             resolve(res.data)
           } else {
@@ -79,7 +79,7 @@ function post(options) {
       method: 'POST',
       data: options.data,
       success: function (res) {
-        if (res.statusCode === 200 && res.errMsg === 'request:ok') {
+        if (res.statusCode == 200 && res.errMsg == 'request:ok') {
           if (res.data.errno === 0) {
             resolve(res.data)
           } else {
@@ -106,43 +106,67 @@ function post(options) {
  */
 function cosUpload(options) {
   return new Promise(function (resolve, reject) {
+    let app = getApp()
+    if (app.net && !app.net.isConnected) {
+      app.toptip.show('当前没有网络连接')
+      reject('none net connected')
+    }
+
+    app.loading.show()
+    let timer = setTimeout(function () {
+      app.toptip.show('网络超时，请稍后重试')
+      app.loading.hide()
+      reject('time out')
+    }, 6000)
+
     let source = options.source
     let target = config.sid + '/' + options.target
     http.get({
       url: '_ftrade/cos.php?m=signature',
       data: { filename: target }
     }).then(function (res) {
-      let url = res.url
-      let sign = res.multi_signature
-      wx.uploadFile({
-        url: url,
-        name: 'filecontent',
-        filePath: source,
-        header: {
-          Authorization: sign,
-        },
-        formData: {
-          op: 'upload',
-          insertOnly: 0,
-        },
-        success: function (res) {
-          if (res.statusCode === 200) {
-            let data = JSON.parse(res.data)
-            if (data.message && data.message == 'SUCCESS') {
-              let host = config.youImage.host
-              let mode = config.youImage.mode_w300
-              let url = host + target + mode
-              resolve({
-                url,
-                mode,
-                target,
-                errno: 0,
-                error: '',
-              })
+      if (res.errno === 0) {
+        let url = res.url
+        let sign = res.multi_signature
+        wx.uploadFile({
+          url: url,
+          name: 'filecontent',
+          filePath: source,
+          header: {
+            Authorization: sign,
+          },
+          formData: {
+            op: 'upload',
+            insertOnly: 0,
+          },
+          success: function (res) {
+            if (res.statusCode == 200) {
+              let data = JSON.parse(res.data)
+              if (data.message && data.message == 'SUCCESS') {
+                let host = config.youImage.host
+                let mode = config.youImage.mode_w300
+                let url = host + target + mode
+                resolve({
+                  url,
+                  mode,
+                  target,
+                  errno: 0,
+                  error: '',
+                })
+              } else {
+                reject(res)
+              }
             }
+          },
+          fail: function (res) {
+            reject(res)
+          },
+          complete: function (res) {
+            app.loading.hide()
+            clearTimeout(timer)
           }
-        },
-      })
+        })
+      }
     })
   })
 }

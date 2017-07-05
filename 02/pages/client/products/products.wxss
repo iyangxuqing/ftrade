@@ -118,6 +118,7 @@ page {
   display: flex;
   flex-direction: column;
   width: 200rpx;
+  padding: 10rpx 0;
 }
 
 .product:nth-of-type(3n+2) {

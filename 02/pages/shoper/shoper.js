@@ -1,7 +1,7 @@
 import { http } from '../../utils/http.js'
 import { Shop } from '../../utils/shop.js'
-import { Loading } from '../../templates/loading/loading.js'
 
+let app = getApp()
 let hasChanged = false
 
 Page({
@@ -116,22 +116,18 @@ Page({
   },
 
   loadShop: function () {
-    this.loading.show()
     Shop.get().then(function (shop) {
       this.setData({
         shop: shop,
         ready: true
       })
-      this.loading.hide()
     }.bind(this))
   },
 
   saveShop: function (cb) {
     let shop = this.data.shop
-    Shop.set(shop).then(function(){
-      let app = getApp()
-      app.shop = shop
-      app.listener.trigger('shopUpdate')
+    Shop.set(shop).then(function () {
+      app.listener.trigger('shopUpdate', shop)
     })
   },
 
@@ -139,8 +135,7 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
-    this.loading = new Loading()
-    getApp().listener.on('login', this.onLogin)
+    app.listener.on('login', this.onLogin)
     let platform = wx.getSystemInfoSync().platform
     this.setData({ platform })
 

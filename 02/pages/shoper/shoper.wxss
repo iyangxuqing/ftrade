@@ -1,5 +1,3 @@
-@import '/templates/loading/loading.wxss';
-
 page {
   height: 100%;
 }

@@ -1,6 +1,3 @@
-<import src="/templates/loading/loading.wxml" />
-<template is="loading" data="{{...loading}}" />
-
 <canvas canvas-id="canvas" class="canvas" wx:if="{{platform!='devtools'}}"></canvas>
 
 <view class="product" wx:if="{{ready}}">

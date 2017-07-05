@@ -1,11 +1,11 @@
-import { Loading } from '../../templates/loading/loading.js'
 import { Category } from '../../utils/categorys.js'
 import { Product } from '../../utils/products.js'
 
-var touchPositionX = 0
-var touchPositionY = 0
-var productlongtap = false
-var productDeleteTimer = null
+let touchPositionX = 0
+let touchPositionY = 0
+let productlongtap = false
+let productDeleteTimer = null
+let app = getApp()
 
 Page({
 
@@ -139,19 +139,16 @@ Page({
    */
   onLoad: function (options) {
     getApp().listener.on('products', this.onProductsUpdate)
-    this.loading = new Loading()
 
     let cid = options.cid
     let cate = Category.getCategory(cid)
     this.setData({ cate })
 
-    this.loading.show()
     Product.getProducts(cid).then(function (products) {
       this.setData({
         products,
         ready: true,
       })
-      this.loading.hide()
     }.bind(this))
   },
 
@@ -173,7 +170,7 @@ Page({
    * 生命周期函数--监听页面隐藏
    */
   onHide: function () {
-    this.loading.hide()
+
   },
 
   /**

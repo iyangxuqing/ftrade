@@ -1,6 +1,3 @@
-<import src="/templates/loading/loading.wxml" />
-<template is="loading" data="{{...loading}}" />
-
 <view class="shop" wx:if="{{ready}}">
   <view class="shop-logo" catchtap="onShopLogoTap">
     <image src="{{shop.logo}}" mode="aspectFit" />

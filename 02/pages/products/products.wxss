@@ -1,5 +1,3 @@
-@import '/templates/loading/loading.wxss';
-
 .cate {
   margin-bottom: 20rpx;
 }
@@ -15,12 +13,10 @@
   display: flex;
   flex-wrap: wrap;
   position: relative;
-  /*margin-left: -10rpx;*//*margin-right: -10rpx;*/
   padding-bottom: 200rpx;
 }
 
 .product {
-  /*width: 220rpx;*/
   width: 200rpx;
   display: flex;
   flex-direction: column;

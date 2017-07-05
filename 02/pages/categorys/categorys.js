@@ -1,8 +1,7 @@
-import { Loading } from '../../templates/loading/loading.js'
 import { Category } from '../../utils/categorys.js'
 
 let touch = {}
-let cateLongTap = false
+let app = getApp()
 
 Page({
 
@@ -64,11 +63,6 @@ Page({
   },
 
   onCateTap: function (e) {
-    if (cateLongTap) {
-      cateLongTap = false
-      return
-    }
-
     let id = e.currentTarget.dataset.id
     let pid = e.currentTarget.dataset.pid
     if (pid == 0) {
@@ -85,31 +79,6 @@ Page({
         url: '../products/products?cid=' + id
       })
     }
-  },
-
-  onCateLongTap: function (e) {
-    cateLongTap = true
-    if (this.data.editor.left >= 0) {
-      this.setData({
-        'editor.left': -1000,
-        'editor.focus': false,
-      })
-      return
-    }
-    let id = e.currentTarget.dataset.id
-    let pid = e.currentTarget.dataset.pid
-    let title = e.currentTarget.dataset.title
-    let top = e.currentTarget.offsetTop
-    let left = e.currentTarget.offsetLeft
-    this.setData({
-      editor: {
-        top: top,
-        left: left,
-        focus: true,
-        placeholder: '类目名称不可为空',
-        data: { id, pid, value: title }
-      }
-    })
   },
 
   onCateAdd: function (e) {
@@ -131,6 +100,30 @@ Page({
         focus: true,
         placeholder: placeholder,
         data: { pid }
+      }
+    })
+  },
+
+  onTitleTap: function (e) {
+    if (this.data.editor.left >= 0) {
+      this.setData({
+        'editor.left': -1000,
+        'editor.focus': false,
+      })
+      return
+    }
+    let id = e.currentTarget.dataset.id
+    let pid = e.currentTarget.dataset.pid
+    let title = e.currentTarget.dataset.title
+    let top = e.currentTarget.offsetTop
+    let left = e.currentTarget.offsetLeft
+    this.setData({
+      editor: {
+        top: top,
+        left: left,
+        focus: true,
+        placeholder: '类目名称不可为空',
+        data: { id, pid, value: title }
       }
     })
   },
@@ -203,9 +196,6 @@ Page({
   */
   onLoad: function (options) {
 
-    this.loading = new Loading()
-    this.loading.show()
-
     let platform = wx.getSystemInfoSync().platform
     this.setData({ platform })
 
@@ -214,7 +204,6 @@ Page({
         cates: cates,
         ready: true,
       })
-      this.loading.hide()
     }.bind(this))
   },
 
@@ -236,7 +225,7 @@ Page({
    * 生命周期函数--监听页面隐藏
    */
   onHide: function () {
-    this.loading.hide()
+
   },
 
   /**
@@ -250,14 +239,12 @@ Page({
    * 页面相关事件处理函数--监听用户下拉动作
    */
   onPullDownRefresh: function () {
-    if (getApp().user.role == 'admin') {
-      this.loading.show()
+    if (app.user.role == 'admin') {
       Category.getCategorys('zh', false).then(function (res) {
         this.setData({
           cates: res
         })
         wx.stopPullDownRefresh()
-        this.loading.hide()
       }.bind(this))
     } else {
       setTimeout(function () {
