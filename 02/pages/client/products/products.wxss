@@ -1,5 +1,3 @@
-@import '/templates/loading/loading.wxss';
-
 page {
   position: relative;
   width: 100%;
@@ -193,6 +191,10 @@ page {
   flex-direction: column;
   align-items: center;
   background-color: #e8e8e8;
+}
+
+.head.adminActive{
+  background-color: #dddddd;
 }
 
 .content {

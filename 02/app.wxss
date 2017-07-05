@@ -1,3 +1,6 @@
+@import '/templates/toptip/toptip.wxss';
+@import '/templates/loading/loading.wxss';
+
 page {
   padding-left: 40rpx;
   padding-right: 40rpx;

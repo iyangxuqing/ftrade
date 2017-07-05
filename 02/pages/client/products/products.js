@@ -1,9 +1,11 @@
 import { Shop } from '../../../utils/shop.js'
 import { Product } from '../../../utils/products.js'
 import { Category } from '../../../utils/categorys.js'
-import { Loading } from '../../../templates/loading/loading.js'
 
-var Phrases = {
+let touch = {}
+let app = getApp()
+
+let Phrases = {
   'languages': {
     'zh': '中文',
     'en': 'English',
@@ -29,8 +31,6 @@ var Phrases = {
     'kor': '이 类目 다음 없는 상품',
   },
 }
-
-var touch = {}
 
 Page({
 
@@ -94,6 +94,40 @@ Page({
     }
   },
 
+  onAdminTouchStart: function (e) {
+    touch.id = e.currentTarget.dataset.id
+    touch.x1 = e.touches[0].clientX;
+    touch.y1 = e.touches[0].clientY;
+    touch.t1 = e.timeStamp;
+    touch.x2 = e.touches[0].clientX;
+    touch.y2 = e.touches[0].clientY;
+    touch.t2 = e.timeStamp;
+    touch.timer = setTimeout(function () {
+      this.setData({
+        adminActive: 'adminActive'
+      })
+    }.bind(this), 1000)
+  },
+
+  onAdminTouchMove: function (e) {
+    touch.x2 = e.touches[0].clientX;
+    touch.y2 = e.touches[0].clientY;
+    touch.t2 = e.timeStamp;
+  },
+
+  onAdminTouchEnd: function (e) {
+    touch.t2 = e.timeStamp
+    let dx = touch.x2 - touch.x1
+    let dy = touch.y2 - touch.y1
+    let dt = touch.t2 - touch.t1
+
+    clearTimeout(touch.timer)
+    this.setData({ adminActive: '' })
+    if (dt > 1000 && Math.abs(dx) < 5 && Math.abs(dy) < 5) {
+      this.onAdminTap()
+    }
+  },
+
   onMaskTouch: function (id) {
     this.setData({ leftOpen: '' })
   },
@@ -123,10 +157,7 @@ Page({
 
   onLanguageTap: function (e) {
     let id = e.currentTarget.dataset.id
-    this.loading.show()
-    this.onLanguageChanged(id, function () {
-      this.loading.hide()
-    }.bind(this))
+    this.onLanguageChanged(id)
     this.setData({
       leftOpen: ''
     })
@@ -137,25 +168,35 @@ Page({
       title: Phrases['productList'][language],
     })
     this.setData({
+      /**
+       * 阿拉伯语言排版是自右向左，为了版面的变化，这里引入了language变量
+       */
       language: language,
       categoryEmpty: Phrases['categoryEmpty'][language],
       productEmpty: Phrases['productEmpty'][language],
     })
-    getApp().language = language
     wx.setStorageSync('language', language)
 
+    /**
+     * 店铺信息随语言变化而更新
+     */
     // Shop.get(language).then(function (shop) {
     //   this.setData({ shop })
     // }.bind(this))
 
     Category.getCategorys(language).then(function (cates) {
-      if (cates.length == 0) {
-        cb && cb()
-        return
-      }
+      /**
+       * 对于新建店铺来说，某种语言下还没有任何数据是完全可能的
+       * 这里为了避免程序出错，只简单直接return，用户界面不做反馈
+       */
+      if (cates.length == 0) return
+
       let activeId = cates[0].id
       for (let i in cates) {
-        // 有的类目可能在其下面还没建子类目
+        /**
+         * 有的类目可能在其下面还没建子类目
+         * 这时访问cates[i].children[0]就会出错了
+         */
         if (cates[i].children.length) {
           cates[i].activeId = cates[i].children[0].id
         }
@@ -165,8 +206,8 @@ Page({
       Product.getProducts(cid, language).then(function (products) {
         this.setData({
           cates: cates,
-          products: products,
           activeId: activeId,
+          products: products,
         })
         cb && cb()
       }.bind(this))
@@ -202,19 +243,14 @@ Page({
       }
     }
 
-    this.setData({
-      activeId,
-      cates,
-    })
-
-    this.loading.show()
     let language = this.data.language
     Product.getProducts(activeChildId, language)
       .then(function (products) {
         this.setData({
-          products: products
+          cates,
+          activeId,
+          products,
         })
-        this.loading.hide()
       }.bind(this))
   },
 
@@ -227,7 +263,7 @@ Page({
   },
 
   onAdminTap: function (e) {
-    let user = getApp().user
+    let user = app.user
     if (user.mobileVerified == true) {
       wx.redirectTo({
         url: '/pages/shoper/shoper',
@@ -240,11 +276,12 @@ Page({
   },
 
   onLogin: function () {
-
+    Shop.get().then(function (shop) {
+      this.setData({ shop })
+    }.bind(this))
   },
 
-  onShopUpdate: function () {
-    let shop = getApp().shop
+  onShopUpdate: function (shop) {
     this.setData({ shop })
   },
 
@@ -252,21 +289,18 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
+    app.listener.on('login', this.onLogin)
+    app.listener.on('shopUpdate', this.onShopUpdate)
 
-    getApp().listener.on('login', this.onLogin)
-    getApp().listener.on('shopUpdate', this.onShopUpdate)
+    if (app.login) {
+      Shop.get().then(function (shop) {
+        this.setData({ shop })
+      }.bind(this))
+    }
 
-    this.loading = new Loading()
-    this.loading.show()
-
-    Shop.get().then(function (shop) {
-      this.setData({ shop })
-    }.bind(this))
-
-    let language = getApp().language
-    this.onLanguageChanged(language, function () {
+    let lang = wx.getStorageSync('language')
+    this.onLanguageChanged(lang, function () {
       this.setData({ ready: true })
-      this.loading.hide()
     }.bind(this))
 
   },
@@ -289,7 +323,7 @@ Page({
    * 生命周期函数--监听页面隐藏
    */
   onHide: function () {
-    this.loading.hide()
+
   },
 
   /**

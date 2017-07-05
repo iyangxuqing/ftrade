@@ -1,4 +1,3 @@
-import { Category } from '../../../utils/categorys.js'
 import { Product } from '../../../utils/products.js'
 
 var Phrases = {
@@ -56,7 +55,7 @@ Page({
   onLoad: function (options) {
     let id = options.id
     let cid = options.cid
-    let language = wx.getStorageSync('language') || 'en'
+    let language = wx.getStorageSync('language')
     let favorites = wx.getStorageSync('favorites') || []
     let phrases = {
       navTitle: Phrases['navTitle'][language],
@@ -80,13 +79,12 @@ Page({
       }
       this.setData({
         phrases,
-        products,
         language,
+        products,
         ready: true,
         current: index,
       })
     }.bind(this))
-
   },
 
   /**

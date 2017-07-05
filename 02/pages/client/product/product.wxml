@@ -1,4 +1,3 @@
-
 <view class="products {{language}}" wx:if="{{ready}}">
   <swiper class="products-swiper" current="{{current}}">
     <block wx:for="{{products}}" wx:key="" wx:for-item="product">

@@ -1,7 +1,8 @@
 import { Loading } from '../../templates/loading/loading.js'
 import { Category } from '../../utils/categorys.js'
 
-var touch = {}
+let touch = {}
+let cateLongTap = false
 
 Page({
 
@@ -62,11 +63,52 @@ Page({
     })
   },
 
-  onCateExpand: function (e) {
+  onCateTap: function (e) {
+    if (cateLongTap) {
+      cateLongTap = false
+      return
+    }
+
     let id = e.currentTarget.dataset.id
-    if (this.data.expandId == id) id = ''
+    let pid = e.currentTarget.dataset.pid
+    if (pid == 0) {
+      let expandId = this.data.expandId
+      if (expandId == id) {
+        expandId = ''
+      } else {
+        expandId = id
+      }
+      console.log(expandId)
+      this.setData({ expandId })
+    } else {
+      wx.navigateTo({
+        url: '../products/products?cid=' + id
+      })
+    }
+  },
+
+  onCateLongTap: function (e) {
+    cateLongTap = true
+    if (this.data.editor.left >= 0) {
+      this.setData({
+        'editor.left': -1000,
+        'editor.focus': false,
+      })
+      return
+    }
+    let id = e.currentTarget.dataset.id
+    let pid = e.currentTarget.dataset.pid
+    let title = e.currentTarget.dataset.title
+    let top = e.currentTarget.offsetTop
+    let left = e.currentTarget.offsetLeft
     this.setData({
-      expandId: id
+      editor: {
+        top: top,
+        left: left,
+        focus: true,
+        placeholder: '类目名称不可为空',
+        data: { id, pid, value: title }
+      }
     })
   },
 
@@ -93,30 +135,6 @@ Page({
     })
   },
 
-  onTitleEdit: function (e) {
-    if (this.data.editor.left >= 0) {
-      this.setData({
-        'editor.left': -1000,
-        'editor.focus': false,
-      })
-      return
-    }
-    let id = e.currentTarget.dataset.id
-    let pid = e.currentTarget.dataset.pid
-    let title = e.currentTarget.dataset.title
-    let top = e.currentTarget.offsetTop
-    let left = e.currentTarget.offsetLeft
-    this.setData({
-      editor: {
-        top: top,
-        left: left,
-        focus: true,
-        placeholder: '类目名称不可为空',
-        data: { id, pid, value: title }
-      }
-    })
-  },
-
   onEditorBlur: function (e) {
     let id = this.data.editor.data.id
     let pid = this.data.editor.data.pid
@@ -135,22 +153,6 @@ Page({
       let cates = Category.setTitle({ id, pid, title: value })
       this.setData({ cates })
     }
-  },
-
-  onThumbEdit: function (e) {
-    let id = e.currentTarget.dataset.id
-    let pid = e.currentTarget.dataset.pid
-    wx.chooseImage({
-      count: 1,
-      success: function (res) {
-        let thumb = res.tempFilePaths[0]
-        this.loading.show()
-        Category.setThumb({ id, pid, thumb }).then(function (cates) {
-          this.setData({ cates })
-          this.loading.hide()
-        }.bind(this))
-      }.bind(this)
-    })
   },
 
   onCateSortUp: function (e) {
@@ -194,14 +196,6 @@ Page({
         })
       }
     }.bind(this))
-  },
-
-  onNavProducts: function (e) {
-    let id = e.currentTarget.dataset.id
-    let pid = e.currentTarget.dataset.pid
-    wx.navigateTo({
-      url: '../products/products?cid=' + id
-    })
   },
 
   /**

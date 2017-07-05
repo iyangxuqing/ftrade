@@ -156,7 +156,7 @@ function getProductsFromServer(cid) {
         resolve(products)
       }
     }).catch(function (res) {
-      consloe.log(res)
+      console.log(res)
     })
   })
 }

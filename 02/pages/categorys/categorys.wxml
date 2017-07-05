@@ -34,14 +34,14 @@
 </template>
 
 <template name="category">
-  <view class="category" data-id="{{id}}" data-pid="{{pid}}" bindtouchstart="touchstart" bindtouchmove="touchmove" bindtouchend="touchend">
+  <view class="category" data-id="{{id}}" data-pid="{{pid}}" catchtap="onCateTap" bindtouchstart="touchstart" bindtouchmove="touchmove" bindtouchend="touchend">
     <view class="category-inner {{swipeLeftId==id?'swipeleft':''}}">
       <view class="left">
         <view class="icon icon-left {{expandId==id?'expanded':''}}">
-          <image wx:if="{{children}}" src="/images/icon/enter.png" data-id="{{id}}" catchtap="onCateExpand" />
+          <image wx:if="{{children}}" src="/images/icon/enter.png" />
         </view>
-        <view class="title" data-id="{{id}}" data-pid="{{pid}}" data-title="{{title}}" catchtap="onTitleEdit">{{title}}</view>
-        <view class="icon icon-right" wx:if="{{!children}}" data-id="{{id}}" data-pid="{{pid}}" catchtap="onNavProducts">
+        <view class="title" data-id="{{id}}" data-pid="{{pid}}" data-title="{{title}}" catchlongtap="onCateLongTap">{{title}}</view>
+        <view class="icon icon-right" wx:if="{{!children}}">
           <image src="/images/icon/enter.png" />
         </view>
       </view>

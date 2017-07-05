@@ -6,22 +6,26 @@ export class Loading {
 
   show(options = {}) {
     let page = getCurrentPages().pop()
-    page.setData({
-      'loading.show': true,
-    })
-    this.showTimer = setTimeout(function () {
+    if (page) {
       page.setData({
-        'loading.showIcon': true
+        'loading.show': true,
       })
-    }, 500)
+      this.showTimer = setTimeout(function () {
+        page.setData({
+          'loading.showIcon': true
+        })
+      }, 500)
+    }
   }
 
   hide() {
     let page = getCurrentPages().pop()
-    clearTimeout(this.showTimer)
-    page.setData({
-      'loading.show': false
-    })
+    if (page) {
+      clearTimeout(this.showTimer)
+      page.setData({
+        'loading.show': false
+      })
+    }
   }
 
 }

@@ -1,3 +1,5 @@
+<import src='/templates/toptip/toptip.wxml' />
+<template is="toptip" data="{{...toptip}}" />
 <import src='/templates/loading/loading.wxml' />
 <template is="loading" data="{{...loading}}" />
 
@@ -54,8 +56,8 @@
   <!-- popup -->
 
   <view class="popup {{leftOpen}}" bindtouchstart="onPopupTouchStart" bindtouchmove="onPopupTouchMove" bindtouchend="onPopupTouchEnd">
-    <view class="head">
-      <view class="shop-logo" catchlongtap="onAdminTap">
+    <view class="head {{adminActive}}">
+      <view class="shop-logo" bindtouchstart="onAdminTouchStart" bindtouchmove="onAdminTouchMove" bindtouchend="onAdminTouchEnd">
         <image src="{{shop.logo||''}}" />
       </view>
       <view class="shop-name">
