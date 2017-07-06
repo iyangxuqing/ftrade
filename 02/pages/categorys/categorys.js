@@ -72,7 +72,6 @@ Page({
       } else {
         expandId = id
       }
-      console.log(expandId)
       this.setData({ expandId })
     } else {
       wx.navigateTo({
@@ -143,7 +142,7 @@ Page({
       let cates = Category.add({ pid, title: value })
       this.setData({ cates })
     } else {
-      let cates = Category.setTitle({ id, pid, title: value })
+      let cates = Category.set({ id, pid, title: value })
       this.setData({ cates })
     }
   },

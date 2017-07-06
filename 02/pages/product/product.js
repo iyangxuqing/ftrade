@@ -190,6 +190,16 @@ Page({
     })
     hasChanged = true
 
+    /**
+     * 商品删除图片时，只在数据库中删除该图片链接，
+     * 并不会立即将图片库中的图片删除，
+     * 因为不光是删除图片，更换图片、删除商品等操作，
+     * 都会产生大量的孤立图片，
+     * 将这些孤立图片统一由后台删除，可以减低前端代码复杂度，
+     * 另外，产品编辑的保存是滞后的，
+     * 删除图片后，并未立即从图床上删除图片，
+     * 在由于其他原因致使产品编辑未被保存时，产品图片依然有效。
+     */
     // let filename = images[index]
     // filename = filename.split('?')[0]
     // filename = filename.split('.com/')[1]
@@ -294,14 +304,6 @@ Page({
     let oldValue = editor.value
     if (!value || value == oldValue) return
 
-    // if (type == 'title') {
-    //   this.setData({
-    //     'product.title': value
-    //   })
-    //   hasChanged = true
-    //   return
-    // }
-
     let product = this.data.product
     if (index < 0) {
       if (value) {
@@ -367,16 +369,18 @@ Page({
     let id = options.id
     let cid = options.cid
 
-    let product = {
-      cid: cid,
-      images: [],
-      prices: [],
-      props: [],
-    }
+    let product = {}
     if (id) {
       product = Product.getProduct(id, cid, 'zh')
     } else {
-      product.id = Date.now()
+      product = {
+        id: Date.now(),
+        cid: cid,
+        title: '',
+        images: [],
+        prices: [],
+        props: []
+      }
     }
     let platform = wx.getSystemInfoSync().platform
     this.setData({
@@ -412,7 +416,7 @@ Page({
    */
   onUnload: function (e) {
     let product = this.data.product
-    if (hasChanged && product.title) {
+    if (hasChanged) {
       Product.set(product)
     }
   },

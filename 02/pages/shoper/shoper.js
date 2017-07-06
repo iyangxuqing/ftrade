@@ -6,9 +6,6 @@ let hasChanged = false
 
 Page({
 
-  /**
-   * 页面的初始数据
-   */
   data: {
 
   },
@@ -79,47 +76,12 @@ Page({
     })
   },
 
-  // onEditorBlur: function (e) {
-  //   let editor = this.data.editor
-  //   let type = editor.type
-  //   let value = e.detail.value
-  //   let oldValue = editor.value
-
-  //   setTimeout(function () {
-  //     this.setData({
-  //       'editor.left': -1000,
-  //       'editor.focus': false,
-  //     })
-  //   }.bind(this), 0)
-
-  //   if (value == '' || value == oldValue) return
-
-  //   if (type == 'shop-name') {
-  //     this.setData({
-  //       'shop.name': value
-  //     })
-  //   }
-  //   if (type == 'shop-phone') {
-  //     this.setData({
-  //       'shop.phone': value
-  //     })
-  //   }
-  //   if (type == 'shop-address') {
-  //     this.setData({
-  //       'shop.address': value
-  //     })
-  //   }
-  // },
-
-  onLogin: function () {
-    this.loadShop()
-  },
-
   loadShop: function () {
     Shop.get().then(function (shop) {
+      console.log(shop)
       this.setData({
         shop: shop,
-        ready: true
+        ready: true,
       })
     }.bind(this))
   },
@@ -131,16 +93,17 @@ Page({
     })
   },
 
+  onLogin: function () {
+    this.loadShop()
+  },
+
   /**
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
     app.listener.on('login', this.onLogin)
-    let platform = wx.getSystemInfoSync().platform
-    this.setData({ platform })
 
-    let token = wx.getStorageSync('token')
-    if (token) this.loadShop()
+    if (app.login) this.loadShop()
   },
 
   /**

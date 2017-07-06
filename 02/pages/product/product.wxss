@@ -47,7 +47,6 @@
 
 .product-title {
   text-align: center;
-  font-size: 1.1rem;
   background-color: #eee;
 }
 

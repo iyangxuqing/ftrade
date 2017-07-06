@@ -7,7 +7,7 @@ function getProducts(cid, lang = 'zh', cache = true) {
     if (products[lang] && products[lang]['_' + cid] && cache) {
       resolve(products[lang]['_' + cid])
     } else {
-      getProductsFromServer(cid,'en').then(function (products) {
+      getProductsFromServer(cid).then(function (products) {
         /**
          * 需要对空数据进行处理，
          * 当该类目刚新建时，读取该类目下的商品，就得到的是空数据，
@@ -29,75 +29,6 @@ function getProducts(cid, lang = 'zh', cache = true) {
     }
   })
 }
-
-// function getProductsFromServer2(cid, lang = 'zh') {
-//   return new Promise(function (resolve, reject) {
-//     let products = []
-//     http.get({
-//       url: '_ftrade/product.php?m=get',
-//       data: { cid: cid }
-//     }).then(function (res) {
-//       if (res.errno === 0) {
-//         for (let i in res.products) {
-//           let product = res.products[i]
-//           let id = product.id
-//           let cid = product.cid
-//           let sort = product.sort
-//           let images = JSON.parse(product.images)
-//           for (let i in images) {
-//             images[i] = images[i] + config.youImage.mode_w300
-//           }
-//           let multi_title = product.title.json()
-//           let multi_prices = product.prices.json()
-//           let multi_props = product.props.json()
-//           let title = multi_title[lang] || ''
-//           let prices = multi_prices[lang] || []
-//           let props = multi_props[lang] || []
-//           let _prices = []
-//           for (let n = 0; n < prices.length; n += 2) {
-//             _prices.push({
-//               label: prices[Number(n) + 0],
-//               value: prices[Number(n) + 1],
-//             })
-//           }
-//           prices = _prices
-//           let _props = []
-//           for (let n = 0; n < props.length; n += 2) {
-//             _props.push({
-//               label: props[Number(n) + 0],
-//               value: props[Number(n) + 1],
-//             })
-//           }
-//           props = _props
-//           if (title) {
-//             products.push({
-//               id,
-//               cid,
-//               sort,
-//               title,
-//               images,
-//               prices,
-//               props
-//             })
-//           }
-//         }
-//         resolve(products)
-//       } else {
-//         reject(res)
-//       }
-//     }).catch(function (res) {
-//       reject(res)
-//     })
-//   })
-// }
-
-// function getAllProducts(){
-//   http.get({
-//     url: '_ftrade/product.php?m=getAll',
-//   }).then(function(res){
-//     console.log(res)
-//   })
-// }
 
 function getProductsFromServer(cid) {
   return new Promise(function (resolve, reject) {
@@ -155,8 +86,6 @@ function getProductsFromServer(cid) {
         }
         resolve(products)
       }
-    }).catch(function (res) {
-      console.log(res)
     })
   })
 }
@@ -255,6 +184,22 @@ function set(product, cb) {
   /* server end */
 }
 
+/**
+ * 当时用于图片从新浪云移植到腾讯云时使用，
+ * 正常工作流程时没有使用该函数
+ */
+function getAllProducts(){
+  http.get({
+    url: '_ftrade/product.php?m=getAll',
+  }).then(function(res){
+    console.log(res)
+  })
+}
+
+/**
+ * 当时用于图片从新浪云移植到腾讯云时使用，
+ * 正常工作流程时没有使用该函数
+ */
 function setImages(product, cb) {
   /* server start */
   if (getApp().user.role == 'admin') {
@@ -340,7 +285,8 @@ function sort(product, sourceIndex, targetIndex, cb) {
 export var Product = {
   getProducts: getProducts,
   getProduct: getProduct,
-  setImages: setImages,
+  // getAllProducts: getAllProducts,
+  // setImages: setImages,
   set: set,
   del: del,
   sort: sort

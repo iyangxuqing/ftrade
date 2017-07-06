@@ -61,7 +61,7 @@
         <image src="{{shop.logo||''}}" />
       </view>
       <view class="shop-name">
-        {{shop.name || '尹美饰品'}}
+        {{shop.name || '商铺名称'}}
       </view>
     </view>
 
@@ -87,7 +87,7 @@
           <image src="/images/icon/home.png" />
         </view>
         <view class="text">
-          {{shop.address || '国际商贸城二区123456号'}}
+          {{shop.address || '国际商贸城一区123456号'}}
         </view>
       </view>
     </view>

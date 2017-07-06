@@ -209,6 +209,11 @@ Page({
           activeId: activeId,
           products: products,
         })
+        /**
+         * 当语言切换完成，数据都准备好了之后，
+         * 在onLoad事件中，执行回调函数cb，
+         * 用于设置this.setData({ready: true})
+         */
         cb && cb()
       }.bind(this))
     }.bind(this))

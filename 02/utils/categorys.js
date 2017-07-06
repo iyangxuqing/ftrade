@@ -35,13 +35,12 @@ function getCategorysFromServer() {
           let category = res.categorys[i]
           let id = category.id
           let pid = category.pid
-          let thumb = category.thumb
           let sort = category.sort
           let titles = category.title.json()
           for (let lang in titles) {
             if (!_cates[lang]) _cates[lang] = []
             let title = titles[lang]
-            _cates[lang].push({ id, pid, title, thumb, sort })
+            _cates[lang].push({ id, pid, title, sort })
           }
         }
         for (let lang in _cates) {
@@ -92,9 +91,7 @@ function getCategory(id, lang = 'zh') {
           id: id,
           pid: cates[i].id,
           title: cates[i].children[j].title,
-          thumb: cates[i].children[j].thumb,
           ptitle: cates[i].title,
-          pthumb: cates[i].thumb,
         }
       }
     }
@@ -131,7 +128,6 @@ function add(cate, cb) {
   }
   cate.id = Date.now()
   cate.sort = max + 1
-  cate.thumb = ''
 
   if (cate.pid == 0) {
     cate.children = []
@@ -166,7 +162,7 @@ function add(cate, cb) {
   return cates
 }
 
-function setTitle(cate, cb) {
+function set(cate, cb) {
   let Cates = getApp().cates
   if (!cate.lang) cate.lang = 'zh'
   let cates = Cates[cate.lang]
@@ -273,7 +269,7 @@ function del(cate) {
          * 这里检测到前端不可被删除后，需要直接退出，
          * 因为后面代码中有服务端代码，如果不直接退出，
          * 非演示类用户会继续执行服务器代码，
-         * 这时会在界面上提示两次不可删除。
+         * 这时就会在界面上提示两次不可删除。
          */
         return
       } else {
@@ -409,7 +405,7 @@ function sort(cate, up = false) {
 export var Category = {
   getCategorys: getCategorys,
   getCategory: getCategory,
-  setTitle: setTitle,
+  set: set,
   add: add,
   del: del,
   sort: sort,

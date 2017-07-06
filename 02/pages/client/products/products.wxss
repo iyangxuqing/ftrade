@@ -221,7 +221,6 @@ page {
   height: 120rpx;
   line-height: 120rpx;
   text-align: center;
-  font-size: 1.1rem;
   overflow: hidden;
   margin-bottom: 20rpx;
 }
