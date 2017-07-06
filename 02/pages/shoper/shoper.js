@@ -78,7 +78,6 @@ Page({
 
   loadShop: function () {
     Shop.get().then(function (shop) {
-      console.log(shop)
       this.setData({
         shop: shop,
         ready: true,
@@ -124,7 +123,6 @@ Page({
    * 生命周期函数--监听页面隐藏
    */
   onHide: function () {
-    console.log('onHide')
     if (hasChanged) this.saveShop()
   },
 

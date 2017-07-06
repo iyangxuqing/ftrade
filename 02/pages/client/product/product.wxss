@@ -1,5 +1,7 @@
 page {
   height: 100%;
+  margin: 0;
+  padding: 0;
 }
 
 .products {
@@ -14,17 +16,15 @@ page {
   height: 100%;
   overflow: hidden;
   overflow-y: auto;
+  padding-left: 40rpx;
+  padding-right: 40rpx;
   padding-bottom: 200rpx;
 }
 
 .product-images {
   position: relative;
-  width: 742rpx;
   height: 480rpx;
-  margin-left: -36rpx;
-  margin-right: -36rpx;
-  border-top: 1px solid #ccc;
-  border-bottom: 1px solid #ccc;
+  margin: 2rpx 0;
 }
 
 .product-images swiper {
@@ -35,29 +35,37 @@ page {
 .product-image {
   width: 100%;
   height: 100%;
-  padding-top: 20rpx;
-  padding-bottom: 60rpx;
+}
+
+.product-title{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 88rpx;
+  white-space: nowrap;
+  overflow: hidden;
+  background-color: #eee;
+  margin-bottom: 20rpx;
 }
 
 .favorite {
   position: absolute;
-  right: 30rpx;
-  bottom: 0rpx;
+  right: 0;
+  bottom: 0;
 }
 
 .favorite-icon {
   width: 100rpx;
   height: 100rpx;
-  padding: 10rpx;
+  padding: 20rpx;
 }
 
 .items-head {
   display: flex;
   align-items: center;
-  height: 60rpx;
+  height: 88rpx;
   padding: 10rpx;
-  background-color: #ddd;
-  margin-top: 20rpx;
+  background-color: #eee;
 }
 
 .ara .items-head {
@@ -67,7 +75,7 @@ page {
 .item {
   display: flex;
   align-items: center;
-  min-height: 80rpx;
+  min-height: 100rpx;
   border-bottom: 1px solid #eee;
 }
 

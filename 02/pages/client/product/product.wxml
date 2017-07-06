@@ -22,13 +22,15 @@
       </swiper>
       <view class="favorite" data-id="{{id}}" catchtap="onFavoriteTap">
         <view class="favorite-icon" wx:if="{{!favorite}}">
-          <image src="/images/icon/star-gray.png" />
+          <image src="/images/icon/favorite.png" />
         </view>
         <view class="favorite-icon" wx:if="{{favorite}}">
-          <image src="/images/icon/star-red.png" />
+          <image src="/images/icon/favorite-blue.png" />
         </view>
       </view>
     </view>
+
+    <view class="product-title">{{title}}</view>
 
     <view class="items product-prices">
       <view class="items-head">{{pricesTitle}}</view>

@@ -53,14 +53,14 @@ page {
 .page-header-1 {
   display: flex;
   padding-right: 40rpx;
-  border-top: 1px solid #ccc;
-  border-bottom: 1px solid #ccc;
+  border-top: 1px solid #eee;
+  border-bottom: 1px solid #eee;
 }
 
 .page-header-2 {
   min-height: 148rpx;
   padding: 10rpx 20rpx 10rpx 40rpx;
-  border-bottom: 1px solid #ccc;
+  border-bottom: 1px solid #eee;
 }
 
 .menu-trigger {
@@ -194,8 +194,8 @@ page {
   background-color: #e8e8e8;
 }
 
-.head.adminActive{
-  background-color: #dddddd;
+.head.adminActive {
+  background-color: #ddd;
 }
 
 .content {
@@ -208,12 +208,13 @@ page {
 }
 
 .shop-logo {
+  position: relative;
   width: 150rpx;
   height: 150rpx;
   border-radius: 50%;
   overflow: hidden;
   margin-top: 80rpx;
-  border: 1px solid #ccc;
+  border: 1px solid #aaa;
 }
 
 .shop-name {
