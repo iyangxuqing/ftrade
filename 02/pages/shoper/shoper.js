@@ -102,7 +102,7 @@ Page({
   onLoad: function (options) {
     app.listener.on('login', this.onLogin)
 
-    if (app.login) this.loadShop()
+    if (app.token) this.loadShop()
   },
 
   /**

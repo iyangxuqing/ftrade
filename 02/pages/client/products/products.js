@@ -290,17 +290,35 @@ Page({
     this.setData({ shop })
   },
 
+  onNetworkNone: function () {
+    let ready = this.data.ready
+    if (!ready) {
+      this.setData({
+        network: 'none'
+      })
+    }
+  },
+
+  onNetRetry: function (e) {
+    wx.reLaunch({
+      url: 'products',
+    })
+  },
+
   /**
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
     app.listener.on('login', this.onLogin)
     app.listener.on('shopUpdate', this.onShopUpdate)
+    app.listener.on('network-none', this.onNetworkNone)
 
-    if (app.login) {
+    if (app.token) {
       Shop.get().then(function (shop) {
         this.setData({ shop })
       }.bind(this))
+    } else {
+      app.login()
     }
 
     let lang = wx.getStorageSync('language')

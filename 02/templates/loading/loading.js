@@ -4,12 +4,13 @@ export class Loading {
     this.showTimer = null
   }
 
-  show(options = {}) {
+  show() {
     let page = getCurrentPages().pop()
     if (page) {
       page.setData({
         'loading.show': true,
       })
+      clearTimeout(this.showTimer)
       this.showTimer = setTimeout(function () {
         page.setData({
           'loading.showIcon': true

@@ -1,9 +1,3 @@
 <template name="toptip">
-  <view class="toptip {{show}}">
-    <view class="toptip-icon"></view>
-    <view class="toptip-title">{{title}}</view>
-    <view class="toptip-icon" catchtap="{{onClose}}">
-      <icon type="cancel" size="24" color="#fff" />
-    </view>
-  </view>
+  <view class="toptip {{show}}">{{title}}</view>
 </template>

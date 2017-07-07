@@ -12,12 +12,8 @@ let config = require('config.js')
 function get(options) {
   return new Promise(function (resolve, reject) {
     let app = getApp()
-    if (app.net && !app.net.isConnected) {
-      app.toptip.show('当前没有网络连接')
-      reject('none net connected')
-    }
-
     app.loading.show()
+
     let timer = setTimeout(function () {
       app.toptip.show('网络超时，请稍后重试')
       app.loading.hide()
@@ -38,11 +34,14 @@ function get(options) {
           if (res.data.errno === 0) {
             resolve(res.data)
           } else {
+            app.toptip.show('网络或服务器错误，请稍后重试')
             reject(res.data)
           }
         }
       },
       fail: function (res) {
+        app.toptip.show('当前没有网络连接')
+        app.listener.trigger('network-none')
         reject(res)
       },
       complete: function (res) {
@@ -56,12 +55,8 @@ function get(options) {
 function post(options) {
   return new Promise(function (resolve, reject) {
     let app = getApp()
-    if (app.net && !app.net.isConnected) {
-      app.toptip.show('当前没有网络连接')
-      reject('none net connected')
-    }
-
     app.loading.show()
+
     let timer = setTimeout(function () {
       app.toptip.show('网络超时，请稍后重试')
       app.loading.hide()
@@ -83,11 +78,14 @@ function post(options) {
           if (res.data.errno === 0) {
             resolve(res.data)
           } else {
+            app.toptip.show('网络或服务器错误，请稍后重试')
             reject(res.data)
           }
         }
       },
       fail: function (res) {
+        app.toptip.show('当前没有网络连接')
+        app.listener.trigger('network-none')
         reject(res)
       },
       complete: function (res) {
@@ -107,10 +105,6 @@ function post(options) {
 function cosUpload(options) {
   return new Promise(function (resolve, reject) {
     let app = getApp()
-    if (app.net && !app.net.isConnected) {
-      app.toptip.show('当前没有网络连接')
-      reject('none net connected')
-    }
 
     app.loading.show()
     let timer = setTimeout(function () {
@@ -154,11 +148,14 @@ function cosUpload(options) {
                   error: '',
                 })
               } else {
+                app.toptip.show('网络或服务器错误，请稍后重试')
                 reject(res)
               }
             }
           },
           fail: function (res) {
+            app.toptip.show('当前没有网络连接')
+            app.listener.trigger('network-none')
             reject(res)
           },
           complete: function (res) {

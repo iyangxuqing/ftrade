@@ -20,12 +20,14 @@ App({
           }).then(function (res) {
             if (res.errno === 0) {
               this.user = res.user
-              this.login = true
               this.token = res.token
               wx.setStorageSync('token', res.token)
               this.listener.trigger('login')
             }
           }.bind(this))
+            .catch(function (res) {
+              this.listener.trigger('network-none')
+            }.bind(this))
         }
       }.bind(this)
     })
@@ -41,20 +43,6 @@ App({
       wx.setStorageSync('language', 'en')
     }
 
-    wx.getNetworkType({
-      success: function (res) {
-        getApp().net = {
-          networkType: res.networkType,
-          isConnected: res.networkType != 'none'
-        }
-      }
-    })
-    wx.onNetworkStatusChange(function (res) {
-      getApp().net = {
-        networkType: res.networkType,
-        isConnected: res.isConnected
-      }
-    })
   },
 
   globalData: {

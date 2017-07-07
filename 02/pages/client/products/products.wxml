@@ -95,3 +95,10 @@
   </view>
 
 </view>
+
+<view class="network-none" wx:if="{{network=='none'}}" catchtap="onNetRetry">
+  <view class="image">
+    <image src="/images/icon/warn-network1.png" />
+  </view>
+  <view class="title">网络不给力，点击屏幕重试</view>
+</view>
