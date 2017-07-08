@@ -47,7 +47,7 @@ page {
 .row-icon {
   width: 60rpx;
   height: 100rpx;
-  padding: 30rpx 10rpx;
+  padding: 26rpx 6rpx;
 }
 
 .row-value {

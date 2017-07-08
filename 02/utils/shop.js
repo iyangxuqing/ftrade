@@ -21,6 +21,7 @@ function getShop(lang = 'zh') {
           let logo = shop.logo
           if (logo) {
             logo = logo + config.youImage.mode_w300
+            logo = logo + '?t=' + Date.now()
           }
           let phone = shop.phone
           if (!phone && app.user) {
@@ -49,6 +50,7 @@ function getShop(lang = 'zh') {
 
 function setShop(shop) {
   return new Promise(function (resolve, reject) {
+    app.shop = shop
     if (shop.logo) {
       let logo = shop.logo
       shop.logo = logo.split(config.youImage.mode_w300)[0]

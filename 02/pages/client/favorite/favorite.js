@@ -86,7 +86,12 @@ Page({
     let cid = options.cid
     let language = wx.getStorageSync('language')
     let favorites = wx.getStorageSync('favorites') || {}
-    favorites = favorites[language]
+    let products = favorites[language]
+    for (let i in products) {
+      for (let j in products[i].images) {
+        products[i].images[j] += config.youImage.mode_w300
+      }
+    }
 
     let phrases = {
       navTitle: Phrases['navTitle'][language],
@@ -97,25 +102,20 @@ Page({
       title: phrases.navTitle,
     })
 
-    Product.getProducts(cid, language).then(function (products) {
-      let index = -1
-      for (let i in products) {
-        if (products[i].id == id) index = i
-        for (let j in favorites) {
-          if (products[i].id == favorites[j].id) {
-            products[i].favorite = true
-            break
-          }
-        }
+    let index = 0
+    for (let i in products) {
+      products[i].favorite = true
+      if (products[i].id == id) {
+        index = i
       }
-      this.setData({
-        phrases,
-        language,
-        products,
-        ready: true,
-        current: index,
-      })
-    }.bind(this))
+    }
+    this.setData({
+      phrases,
+      language,
+      products,
+      ready: true,
+      current: index,
+    })
   },
 
   /**

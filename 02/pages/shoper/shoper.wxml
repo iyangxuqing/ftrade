@@ -34,7 +34,7 @@
       </view>
       <view class="row-value shop-product-management">商品管理</view>
       <view class="row-icon">
-        <image src="/images/icon/enter.png" />
+        <image src="/images/icon/arrow-right.png" />
       </view>
     </view>
 
@@ -44,7 +44,7 @@
       </view>
       <view class="row-value shop-home">店铺浏览</view>
       <view class="row-icon">
-        <image src="/images/icon/enter.png" />
+        <image src="/images/icon/arrow-right.png" />
       </view>
     </view>
   </view>

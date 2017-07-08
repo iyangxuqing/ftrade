@@ -176,7 +176,7 @@ page {
   flex-direction: column;
   width: 500rpx;
   height: 100%;
-  background-color: #eee;
+  background-color: #f4f5f6;
   transition: all 0.3s ease;
   transform: translate3d(-500rpx, 0, 0);
   z-index: 2001;
@@ -255,12 +255,13 @@ page {
 }
 
 .languages {
-  margin-top: 40rpx;
+  margin-top: 20rpx;
+  margin-bottom: 20rpx;
 }
 
 .language {
-  height: 80rpx;
-  line-height: 80rpx;
+  height: 90rpx;
+  line-height: 90rpx;
   font-size: 0.9rem;
   padding-left: 40rpx;
 }
@@ -270,7 +271,16 @@ page {
   color: blue;
 }
 
-.network-none{
+.favorite {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 100rpx;
+  padding: 0 20rpx 0 40rpx;
+  background-color: #e8e8e8;
+}
+
+.network-none {
   position: fixed;
   top: 0;
   left: 0;
@@ -281,13 +291,13 @@ page {
   align-items: center;
 }
 
-.network-none .image{
+.network-none .image {
   width: 200rpx;
   height: 200rpx;
   margin-top: 400rpx;
   opacity: 0.5;
 }
 
-.network-none .title{
+.network-none .title {
   color: #888;
 }

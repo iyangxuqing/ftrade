@@ -1,0 +1,16 @@
+<view class="favorites {{language}}">
+  <block wx:for="{{favorites}}" wx:key="">
+    <view class="favorite" data-id="{{item.id}}" data-cid="{{item.cid}}" catchtap="onFavoriteTap">
+      <view class="image">
+        <image src="{{item.images[0]}}" />
+      </view>
+      <view class="title">{{item.title}}</view>
+      <view class="icon">
+        <image src="/images/icon/arrow-right.png" />
+      </view>
+    </view>
+  </block>
+  <view class="favorite-empty" wx:if="{{favorites.length==0}}">
+    {{favoriteEmpty}}
+  </view>
+</view>

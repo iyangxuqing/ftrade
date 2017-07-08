@@ -184,35 +184,6 @@ function set(product, cb) {
   /* server end */
 }
 
-/**
- * 当时用于图片从新浪云移植到腾讯云时使用，
- * 正常工作流程时没有使用该函数
- */
-function getAllProducts(){
-  http.get({
-    url: '_ftrade/product.php?m=getAll',
-  }).then(function(res){
-    console.log(res)
-  })
-}
-
-/**
- * 当时用于图片从新浪云移植到腾讯云时使用，
- * 正常工作流程时没有使用该函数
- */
-function setImages(product, cb) {
-  /* server start */
-  if (getApp().user.role == 'admin') {
-    http.get({
-      url: '_ftrade/product.php?m=setImages',
-      data: product
-    }).then(function (res) {
-      cb && cb(res)
-    })
-  }
-  /* server end */
-}
-
 function del(product, cb) {
   let id = product.id
   let cid = product.cid
@@ -285,8 +256,6 @@ function sort(product, sourceIndex, targetIndex, cb) {
 export var Product = {
   getProducts: getProducts,
   getProduct: getProduct,
-  // getAllProducts: getAllProducts,
-  // setImages: setImages,
   set: set,
   del: del,
   sort: sort

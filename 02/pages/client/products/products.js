@@ -30,6 +30,12 @@ let Phrases = {
     'ara': ' هذا  التصنيف  لا  السلع ',
     'kor': '이 类目 다음 없는 상품',
   },
+  'myFavorite': {
+    'zh': '我的收藏',
+    'en': 'My Collection',
+    'ara': ' المفضلة ',
+    'kor': '내 모음집',
+  }
 }
 
 Page({
@@ -174,6 +180,7 @@ Page({
       language: language,
       categoryEmpty: Phrases['categoryEmpty'][language],
       productEmpty: Phrases['productEmpty'][language],
+      myFavorite: Phrases['myFavorite'][language],
     })
     wx.setStorageSync('language', language)
 
@@ -278,6 +285,12 @@ Page({
         url: '/pages/mobile/mobile',
       })
     }
+  },
+
+  onFavoriteTap: function (e) {
+    wx.navigateTo({
+      url: '../favorites/favorites',
+    })
   },
 
   onLogin: function () {

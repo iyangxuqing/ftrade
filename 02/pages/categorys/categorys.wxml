@@ -36,11 +36,11 @@
     <view class="category-inner {{swipeLeftId==id?'swipeleft':''}}">
       <view class="left">
         <view class="icon icon-left {{expandId==id?'expanded':''}}">
-          <image wx:if="{{children}}" src="/images/icon/enter.png" />
+          <image wx:if="{{children}}" src="/images/icon/arrow-right.png" />
         </view>
         <view class="title" data-id="{{id}}" data-pid="{{pid}}" data-title="{{title}}" catchtap="onTitleTap">{{title}}</view>
         <view class="icon icon-right" wx:if="{{!children}}">
-          <image src="/images/icon/enter.png" />
+          <image src="/images/icon/arrow-right.png" />
         </view>
       </view>
       <view class="right">

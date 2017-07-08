@@ -12,7 +12,7 @@
     <view class="page-header">
       <view class="page-header-1">
         <view class="menu-trigger" catchtap="onMenuTriggerTap">
-          <image src="/images/icon/menu-black.png" />
+          <image src="/images/icon/menu.png" />
         </view>
         <view class="categorys-level1">
           <block wx:for="{{cates}}" wx:key="" wx:for-item="cate">
@@ -71,6 +71,13 @@
           <view class="language {{language==index?'active':''}}" catchtap="onLanguageTap" data-id="{{index}}">{{item}}</view>
         </block>
       </view>
+
+      <view class="favorite" catchtap="onFavoriteTap">
+        <view class="favorite-title">{{myFavorite}}</view>
+        <view class="icon">
+          <image src="/images/icon/arrow-right.png" />
+        </view>
+      </view>
     </view>
 
     <view class="foot">
@@ -84,7 +91,7 @@
       </view>
       <view class="shop-address">
         <view class="icon">
-          <image src="/images/icon/home.png" />
+          <image src="/images/icon/address.png" />
         </view>
         <view class="text">
           {{shop.address || '国际商贸城一区123456号'}}
@@ -98,7 +105,7 @@
 
 <view class="network-none" wx:if="{{network=='none'}}" catchtap="onNetRetry">
   <view class="image">
-    <image src="/images/icon/warn-network1.png" />
+    <image src="/images/icon/warn-network.png" />
   </view>
   <view class="title">网络不给力，点击屏幕重试</view>
 </view>
