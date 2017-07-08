@@ -52,9 +52,6 @@ function getProductsFromServer(cid) {
           let cid = product.cid
           let sort = product.sort
           let images = JSON.parse(product.images)
-          for (let i in images) {
-            images[i] = images[i] + config.youImage.mode_w300
-          }
           let multi_title = product.title.json()
           let multi_prices = product.prices.json()
           let multi_props = product.props.json()
@@ -151,12 +148,7 @@ function set(product, cb) {
     let cid = product.cid
     let sort = product.sort
     let title = product.title
-    let images = []
-    let mode = config.youImage.mode_w300
-    for (let i in product.images) {
-      let image = product.images[i].replace(mode, '')
-      images.push(image)
-    }
+    let images = product.images
     let prices = product.prices
     let props = product.props
     // 控制一下单种语言下各属性的长度，免得撑破数据库设计的字段长度

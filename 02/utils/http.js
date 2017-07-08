@@ -138,11 +138,9 @@ function cosUpload(options) {
               let data = JSON.parse(res.data)
               if (data.message && data.message == 'SUCCESS') {
                 let host = config.youImage.host
-                let mode = config.youImage.mode_w300
-                let url = host + target + mode
+                let url = host + target
                 resolve({
                   url,
-                  mode,
                   target,
                   errno: 0,
                   error: '',

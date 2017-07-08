@@ -31,6 +31,7 @@ Page({
     swipeLeftId: '',
     delImageIndex: -1,
     platform: 'devtools',
+    youImageMode: app.youImageMode,
   },
 
   touchstart: function (e) {

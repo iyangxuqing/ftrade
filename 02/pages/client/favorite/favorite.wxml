@@ -2,7 +2,7 @@
   <swiper class="products-swiper" current="{{current}}">
     <block wx:for="{{products}}" wx:key="" wx:for-item="product">
       <swiper-item>
-        <template is="product" data="{{...product, ...phrases}}" />
+        <template is="product" data="{{...product, ...phrases, youImageMode}}" />
       </swiper-item>
     </block>
   </swiper>
@@ -15,7 +15,7 @@
         <block wx:for="{{images}}" wx:key="">
           <swiper-item>
             <view class="product-image">
-              <image src="{{item}}" mode="aspectFit" />
+              <image src="{{item + youImageMode}}" mode="aspectFit" />
             </view>
           </swiper-item>
         </block>

@@ -7,7 +7,7 @@ let hasChanged = false
 Page({
 
   data: {
-
+    youImageMode: app.youImageMode
   },
 
   onShopLogoTap: function (e) {
@@ -18,11 +18,11 @@ Page({
         var tempFilePath = res.tempFilePaths[0]
         http.cosUpload({
           source: tempFilePath,
-          target: 'images/shoplogo.png'
+          target: 'images/' + Date.now() + '.jpg'
         }).then(function (res) {
           let url = res.url
           this.setData({
-            'shop.logo': url + "&t=" + Date.now()
+            'shop.logo': url
           })
         }.bind(this))
         hasChanged = true

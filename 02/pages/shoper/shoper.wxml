@@ -1,6 +1,6 @@
 <view class="shop" wx:if="{{ready}}">
   <view class="shop-logo" catchtap="onShopLogoTap">
-    <image src="{{shop.logo}}" mode="aspectFit" />
+    <image src="{{shop.logo + youImageMode}}" mode="aspectFit" />
   </view>
 
   <view class="shop-name">

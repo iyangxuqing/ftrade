@@ -20,7 +20,8 @@ Page({
       sourceIndex: -1,
       targetIndex: -1,
       display: 'none',
-    }
+    },
+    youImageMode: app.youImageMode,
   },
 
   touchstart: function (e) {

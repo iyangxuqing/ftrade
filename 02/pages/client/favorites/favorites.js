@@ -1,6 +1,8 @@
 let config = require('../../../utils/config.js')
 
-var Phrases = {
+let app = getApp()
+
+let Phrases = {
   favoriteTitle: {
     'zh': '我的收藏',
     'en': 'My Collection',
@@ -18,18 +20,13 @@ var Phrases = {
 Page({
 
   data: {
-
+    youImageMode: app.youImageMode
   },
 
   loadFavorites: function () {
     let favorites = wx.getStorageSync('favorites') || {}
     let lang = wx.getStorageSync('language')
     favorites = favorites[lang] || []
-    for (let i in favorites) {
-      for (let j in favorites[i].images) {
-        favorites[i].images[j] += config.youImage.mode_w300
-      }
-    }
     let favoriteTitle = Phrases['favoriteTitle'][lang]
     let favoriteEmpty = Phrases['favoriteEmpty'][lang]
     wx.setNavigationBarTitle({

@@ -40,7 +40,7 @@
           <text class="line" wx:if="{{index>0&&index%6==0}}"></text>
           <view class="product" data-id="{{item.id}}" data-cid="{{item.cid}}" catchtap="onProductTap">
             <view class="product-image">
-              <image src="{{item.images[0]}}" />
+              <image src="{{item.images[0] + youImageMode}}" />
             </view>
             <view class="product-title">{{item.title}}</view>
           </view>
@@ -58,7 +58,7 @@
   <view class="popup {{leftOpen}}" bindtouchstart="onPopupTouchStart" bindtouchmove="onPopupTouchMove" bindtouchend="onPopupTouchEnd">
     <view class="head {{adminActive}}">
       <view class="shop-logo" bindtouchstart="onAdminTouchStart" bindtouchmove="onAdminTouchMove" bindtouchend="onAdminTouchEnd">
-        <image src="{{shop.logo||''}}" />
+        <image src="{{shop.logo ? shop.logo+youImageMode : ''}}" />
       </view>
       <view class="shop-name">
         {{shop.name || '商铺名称'}}

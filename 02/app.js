@@ -1,3 +1,4 @@
+let config = require('utils/config.js')
 import 'utils/util.js'
 import { http } from 'utils/http.js'
 import { Listener } from 'utils/listener.js'
@@ -38,6 +39,7 @@ App({
     this.toptip = new Toptip()
     this.loading = new Loading()
     this.listener = new Listener()
+    this.youImageMode = config.youImage.mode_w300
 
     if (!wx.getStorageSync('language')) {
       wx.setStorageSync('language', 'en')

@@ -1,6 +1,8 @@
 let config = require('../../../utils/config.js')
 import { Product } from '../../../utils/products.js'
 
+let app = getApp()
+
 var Phrases = {
   navTitle: {
     'zh': '商品详情',
@@ -25,7 +27,7 @@ var Phrases = {
 Page({
 
   data: {
-
+    youImageMode: app.youImageMode
   },
 
   onFavoriteTap: function (e) {
@@ -51,13 +53,9 @@ Page({
       for (let lang in cates) {
         langs.push(lang)
       }
-      let mode = config.youImage.mode_w300
       for (let i in langs) {
         let lang = langs[i]
         let product = Product.getProduct(id, cid, lang)
-        for (let j in product.images) {
-          product.images[j] = product.images[j].split(mode)[0]
-        }
         if (!favorites[lang]) favorites[lang] = []
         favorites[lang].push(product)
         if (favorites[lang].length > 60) {
@@ -87,11 +85,6 @@ Page({
     let language = wx.getStorageSync('language')
     let favorites = wx.getStorageSync('favorites') || {}
     let products = favorites[language]
-    for (let i in products) {
-      for (let j in products[i].images) {
-        products[i].images[j] += config.youImage.mode_w300
-      }
-    }
 
     let phrases = {
       navTitle: Phrases['navTitle'][language],

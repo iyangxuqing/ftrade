@@ -42,7 +42,8 @@ Page({
 
   data: {
     leftOpen: '',
-    languages: Phrases['languages']
+    languages: Phrases['languages'],
+    youImageMode: app.youImageMode,
   },
 
   onMaskTouchStart: function (e) {
