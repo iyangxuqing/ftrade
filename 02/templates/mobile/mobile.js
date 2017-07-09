@@ -24,7 +24,7 @@ let methods = {
       page.setData({
         'mobile.numberError': 'message-error'
       })
-      page.toptip.show('手机号码输入有误')
+      getApp().toptip.show('手机号码输入有误')
       return
     }
 
@@ -110,7 +110,7 @@ let methods = {
         page.setData({
           'mobile.codeError': 'message-error'
         })
-        page.toptip.show('验证码输入有误')
+        getApp().toptip.show('验证码输入有误')
       }
     }.bind(this))
   },

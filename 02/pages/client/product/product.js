@@ -56,10 +56,15 @@ Page({
       for (let i in langs) {
         let lang = langs[i]
         let product = Product.getProduct(id, cid, lang)
-        if (!favorites[lang]) favorites[lang] = []
-        favorites[lang].push(product)
-        if (favorites[lang].length > 60) {
-          favorites[lang].shift()
+        /**
+         * 由于翻译的滞后性，有的语言下可能还没有这个商品
+         */
+        if(product){
+          if (!favorites[lang]) favorites[lang] = []
+          favorites[lang].push(product)
+          if (favorites[lang].length > 100) {
+            favorites[lang].shift()
+          }
         }
       }
       wx.setStorageSync('favorites', favorites)

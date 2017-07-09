@@ -11,6 +11,16 @@ App({
     this.login()
   },
 
+  init: function () {
+    this.toptip = new Toptip()
+    this.loading = new Loading()
+    this.listener = new Listener()
+    this.youImageMode = config.youImage.mode_w300
+    if (!wx.getStorageSync('language')) {
+      wx.setStorageSync('language', 'en')
+    }
+  },
+
   login: function (cb) {
     wx.login({
       success: function (res) {
@@ -32,19 +42,6 @@ App({
         }
       }.bind(this)
     })
-  },
-
-  init: function () {
-
-    this.toptip = new Toptip()
-    this.loading = new Loading()
-    this.listener = new Listener()
-    this.youImageMode = config.youImage.mode_w300
-
-    if (!wx.getStorageSync('language')) {
-      wx.setStorageSync('language', 'en')
-    }
-
   },
 
   globalData: {

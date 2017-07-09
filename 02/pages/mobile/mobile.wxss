@@ -1,6 +1,5 @@
-@import '/templates/toptip/toptip.wxss';
 @import '/templates/mobile/mobile.wxss';
 
 page{
-  padding-top: 20rpx;
+  padding-top: 40rpx;
 }

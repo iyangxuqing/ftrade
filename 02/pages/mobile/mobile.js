@@ -1,4 +1,3 @@
-import { Toptip } from '../../templates/toptip/toptip.js'
 import { Mobile } from '../../templates/mobile/mobile.js'
 
 Page({
@@ -25,7 +24,6 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
-    this.toptip = new Toptip()
     this.mobile = new Mobile(this.onMobileVerified)
   },
 

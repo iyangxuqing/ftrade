@@ -1,5 +1,5 @@
 .mobile {
-  margin-top: 20rpx;
+  margin: 0;
 }
 
 .mobile-row {
