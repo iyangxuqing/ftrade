@@ -19,7 +19,6 @@ page {
   padding-left: 40rpx;
   padding-right: 40rpx;
   padding-bottom: 200rpx;
-  -webkit-overflow-scrolling: touch;
 }
 
 .product-images {

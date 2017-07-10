@@ -1,0 +1,59 @@
+<view class="container" wx:if="{{ready}}">
+  <template is="categorys" data="{{cates, swipeLeftId, expandId}}" />
+  <template is="editor" data="{{...editor, platform}}" />
+</view>
+
+<template name="editor">
+  <view class="editor {{platform}}" style="top:{{top}}px;left:{{left}}px">
+    <input value="{{data.value}}" bindblur="onEditorBlur" cursor-spacing="10" maxlength="20" focus="{{focus}}" placeholder="{{placeholder}}" />
+  </view>
+</template>
+
+<template name="categorys">
+  <view class="categorys">
+    <block wx:for="{{cates}}" wx:key="" wx:for-item="cate">
+      <template is="category" data="{{...cate, swipeLeftId, expandId}}" />
+      <view class="children" wx:if="{{expandId==cate.id}}">
+        <block wx:for="{{cate.children}}" wx:key="">
+          <template is="category" data="{{...item, swipeLeftId}}" />
+        </block>
+        <template is="category-new" data="{{pid:cate.id, placeholder:'新增子类目'}}" />
+      </view>
+    </block>
+    <template is="category-new" data="{{pid:0, placeholder:'新增类目'}}" />
+  </view>
+</template>
+
+<template name="category-new">
+  <view class="category category-new">
+    <view class="icon icon-left"></view>
+    <view class="title" data-pid="{{pid}}" catchtap="onCateAdd">{{placeholder}}</view>
+  </view>
+</template>
+
+<template name="category">
+  <view class="category" data-id="{{id}}" data-pid="{{pid}}" bindtouchstart="touchstart" bindtouchmove="touchmove" bindtouchend="touchend" catchtap="onCateTap">
+    <view class="category-inner {{swipeLeftId==id?'swipeleft':''}}">
+      <view class="left">
+        <view class="icon icon-left {{expandId==id?'expanded':''}}">
+          <image wx:if="{{children}}" src="/images/icon/arrow-right.png" />
+        </view>
+        <view class="title" data-id="{{id}}" data-pid="{{pid}}" data-title="{{title}}" catchtap="onTitleTap">{{title}}</view>
+        <view class="icon icon-right" wx:if="{{!children}}">
+          <image src="/images/icon/arrow-right.png" />
+        </view>
+      </view>
+      <view class="right">
+        <view class="sort-up" data-id="{{id}}" data-pid="{{pid}}" catchtap="onCateSortUp">
+          <image src="/images/icon/sort-up-white.png" />
+        </view>
+        <view class="sort-down" data-id="{{id}}" data-pid="{{pid}}" catchtap="onCateSortDown">
+          <image src="/images/icon/sort-down-white.png" />
+        </view>
+        <view class="delete" data-id="{{id}}" data-pid="{{pid}}" catchtap="onCateDelete">
+          <image src="/images/icon/delete-white.png" />
+        </view>
+      </view>
+    </view>
+  </view>
+</template>

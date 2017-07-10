@@ -48,12 +48,12 @@ page {
   padding-right: 40rpx;
   overflow: hidden;
   overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
 }
 
 .page-header-1 {
   display: flex;
   padding-right: 40rpx;
+  border-top: 1px solid #eee;
   border-bottom: 1px solid #eee;
 }
 
@@ -89,7 +89,6 @@ page {
 .category-level1 {
   flex-shrink: 0;
   min-width: 100rpx;
-  height: 100rpx;
   line-height: 100rpx;
   padding-right: 40rpx;
   color: #111;
@@ -97,7 +96,6 @@ page {
 
 .category-level2 {
   min-width: 100rpx;
-  height: 64rpx;
   line-height: 64rpx;
   padding-right: 40rpx;
   font-size: 0.85rem;
@@ -111,8 +109,8 @@ page {
 .products {
   display: flex;
   flex-wrap: wrap;
-  padding-top: 20rpx;
-  padding-bottom: 100rpx;
+  padding-top: 40rpx;
+  padding-bottom: 40rpx;
 }
 
 .product {
@@ -133,7 +131,7 @@ page {
   height: 60rpx;
   display: block;
   margin-top: 20rpx;
-  margin-bottom: 20rpx;
+  margin-bottom: 40rpx;
   background-color: #eee;
 }
 
@@ -216,6 +214,7 @@ page {
   border-radius: 50%;
   overflow: hidden;
   margin-top: 80rpx;
+  border: 1px solid #aaa;
 }
 
 .shop-name {

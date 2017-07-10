@@ -58,10 +58,10 @@
   <view class="popup {{leftOpen}}" bindtouchstart="onPopupTouchStart" bindtouchmove="onPopupTouchMove" bindtouchend="onPopupTouchEnd">
     <view class="head {{adminActive}}">
       <view class="shop-logo" bindtouchstart="onAdminTouchStart" bindtouchmove="onAdminTouchMove" bindtouchend="onAdminTouchEnd">
-        <image src="{{shop.logo ? shop.logo+youImageMode : '/images/yx01.jpg'}}" />
+        <image src="{{shop.logo ? shop.logo+youImageMode : ''}}" />
       </view>
       <view class="shop-name">
-        {{shop.name || '铱星饰品'}}
+        {{shop.name || '商铺名称'}}
       </view>
     </view>
 
@@ -86,7 +86,7 @@
           <image src="/images/icon/phone.png" />
         </view>
         <view class="text">
-          {{shop.phone || '158-2233-5858'}}
+          {{shop.phone || '158-1234-5678'}}
         </view>
       </view>
       <view class="shop-address">
@@ -94,7 +94,7 @@
           <image src="/images/icon/address.png" />
         </view>
         <view class="text">
-          {{shop.address || '国际商贸城一区A2-336号'}}
+          {{shop.address || '国际商贸城一区123456号'}}
         </view>
       </view>
     </view>

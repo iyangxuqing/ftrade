@@ -1,0 +1,43 @@
+.favorites {
+  padding-bottom: 200rpx;
+}
+
+.favorite {
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid #ddd;
+}
+
+.favorite:first-child {
+  border-top: 1px solid #ddd;
+}
+
+.image {
+  flex-shrink: 0;
+  width: 160rpx;
+  height: 160rpx;
+  padding: 20rpx;
+  margin-left: -20rpx;
+}
+
+.title {
+  flex-grow: 1;
+  padding-right: 0;
+}
+
+.icon {
+  flex-shrink: 0;
+  width: 80rpx;
+  height: 80rpx;
+  padding: 16rpx;
+}
+
+.favorite-empty {
+  padding: 400rpx 0;
+  text-align: center;
+  color: #888;
+}
+
+.ara .title{
+  text-align: right;
+}

@@ -1,0 +1,19 @@
+{
+  "pages": [
+    "pages/client/products/products",
+    "pages/client/product/product",
+    "pages/client/favorites/favorites",
+    "pages/client/favorite/favorite",
+    "pages/categorys/categorys",
+    "pages/products/products",
+    "pages/product/product",
+    "pages/mobile/mobile",
+    "pages/shoper/shoper"
+  ],
+  "window": {
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#fff",
+    "navigationBarTitleText": "",
+    "navigationBarTextStyle": "black"
+  }
+}

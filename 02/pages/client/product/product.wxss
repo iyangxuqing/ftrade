@@ -12,13 +12,14 @@ page {
   height: 100%;
 }
 
-.product{
+.product {
   height: 100%;
   overflow: hidden;
   overflow-y: auto;
   padding-left: 40rpx;
   padding-right: 40rpx;
   padding-bottom: 200rpx;
+  -webkit-overflow-scrolling: touch;
 }
 
 .product-images {
@@ -37,7 +38,7 @@ page {
   height: 100%;
 }
 
-.product-title{
+.product-title {
   display: flex;
   align-items: center;
   justify-content: center;

@@ -54,6 +54,7 @@ Page({
     touch.x2 = e.touches[0].clientX;
     touch.y2 = e.touches[0].clientY;
     touch.t2 = e.timeStamp;
+    this.onMaskTouch(touch.id)
   },
 
   onMaskTouchMove: function (e) {
@@ -67,7 +68,10 @@ Page({
     let dx = touch.x2 - touch.x1
     let dy = touch.y2 - touch.y1
     let dt = touch.t2 - touch.t1
-    this.onMaskTouch(touch.id)
+    if ((Math.abs(dy) < Math.abs(dx) / 2 && dt < 250)) {
+      if (dx < -20) this.onMaskSwipeLeft(touch.id)
+      if (dx > 20) this.onMaskSwipeRight(touch.id)
+    }
   },
 
   onPopupTouchStart: function (e) {
@@ -135,6 +139,12 @@ Page({
     this.setData({ leftOpen: '' })
   },
 
+  onMaskSwipeLeft: function (id) {
+  },
+
+  onMaskSwipeRight: function (id) {
+  },
+
   onPopupSwipeLeft: function (id) {
     this.setData({ leftOpen: '' })
   },
@@ -143,7 +153,7 @@ Page({
   },
 
   onMenuTriggerTap: function (e) {
-    let leftOpen = this.data.leftOpen
+    let leftOpen = this.data.openLeft
     leftOpen = leftOpen ? '' : 'left-open'
     this.setData({ leftOpen })
   },
@@ -155,7 +165,9 @@ Page({
   onLanguageTap: function (e) {
     let id = e.currentTarget.dataset.id
     this.onLanguageChanged(id)
-    this.setData({ leftOpen: '' })
+    this.setData({
+      leftOpen: ''
+    })
   },
 
   onLanguageChanged: function (language, cb) {
