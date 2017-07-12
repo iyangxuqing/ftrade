@@ -62,6 +62,8 @@ function getCategorysFromServer() {
         }
         resolve(cates)
       }
+    }).catch(function (res) {
+      getApp().listener.trigger('network-none')
     })
   })
 }

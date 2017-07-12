@@ -9,6 +9,9 @@ App({
   onLaunch: function () {
     this.init()
     this.login()
+    let time = 1499760727000
+    let str = new Date(time)
+    console.log(str)
   },
 
   init: function () {
@@ -36,9 +39,6 @@ App({
               this.listener.trigger('login')
             }
           }.bind(this))
-            .catch(function (res) {
-              this.listener.trigger('network-none')
-            }.bind(this))
         }
       }.bind(this)
     })

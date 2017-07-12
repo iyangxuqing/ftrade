@@ -18,7 +18,7 @@ function get(options) {
       app.toptip.show('网络超时，请稍后重试')
       app.loading.hide()
       reject('time out')
-    }, 6000)
+    }, 5000)
 
     wx.request({
       url: config.apiUrl + options.url,
@@ -61,7 +61,7 @@ function post(options) {
       app.toptip.show('网络超时，请稍后重试')
       app.loading.hide()
       reject('time out')
-    }, 6000)
+    }, 5000)
 
     wx.request({
       url: config.apiUrl + options.url,

@@ -83,6 +83,8 @@ function getProductsFromServer(cid) {
         }
         resolve(products)
       }
+    }).catch(function (res) {
+      getApp().listener.trigger('network-none')
     })
   })
 }
