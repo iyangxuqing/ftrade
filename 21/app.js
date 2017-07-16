@@ -15,12 +15,10 @@ App({
     this.toptip = new Toptip()
     this.loading = new Loading()
     this.listener = new Listener()
-    this.youImageMode = config.youImage.mode
+    this.youImageMode = config.youImage.mode_w300
     if (!wx.getStorageSync('language')) {
       wx.setStorageSync('language', 'en')
     }
-    this.lang = wx.getStorageSync('language')
-    this.cache = true
   },
 
   login: function (cb) {
@@ -29,15 +27,17 @@ App({
         if (res.code) {
           http.get({
             url: '_ftrade/user.php?m=login',
-            data: { code: res.code },
-            slient: true
+            data: { code: res.code }
           }).then(function (res) {
             if (res.errno === 0) {
+              this.user = res.user
+              this.token = res.token
               wx.setStorageSync('token', res.token)
+              this.listener.trigger('login')
             }
-          })
+          }.bind(this))
         }
-      }
+      }.bind(this)
     })
   },
 

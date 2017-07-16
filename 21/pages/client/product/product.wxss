@@ -24,7 +24,7 @@ page {
 
 .product-images {
   position: relative;
-  height: 400rpx;
+  height: 480rpx;
   margin: 2rpx 0;
 }
 
@@ -43,11 +43,22 @@ page {
   align-items: center;
   justify-content: center;
   height: 88rpx;
-  padding: 0 10rpx;
   white-space: nowrap;
   overflow: hidden;
   background-color: #eee;
   margin-bottom: 20rpx;
+}
+
+.favorite {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+}
+
+.favorite-icon {
+  width: 100rpx;
+  height: 100rpx;
+  padding: 20rpx;
 }
 
 .items-head {

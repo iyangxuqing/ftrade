@@ -193,7 +193,11 @@ page {
   display: flex;
   flex-direction: column;
   align-items: center;
-  background-color: #f1f2f3;
+  background-color: #e8e8e8;
+}
+
+.head.adminActive {
+  background-color: #ddd;
 }
 
 .content {
@@ -212,7 +216,6 @@ page {
   border-radius: 50%;
   overflow: hidden;
   margin-top: 80rpx;
-  border: 1px solid #ccc;
 }
 
 .shop-name {

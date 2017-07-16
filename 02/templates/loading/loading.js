@@ -1,31 +1,37 @@
 export class Loading {
 
   constructor() {
-    this.showTimer = null
+    this.count = 0
+    this.timer = null
   }
 
   show() {
+    this.count++
     let page = getCurrentPages().pop()
     if (page) {
-      page.setData({
-        'loading.show': true,
-      })
-      clearTimeout(this.showTimer)
-      this.showTimer = setTimeout(function () {
+      if (this.count == 1) {
         page.setData({
-          'loading.showIcon': true
+          'loading.show': true,
         })
-      }, 500)
+        this.timer = setTimeout(function () {
+          page.setData({
+            'loading.showIcon': true
+          })
+        }, 300)
+      }
     }
   }
 
   hide() {
+    this.count--
     let page = getCurrentPages().pop()
     if (page) {
-      clearTimeout(this.showTimer)
-      page.setData({
-        'loading.show': false
-      })
+      if (this.count == 0) {
+        clearTimeout(this.timer)
+        page.setData({
+          'loading.show': false
+        })
+      }
     }
   }
 

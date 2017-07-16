@@ -1,3 +1,26 @@
+/**
+ * fix me utils/categorys.js中读取到的category.title需要反转义
+ * 
+ */
+
+function formatTime(date) {
+  var year = date.getFullYear()
+  var month = date.getMonth() + 1
+  var day = date.getDate()
+
+  var hour = date.getHours()
+  var minute = date.getMinutes()
+  var second = date.getSeconds()
+
+
+  return [year, month, day].map(formatNumber).join('/') + ' ' + [hour, minute, second].map(formatNumber).join(':')
+}
+
+function formatNumber(n) {
+  n = n.toString()
+  return n[1] ? n : '0' + n
+}
+
 String.prototype.json = function () {
   let value = this
   let temp = ''
@@ -37,4 +60,8 @@ String.prototype.json = function () {
   } catch (e) {
     return null
   }
+}
+
+module.exports = {
+  formatTime: formatTime
 }

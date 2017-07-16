@@ -7,7 +7,7 @@
 
   <view class="page {{leftOpen}}">
 
-    <view class="page-mask" wx:if="{{leftOpen}}" catchtap="onMaskTap" bindtouchstart="onMaskTouchStart" bindtouchend="onMaskTouchEnd"></view>
+    <view class="page-mask" wx:if="{{leftOpen}}" catchtap="onMaskTap" bindtouchstart="onMaskTouchStart" bindtouchmove="onMaskTouchMove" bindtouchend="onMaskTouchEnd"></view>
 
     <view class="page-header">
       <view class="page-header-1">
@@ -16,17 +16,17 @@
         </view>
         <view class="categorys-level1">
           <block wx:for="{{cates}}" wx:key="" wx:for-item="cate">
-            <view class="category-level1 {{activeCateId==cate.id?'active':''}}" data-id="{{cate.id}}" data-pid="{{cate.pid}}" catchtap="onCateTap">{{cate.title}}</view>
+            <view class="category-level1 {{activeId==cate.id?'active':''}}" data-id="{{cate.id}}" data-pid="{{cate.pid}}" catchtap="onCateTap">{{cate.title}}</view>
           </block>
         </view>
       </view>
       <view class="page-header-2">
         <block wx:for="{{cates}}" wx:key="" wx:for-item="cate">
-          <view class="categorys-level2" wx:if="{{cate.id==activeCateId}}">
+          <view class="categorys-level2" wx:if="{{cate.id==activeId}}">
             <block wx:for="{{cate.children}}" wx:key="">
-              <view class="category category-level2 {{cate.activeChildId==item.id?'active':''}}" data-id="{{item.id}}" data-pid="{{item.pid}}" catchtap="onCateTap">{{item.title}}</view>
+              <view class="category category-level2 {{cate.activeId==item.id?'active':''}}" data-id="{{item.id}}" data-pid="{{item.pid}}" catchtap="onCateTap">{{item.title}}</view>
             </block>
-            <view class="empty" wx:if="{{cate.children && !cate.children.length}}">
+            <view class="empty" wx:if="{{!cate.children.length}}">
               <text>{{categoryEmpty}}</text>
             </view>
           </view>
@@ -45,7 +45,7 @@
             <view class="product-title">{{item.title}}</view>
           </view>
         </block>
-        <view class="empty" wx:if="{{products && !products.length}}">
+        <view class="empty" wx:if="{{!products.length}}">
           <text>{{productEmpty}}</text>
         </view>
       </view>
@@ -57,8 +57,8 @@
 
   <view class="popup {{leftOpen}}" bindtouchstart="onPopupTouchStart" bindtouchmove="onPopupTouchMove" bindtouchend="onPopupTouchEnd">
     <view class="head {{adminActive}}">
-      <view class="shop-logo">
-        <image src="{{shop.logo ? shop.logo+youImageMode : ''}}" />
+      <view class="shop-logo" bindtouchstart="onAdminTouchStart" bindtouchmove="onAdminTouchMove" bindtouchend="onAdminTouchEnd">
+        <image src="{{shop.logo ? shop.logo+youImageMode : '/images/yx01.jpg'}}" />
       </view>
       <view class="shop-name">
         {{shop.name || '铱星饰品'}}
@@ -70,6 +70,13 @@
         <block wx:for="{{languages}}" wx:key="">
           <view class="language {{language==index?'active':''}}" catchtap="onLanguageTap" data-id="{{index}}">{{item}}</view>
         </block>
+      </view>
+
+      <view class="favorite" catchtap="onFavoriteTap">
+        <view class="favorite-title">{{myFavorite}}</view>
+        <view class="icon">
+          <image src="/images/icon/arrow-right.png" />
+        </view>
       </view>
     </view>
 

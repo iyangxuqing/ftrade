@@ -1,0 +1,19 @@
+.toptip {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 90rpx;
+  color: #2a90d7;
+  background-color: #d5e9f7;
+  transition: all 300ms ease;
+  transform: translate3d(0, -90rpx, 0);
+}
+
+.toptip.show {
+  transform: translate3d(0, 0, 0);
+}
