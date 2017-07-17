@@ -1,6 +1,7 @@
 import { Shop } from '../../../utils/shop.js'
 import { Product } from '../../../utils/products.js'
 import { Category } from '../../../utils/categorys.js'
+import { http } from '../../../utils/http.js'
 
 let touch = {}
 let app = getApp()
@@ -106,8 +107,7 @@ Page({
     let lang = e.currentTarget.dataset.id
     app.lang = lang
     wx.setStorageSync('language', lang)
-
-    this.loadProducts(lang)
+    this.loadCategorys()
     wx.setNavigationBarTitle({
       title: Phrases['productList'][lang],
     })
@@ -147,16 +147,13 @@ Page({
         }
       }
     }
+    this.setData({
+      cates,
+      activeCateId,
+    })
 
     let cid = activeChildCateId
-    Product.getProducts({ cid })
-      .then(function (products) {
-        this.setData({
-          cates,
-          products,
-          activeCateId,
-        })
-      }.bind(this))
+    this.loadProducts(cid)
   },
 
   onProductTap: function (e) {
@@ -166,52 +163,76 @@ Page({
     })
   },
 
-  onNetworkNone: function () {
-    let ready = this.data.ready
-    if (!ready) {
-      this.setData({
-        network: 'none'
-      })
+  onReloadCategorys: function (e) {
+    this.loadCategorys()
+  },
+
+  onReloadProducts: function (e) {
+    let cates = this.data.cates
+    let activeCateId = this.data.activeCateId
+    let activeChildCateId = ''
+    for (let i in cates) {
+      if (cates[i].id == activeCateId) {
+        activeChildCateId = cates[i].activeChildId
+        break
+      }
     }
+    this.loadProducts(activeChildCateId)
   },
 
-  onNetRetry: function (e) {
-    wx.reLaunch({
-      url: 'products',
-    })
-  },
-
-  loadProducts: function (lang) {
-    let page = this
-    Category.getCategorys().then(function (cates) {
-      let activeCateId = ''
-      let activeChildCateId = ''
-      // 某种语言下可能还没有类目
-      if (cates.length > 0) activeCateId = cates[0].id
-      for (let i in cates) {
-        // 某种类目下可能还没有子类目
-        if (cates[i].children.length > 0) {
-          cates[i].activeChildId = cates[i].children[0].id
-          if (!activeChildCateId) {
-            activeChildCateId = cates[i].children[0].id
+  loadCategorys: function () {
+    Category.getCategorys()
+      .then(function (cates) {
+        let activeCateId = ''
+        let activeChildCateId = ''
+        // 某种语言下可能还没有类目
+        if (cates.length > 0) activeCateId = cates[0].id
+        for (let i in cates) {
+          // 某种类目下可能还没有子类目
+          if (cates[i].children.length > 0) {
+            cates[i].activeChildId = cates[i].children[0].id
+            if (!activeChildCateId) {
+              activeChildCateId = cates[i].children[0].id
+            }
           }
         }
-      }
-      page.setData({
-        activeCateId: activeCateId,
-        cates: cates,
-        ready: true,
-      })
-      return ({ cid: activeChildCateId })
-    }).then(function (res) {
-      let cid = res.cid
-      Product.getProducts({ cid })
-        .then(function (products) {
-          page.setData({
-            products: products
-          })
+        this.setData({
+          categorysFail: false,
+          activeCateId: activeCateId,
+          cates: cates,
+          ready: true,
         })
+        let cid = activeChildCateId
+        this.loadProducts(cid)
+      }.bind(this))
+      .catch(function (res) {
+        this.setData({
+          categorysFail: true
+        })
+      }.bind(this))
+  },
+
+  loadProducts: function (cid) {
+    this.setData({
+      productsFail: false,
+      productsNone: false,
     })
+    Product.getProducts({ cid })
+      .then(function (products) {
+        this.setData({
+          products,
+          productsFail: false,
+          productsNone: products.length == 0,
+        })
+      }.bind(this))
+      .catch(function (res) {
+        console.log(res)
+        this.setData({
+          products: [],
+          productsFail: true,
+          productsNone: false,
+        })
+      }.bind(this))
   },
 
   /**
@@ -230,7 +251,7 @@ Page({
       productEmpty: Phrases['productEmpty'][lang],
     })
 
-    this.loadProducts(lang)
+    this.loadCategorys()
     Shop.get({ slient: true }).then(function (shop) {
       this.setData({ shop })
     }.bind(this))

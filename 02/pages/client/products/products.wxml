@@ -45,12 +45,19 @@
             <view class="product-title">{{item.title}}</view>
           </view>
         </block>
-        <view class="empty" wx:if="{{products && !products.length}}">
+
+        <view class="products-none" wx:if="{{productsNone}}">
           <text>{{productEmpty}}</text>
+        </view>
+
+        <view class="net-fail products-fail" wx:if="{{productsFail}}" catchtap="onReloadProducts">
+          <view class="net-fail-icon">
+            <image src="/images/icon/warn-network.png" />
+          </view>
+          <view class="net-fail-text">网络不给力，点击屏幕重试</view>
         </view>
       </view>
     </view>
-
   </view>
 
   <!-- popup -->
@@ -91,14 +98,12 @@
         </view>
       </view>
     </view>
-
   </view>
-
 </view>
 
-<view class="network-none" wx:if="{{network=='none'}}" catchtap="onNetRetry">
-  <view class="image">
+<view class="net-fail categorys-fail" wx:if="{{categorysFail}}" catchtap="onReloadCategorys">
+  <view class="net-fail-icon">
     <image src="/images/icon/warn-network.png" />
   </view>
-  <view class="title">网络不给力，点击屏幕重试</view>
+  <view class="net-fail-text">网络不给力，点击屏幕重试</view>
 </view>

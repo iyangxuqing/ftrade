@@ -5,6 +5,13 @@
   <template is="product" data="{{...product, ...phrases, youImageMode}}" />
 </view>
 
+<view class="net-fail product-fail" wx:if="{{productFail}}" catchtap="onReloadProduct">
+  <view class="net-fail-icon">
+    <image src="/images/icon/warn-network.png" />
+  </view>
+  <view class="net-fail-text">网络不给力，点击屏幕重试</view>
+</view>
+
 <template name="product">
   <view class="product">
     <view class="product-images">

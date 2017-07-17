@@ -24,6 +24,8 @@ function getProducts(options) {
         app.productList = productList
         products = transformProducts(products, lang)
         resolve(products)
+      }).catch(function (res) {
+        reject(res)
       })
     }
   })
@@ -39,7 +41,11 @@ function getProductsFromServer(options) {
       if (res.errno === 0) {
         let products = res.products
         resolve(products)
+      } else {
+        reject(res)
       }
+    }).catch(function (res) {
+      reject(res)
     })
   })
 }
@@ -66,6 +72,8 @@ function getProduct(options) {
         app.products = products
         product = transformProduct(product, lang)
         resolve(product)
+      }).catch(function (res) {
+        reject(res)
       })
     }
   })
@@ -80,7 +88,11 @@ function getProductFromServer(options) {
     }).then(function (res) {
       if (res.errno === 0) {
         resolve(res.product)
+      } else {
+        reject(res)
       }
+    }).catch(function (res) {
+      reject(res)
     })
   })
 }

@@ -20,6 +20,8 @@ function getCategorys(options = {}) {
         app.cates = cates
         cates = transformCategorys(cates, lang)
         resolve(cates)
+      }).catch(function (res) {
+        reject(res)
       })
     }
   })
@@ -34,7 +36,11 @@ function getCategorysFromServer(options) {
       if (res.errno === 0) {
         let cates = res.categorys
         resolve(cates)
+      } else {
+        reject(res)
       }
+    }).catch(function (res) {
+      reject(res)
     })
   })
 }

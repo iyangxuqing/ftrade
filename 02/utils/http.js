@@ -25,16 +25,13 @@ function get(options) {
       },
       data: options.data,
       success: function (res) {
-        if (res.statusCode == 200 && res.errMsg == 'request:ok') {
-          if (res.data.errno === 0) {
-            resolve(res.data)
-          }
+        if (res.statusCode == 200 && res.data && res.data.errno === 0) {
+          resolve(res.data)
+        } else {
+          reject(res)
         }
       },
       fail: function (res) {
-        if (!options.slient) {
-          app.listener.trigger('network-none')
-        }
         reject(res)
       },
       complete: function (res) {

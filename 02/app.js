@@ -43,5 +43,9 @@ App({
 
   globalData: {
     userInfo: null
-  }
+  },
+
+  requestTask: {},
+  autoRequestTask: [],
+
 })

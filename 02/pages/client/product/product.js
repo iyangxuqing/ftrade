@@ -29,9 +29,27 @@ Page({
     youImageMode: app.youImageMode
   },
 
-  /**
-   * 生命周期函数--监听页面加载
-   */
+  onReloadProduct: function (e) {
+    let id = this.data.id
+    this.loadProduct(id)
+  },
+
+  loadProduct: function (id) {
+    Product.getProduct({ id })
+      .then(function (product) {
+        this.setData({
+          ready: true,
+          product: product,
+          productFail: false,
+        })
+      }.bind(this))
+      .catch(function (res) {
+        this.setData({
+          productFail: true,
+        })
+      }.bind(this))
+  },
+
   onLoad: function (options) {
     let id = options.id
     let lang = app.lang
@@ -43,15 +61,12 @@ Page({
     wx.setNavigationBarTitle({
       title: phrases.navTitle,
     })
-
-    Product.getProduct({id}).then(function (product) {
-      this.setData({
-        phrases,
-        product,
-        language: lang,
-        ready: true,
-      })
-    }.bind(this))
+    this.setData({
+      id: id,
+      phrases,
+      language: lang,
+    })
+    this.loadProduct(id)
   },
 
   /**
