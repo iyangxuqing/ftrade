@@ -1,5 +1,3 @@
-<import src='/templates/toptip/toptip.wxml' />
-<template is="toptip" data="{{...toptip}}" />
 <import src='/templates/loading/loading.wxml' />
 <template is="loading" data="{{...loading}}" />
 
@@ -54,7 +52,7 @@
           <view class="net-fail-icon">
             <image src="/images/icon/warn-network.png" />
           </view>
-          <view class="net-fail-text">网络不给力，点击屏幕重试</view>
+          <view class="net-fail-text"><text>{{networkFail}}</text></view>
         </view>
       </view>
     </view>
@@ -105,5 +103,5 @@
   <view class="net-fail-icon">
     <image src="/images/icon/warn-network.png" />
   </view>
-  <view class="net-fail-text">网络不给力，点击屏幕重试</view>
+  <view class="net-fail-text"><text>{{networkFail}}</text></view>
 </view>

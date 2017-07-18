@@ -1,7 +1,7 @@
 {
   "pages": [
-    "pages/client/products/products",
-    "pages/client/product/product"
+    "pages/products/products",
+    "pages/product/product"
   ],
   "window": {
     "backgroundTextStyle": "light",

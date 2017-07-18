@@ -2,7 +2,6 @@ let config = require('utils/config.js')
 import 'utils/util.js'
 import { http } from 'utils/http.js'
 import { Listener } from 'utils/listener.js'
-import { Toptip } from 'templates/toptip/toptip.js'
 import { Loading } from 'templates/loading/loading.js'
 
 App({
@@ -12,10 +11,10 @@ App({
   },
 
   init: function () {
-    this.toptip = new Toptip()
     this.loading = new Loading()
     this.listener = new Listener()
     this.youImageMode = config.youImage.mode
+    this.phrases = config.phrases
     if (!wx.getStorageSync('language')) {
       wx.setStorageSync('language', 'en')
     }
@@ -44,8 +43,5 @@ App({
   globalData: {
     userInfo: null
   },
-
-  requestTask: {},
-  autoRequestTask: [],
 
 })

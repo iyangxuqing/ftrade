@@ -1,27 +1,6 @@
-import { Product } from '../../../utils/products.js'
+import { Product } from '../../utils/products.js'
 
 let app = getApp()
-
-var Phrases = {
-  navTitle: {
-    'zh': '商品详情',
-    'en': 'Commodity Details',
-    'ara': ' تفاصيل المنتج ',
-    'kor': '상품 설명',
-  },
-  pricesTitle: {
-    'zh': '批发价格',
-    'en': 'Wholesale Price',
-    'ara': ' سعر الجملة ',
-    'kor': '도매 가격',
-  },
-  propsTitle: {
-    'zh': '商品属性',
-    'en': 'Commodity Attribute',
-    'ara': ' السلع صفة ',
-    'kor': '상품 특성',
-  }
-}
 
 Page({
 
@@ -53,18 +32,18 @@ Page({
   onLoad: function (options) {
     let id = options.id
     let lang = app.lang
-    let phrases = {
-      navTitle: Phrases['navTitle'][lang],
-      pricesTitle: Phrases['pricesTitle'][lang],
-      propsTitle: Phrases['propsTitle'][lang],
-    }
     wx.setNavigationBarTitle({
-      title: phrases.navTitle,
+      title: app.phrases.productDetail[lang],
     })
     this.setData({
       id: id,
-      phrases,
       language: lang,
+      phrases: {
+        productDetail: app.phrases.productDetail[lang],
+        pricesTitle: app.phrases.pricesTitle[lang],
+        propsTitle: app.phrases.propsTitle[lang],
+        networkFail: app.phrases.networkFail[lang],
+      }
     })
     this.loadProduct(id)
   },

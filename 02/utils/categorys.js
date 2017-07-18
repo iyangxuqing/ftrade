@@ -30,7 +30,7 @@ function getCategorys(options = {}) {
 function getCategorysFromServer(options) {
   return new Promise(function (resolve, reject) {
     http.get({
-      url: '_ftrade/category.php?m=get',
+      url: '_ftrade/client/category.php?m=get',
       slient: options.slient
     }).then(function (res) {
       if (res.errno === 0) {

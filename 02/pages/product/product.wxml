@@ -9,7 +9,7 @@
   <view class="net-fail-icon">
     <image src="/images/icon/warn-network.png" />
   </view>
-  <view class="net-fail-text">网络不给力，点击屏幕重试</view>
+  <view class="net-fail-text"><text>{{phrases.networkFail}}</text></view>
 </view>
 
 <template name="product">

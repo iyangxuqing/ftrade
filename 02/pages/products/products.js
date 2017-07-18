@@ -1,43 +1,15 @@
-import { Shop } from '../../../utils/shop.js'
-import { Product } from '../../../utils/products.js'
-import { Category } from '../../../utils/categorys.js'
-import { http } from '../../../utils/http.js'
+import { Shop } from '../../utils/shop.js'
+import { Product } from '../../utils/products.js'
+import { Category } from '../../utils/categorys.js'
 
 let touch = {}
 let app = getApp()
-
-let Phrases = {
-  'languages': {
-    'zh': '中文',
-    'en': 'English',
-    'ara': ' عربي ',
-    'kor': '한국어',
-  },
-  'productList': {
-    'zh': '商品列表',
-    'en': 'Product List',
-    'ara': ' قائمة المنتجات ',
-    'kor': '상품 목록',
-  },
-  'categoryEmpty': {
-    'zh': '该类目下没有子类目',
-    'en': 'There are no subcategories in this category',
-    'ara': ' هذا  التصنيف  لا  تصنيف  فرعي ',
-    'kor': '이 类目 다음 없는 사람 类目',
-  },
-  'productEmpty': {
-    'zh': '该类目下没商品',
-    'en': 'There is no goods under this category',
-    'ara': ' هذا  التصنيف  لا  السلع ',
-    'kor': '이 类目 다음 없는 상품',
-  },
-}
 
 Page({
 
   data: {
     leftOpen: '',
-    languages: Phrases['languages'],
+    languages: app.phrases['languages'],
     youImageMode: app.youImageMode,
   },
 
@@ -109,13 +81,14 @@ Page({
     wx.setStorageSync('language', lang)
     this.loadCategorys()
     wx.setNavigationBarTitle({
-      title: Phrases['productList'][lang],
+      title: app.phrases['productList'][lang],
     })
     this.setData({
       leftOpen: '',
       language: lang,
-      categoryEmpty: Phrases['categoryEmpty'][lang],
-      productEmpty: Phrases['productEmpty'][lang],
+      categoryEmpty: app.phrases['categoryEmpty'][lang],
+      productEmpty: app.phrases['productEmpty'][lang],
+      networkFail: app.phrases['networkFail'][lang],
     })
   },
 
@@ -226,7 +199,6 @@ Page({
         })
       }.bind(this))
       .catch(function (res) {
-        console.log(res)
         this.setData({
           products: [],
           productsFail: true,
@@ -243,12 +215,13 @@ Page({
 
     let lang = app.lang
     wx.setNavigationBarTitle({
-      title: Phrases['productList'][lang],
+      title: app.phrases['productList'][lang],
     })
     this.setData({
       language: lang,
-      categoryEmpty: Phrases['categoryEmpty'][lang],
-      productEmpty: Phrases['productEmpty'][lang],
+      categoryEmpty: app.phrases['categoryEmpty'][lang],
+      productEmpty: app.phrases['productEmpty'][lang],
+      networkFail: app.phrases['networkFail'][lang],
     })
 
     this.loadCategorys()

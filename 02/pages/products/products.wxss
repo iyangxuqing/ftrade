@@ -113,6 +113,7 @@ page {
   flex-wrap: wrap;
   padding-top: 20rpx;
   padding-bottom: 100rpx;
+  align-content: flex-start;
 }
 
 .product {

@@ -34,7 +34,7 @@ function getProducts(options) {
 function getProductsFromServer(options) {
   return new Promise(function (resolve, reject) {
     http.get({
-      url: '_ftrade/product.php?m=getProducts_2',
+      url: '_ftrade/client/product.php?m=getProducts',
       data: { cid: options.cid },
       slient: options.slient
     }).then(function (res) {
@@ -82,7 +82,7 @@ function getProduct(options) {
 function getProductFromServer(options) {
   return new Promise(function (resolve, reject) {
     http.get({
-      url: '_ftrade/product.php?m=getProduct_2',
+      url: '_ftrade/client/product.php?m=getProduct',
       data: { id: options.id },
       slient: options.slient
     }).then(function (res) {
