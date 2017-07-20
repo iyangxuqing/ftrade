@@ -1,0 +1,12 @@
+{
+  "pages": [
+    "pages/products/products",
+    "pages/product/product"
+  ],
+  "window": {
+    "backgroundTextStyle": "light",
+    "navigationBarTitleText": "",
+    "navigationBarTextStyle": "black",
+    "navigationBarBackgroundColor": "#eee"
+  }
+}

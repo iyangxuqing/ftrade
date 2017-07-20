@@ -1,0 +1,107 @@
+<import src='/templates/loading/loading.wxml' />
+<template is="loading" data="{{...loading}}" />
+
+<view class="container {{language}}" wx:if="{{ready}}">
+
+  <view class="page {{leftOpen}}">
+
+    <view class="page-mask" wx:if="{{leftOpen}}" catchtap="onMaskTap" bindtouchstart="onMaskTouchStart" bindtouchend="onMaskTouchEnd"></view>
+
+    <view class="page-header">
+      <view class="page-header-1">
+        <view class="menu-trigger" catchtap="onMenuTriggerTap">
+          <image src="/images/icon/menu.png" />
+        </view>
+        <view class="categorys-level1">
+          <block wx:for="{{cates}}" wx:key="" wx:for-item="cate">
+            <view class="category-level1 {{activeCateId==cate.id?'active':''}}" data-id="{{cate.id}}" data-pid="{{cate.pid}}" catchtap="onCateTap">{{cate.title}}</view>
+          </block>
+        </view>
+      </view>
+      <view class="page-header-2">
+        <block wx:for="{{cates}}" wx:key="" wx:for-item="cate">
+          <view class="categorys-level2" wx:if="{{cate.id==activeCateId}}">
+            <block wx:for="{{cate.children}}" wx:key="">
+              <view class="category category-level2 {{cate.activeChildId==item.id?'active':''}}" data-id="{{item.id}}" data-pid="{{item.pid}}" catchtap="onCateTap">{{item.title}}</view>
+            </block>
+            <view class="empty" wx:if="{{cate.children && !cate.children.length}}">
+              <text>{{categoryEmpty}}</text>
+            </view>
+          </view>
+        </block>
+      </view>
+    </view>
+
+    <view class="page-content">
+      <view class="products">
+        <block wx:for="{{products}}" wx:key="">
+          <text class="line" wx:if="{{index>0&&index%6==0}}"></text>
+          <view class="product" data-id="{{item.id}}" data-cid="{{item.cid}}" catchtap="onProductTap">
+            <view class="product-image">
+              <image src="{{item.images[0] + youImageMode}}" />
+            </view>
+            <view class="product-title">{{item.title}}</view>
+          </view>
+        </block>
+
+        <view class="products-none" wx:if="{{productsNone}}">
+          <text>{{productEmpty}}</text>
+        </view>
+
+        <view class="net-fail products-fail" wx:if="{{productsFail}}" catchtap="onReloadProducts">
+          <view class="net-fail-icon">
+            <image src="/images/icon/warn-network.png" />
+          </view>
+          <view class="net-fail-text"><text>{{networkFail}}</text></view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- popup -->
+
+  <view class="popup {{leftOpen}}" bindtouchstart="onPopupTouchStart" bindtouchmove="onPopupTouchMove" bindtouchend="onPopupTouchEnd">
+    <view class="head {{adminActive}}">
+      <view class="shop-logo">
+        <image src="{{shop.logo ? shop.logo+youImageMode : ''}}" />
+      </view>
+      <view class="shop-name">
+        {{shop.name || '铱星饰品'}}
+      </view>
+    </view>
+
+    <view class="content">
+      <view class="languages">
+        <block wx:for="{{languages}}" wx:key="">
+          <view class="language {{language==index?'active':''}}" catchtap="onLanguageTap" data-id="{{index}}">{{item}}</view>
+        </block>
+      </view>
+    </view>
+
+    <view class="foot">
+      <view class="shop-contact">
+        <view class="icon">
+          <image src="/images/icon/phone.png" />
+        </view>
+        <view class="text">
+          {{shop.phone || '158-2233-5858'}}
+        </view>
+      </view>
+      <view class="shop-address">
+        <view class="icon">
+          <image src="/images/icon/address.png" />
+        </view>
+        <view class="text">
+          {{shop.address || '国际商贸城一区A2-336号'}}
+        </view>
+      </view>
+    </view>
+  </view>
+</view>
+
+<view class="net-fail categorys-fail" wx:if="{{categorysFail}}" catchtap="onReloadCategorys">
+  <view class="net-fail-icon">
+    <image src="/images/icon/warn-network.png" />
+  </view>
+  <view class="net-fail-text"><text>{{networkFail}}</text></view>
+</view>
