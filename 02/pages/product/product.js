@@ -9,44 +9,35 @@ Page({
     youImageMode: app.youImageMode
   },
 
-  onReloadProduct: function (e) {
-    let id = this.data.id
-    let cid = this.data.cid
-    this.loadProduct(id, cid)
-  },
-
-  loadProduct: function (id, cid) {
+  loadData: function (id, cid) {
     let page = this
-    page.loading.show()
-    Product.getProduct({ id, cid })
-      .then(function (product) {
+    page.setData({ id, cid })
+    Product.getProducts({ cid })
+      .then(function (products) {
+        let current = 0
+        for (let i in products) {
+          if (products[i].id == id) {
+            current = i
+            break
+          }
+        }
         page.setData({
           ready: true,
-          product: product,
-          productFail: false,
+          current: current,
+          products: products,
         })
-        page.loading.hide()
-      })
-      .catch(function (res) {
-        page.setData({
-          productFail: true,
-        })
-        page.loading.hide()
       })
   },
 
   onLoad: function (options) {
-    this.loading = new Loading(this)
-
     let id = options.id
     let cid = options.cid
     let lang = app.lang
     wx.setNavigationBarTitle({
       title: app.phrases.productDetail[lang],
     })
+    this.loading = new Loading(this)
     this.setData({
-      id: id,
-      cid: cid,
       language: lang,
       phrases: {
         productDetail: app.phrases.productDetail[lang],
@@ -55,7 +46,7 @@ Page({
         networkFail: app.phrases.networkFail[lang],
       }
     })
-    this.loadProduct(id, cid)
+    this.loadData(id, cid)
   },
 
   /**

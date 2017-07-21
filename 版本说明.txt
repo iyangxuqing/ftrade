@@ -1,0 +1,2 @@
+104
+getProducts只读取title和images，不读取prices和props。由getProduct读取完整信息。

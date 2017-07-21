@@ -44,7 +44,7 @@
           </view>
         </block>
 
-        <view class="products-none" wx:if="{{productsNone}}">
+        <view class="products-none" wx:if="{{products.length==0}}">
           <text>{{productEmpty}}</text>
         </view>
 

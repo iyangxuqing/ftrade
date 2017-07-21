@@ -1,0 +1,55 @@
+<import src="/templates/loading/loading" />
+<template is="loading" data="{{...loading}}" />
+
+<swiper class="products {{language}}" wx:if="{{ready}}" current="{{current}}" bindchange="onSwiperChange">
+  <block wx:for="{{products}}" wx:key="" wx:for-item="product">
+    <swiper-item>
+      <template is="product" data="{{...product, ...phrases, youImageMode}}" />
+    </swiper-item>
+  </block>
+</swiper>
+
+<view class="net-fail product-fail" wx:if="{{productFail}}" catchtap="onReloadProduct">
+  <view class="net-fail-icon">
+    <image src="/images/icon/warn-network.png" />
+  </view>
+  <view class="net-fail-text"><text>{{phrases.networkFail}}</text></view>
+</view>
+
+<template name="product">
+  <view class="product">
+    <view class="product-images">
+      <swiper>
+        <block wx:for="{{images}}" wx:key="">
+          <swiper-item>
+            <view class="product-image">
+              <image src="{{item + youImageMode}}" mode="aspectFit" />
+            </view>
+          </swiper-item>
+        </block>
+      </swiper>
+    </view>
+
+    <view class="product-title">{{title}}</view>
+
+    <view class="items product-prices">
+      <view class="items-head">{{pricesTitle}}</view>
+      <block wx:for="{{prices}}" wx:key="">
+        <view class="item product-price">
+          <view class="label">{{item.label}}</view>
+          <view class="value">￥{{item.value}}</view>
+        </view>
+      </block>
+    </view>
+
+    <view class="items product-props">
+      <view class="items-head">{{propsTitle}}</view>
+      <block wx:for="{{props}}" wx:key="">
+        <view class="item product-prop">
+          <view class="label">{{item.label}}</view>
+          <view class="value">{{item.value}}</view>
+        </view>
+      </block>
+    </view>
+  </view>
+</template>

@@ -1,4 +1,4 @@
-import {Loading} from '../../templates/loading/loading.js'
+import { Loading } from '../../templates/loading/loading.js'
 import { Shop } from '../../utils/shop.js'
 import { Product } from '../../utils/products.js'
 import { Category } from '../../utils/categorys.js'
@@ -188,7 +188,6 @@ Page({
   loadProducts: function (cid) {
     this.setData({
       productsFail: false,
-      productsNone: false,
     })
     this.loading.show()
     Product.getProducts({ cid })
@@ -198,21 +197,19 @@ Page({
           this.setData({
             products,
             productsFail: false,
-            productsNone: products.length == 0,
           })
+          this.loading.hide()
         }
-        this.loading.hide()
       }.bind(this))
       .catch(function (res) {
         let activeChildCateId = this.data.activeChildCateId
         if (cid == activeChildCateId) {
           this.setData({
-            products: [],
+            products: null,
             productsFail: true,
-            productsNone: false,
           })
+          this.loading.hide()
         }
-        this.loading.hide()
       }.bind(this))
   },
 

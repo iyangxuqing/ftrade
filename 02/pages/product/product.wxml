@@ -1,16 +1,13 @@
 <import src="/templates/loading/loading" />
 <template is="loading" data="{{...loading}}" />
 
-<view class="products {{language}}" wx:if="{{ready}}">
-  <template is="product" data="{{...product, ...phrases, youImageMode}}" />
-</view>
-
-<view class="net-fail product-fail" wx:if="{{productFail}}" catchtap="onReloadProduct">
-  <view class="net-fail-icon">
-    <image src="/images/icon/warn-network.png" />
-  </view>
-  <view class="net-fail-text"><text>{{phrases.networkFail}}</text></view>
-</view>
+<swiper class="products {{language}}" wx:if="{{ready}}" current="{{current}}">
+  <block wx:for="{{products}}" wx:key="" wx:for-item="product">
+    <swiper-item>
+      <template is="product" data="{{...product, ...phrases, youImageMode}}" />
+    </swiper-item>
+  </block>
+</swiper>
 
 <template name="product">
   <view class="product">
