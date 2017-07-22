@@ -1,48 +1,81 @@
-<import src="/templates/loading/loading" />
-<template is="loading" data="{{...loading}}" />
+<canvas canvas-id="canvas" class="canvas" wx:if="{{platform!='devtools'}}"></canvas>
 
-<swiper class="products {{language}}" wx:if="{{ready}}" current="{{current}}">
-  <block wx:for="{{products}}" wx:key="" wx:for-item="product">
-    <swiper-item>
-      <template is="product" data="{{...product, ...phrases, youImageMode}}" />
-    </swiper-item>
-  </block>
-</swiper>
+<view class="product" wx:if="{{ready}}">
 
-<template name="product">
-  <view class="product">
-    <view class="product-images">
-      <swiper>
-        <block wx:for="{{images}}" wx:key="">
-          <swiper-item>
-            <view class="product-image">
-              <image src="{{item + youImageMode}}" mode="aspectFit" />
+  <view class="product-images">
+    <swiper>
+      <block wx:for="{{product.images}}" wx:key="">
+        <swiper-item>
+          <view class="product-image" data-index="{{index}}" catchtap="onImageTap" catchlongtap="onImageLongTap">
+            <view class="product-image-del" data-index="{{index}}" catchtap="onImageDel" wx:if="{{delImageIndex==index}}">
+              <image src="/images/icon/delete.png" />
             </view>
-          </swiper-item>
-        </block>
-      </swiper>
-    </view>
-
-    <view class="product-title">{{title}}</view>
-
-    <view class="items product-prices">
-      <view class="items-head">{{pricesTitle}}</view>
-      <block wx:for="{{prices}}" wx:key="">
-        <view class="item product-price">
-          <view class="label">{{item.label}}</view>
-          <view class="value">￥{{item.value}}</view>
-        </view>
+            <image src="{{item + youImageMode}}" mode="aspectFit" />
+          </view>
+        </swiper-item>
       </block>
-    </view>
-
-    <view class="items product-props">
-      <view class="items-head">{{propsTitle}}</view>
-      <block wx:for="{{props}}" wx:key="">
-        <view class="item product-prop">
-          <view class="label">{{item.label}}</view>
-          <view class="value">{{item.value}}</view>
-        </view>
+      <block wx:if="{{product.images.length<1}}">
+        <swiper-item>
+          <view class="product-image-add" data-index="-1" catchtap="onImageTap">
+            <image src="/images/icon/camera.png" />
+          </view>
+        </swiper-item>
       </block>
-    </view>
+    </swiper>
+  </view>
+
+  <view class="product-title">
+    <input value="{{product.title}}" placeholder="输入商品名称" bindblur="onTitleBlur" />
+  </view>
+
+  <view class="head">
+    <view class="head-title">价格标签</view>
+  </view>
+  <template is="items" data="{{items:product.prices, type:'prices', swipeLeftId, editId, labelholder:'输入价格标签', valueholder:'输入价格(元)'}}" />
+  <view class="item">
+    <view class="item-label item-new-label" data-type="prices" data-index="-1" catchtap="onItemAdd">新增价格标签</view>
+  </view>
+
+  <view class="head">
+    <view class="head-title">商品属性</view>
+  </view>
+  <template is="items" data="{{items:product.props, type:'props', swipeLeftId, editId, labelholder:'输入商品属性', valueholder:'输入属性值'}}" />
+  <view class="item">
+    <view class="item-label item-new-label" data-type="props" data-index="-1" catchtap="onItemAdd">新增商品属性</view>
+  </view>
+
+</view>
+
+<template is="editor" data="{{...editor, platform}}" />
+
+<template name="editor">
+  <view class="editor {{type}} {{platform}}" style="top:{{top}}px;left:{{left}}px">
+    <textarea auto-height focus="{{focus}}" cursor-spacing="10" value="{{value}}" data-type="{{type}}" data-index="{{index}}" placeholder="{{placeholder}}" bindblur="onEditorBlur" />
+  </view>
+</template>
+
+<template name="items">
+  <view class="list">
+    <block wx:for="{{items}}" wx:key="">
+      <view class="item" data-index="{{index}}" data-type="{{type}}" bindtouchstart="touchstart" bindtouchmove="touchmove" bindtouchend="touchend">
+        <view class="item-inner {{swipeLeftId==type+'-'+index?'swipeleft':''}}">
+          <view class="left">
+            <view class="item-label {{item.label?'':'empty'}} {{editId==type+'-label-'+index?'editing':''}}" data-index="{{index}}" data-type="{{type}}-label" data-value="{{item.label}}" catchtap="onItemEdit">{{item.label || labelholder}}</view>
+            <view class="item-value {{item.value?'':'empty'}} {{editId==type+'-value-'+index?'editing':''}}" data-index="{{index}}" data-type="{{type}}-value" data-value="{{item.value}}" catchtap="onItemEdit">{{item.value && type=='prices'?'￥':''}}{{item.value || valueholder}}</view>
+          </view>
+          <view class="right">
+            <view class="sort-up" data-index="{{index}}" data-type="{{type}}" catchtap="onItemSortUp">
+              <image src="/images/icon/sort-up-white.png" />
+            </view>
+            <view class="sort-down" data-index="{{index}}" data-type="{{type}}" catchtap="onItemSortDown">
+              <image src="/images/icon/sort-down-white.png" />
+            </view>
+            <view class="delete" data-index="{{index}}" data-type="{{type}}" catchtap="onItemDelete">
+              <image src="/images/icon/delete-white.png" />
+            </view>
+          </view>
+        </view>
+      </view>
+    </block>
   </view>
 </template>

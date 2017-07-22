@@ -1,0 +1,8 @@
+<template name="netfail">
+  <view class="net-fail" wx:if="{{show}}" data-id="{{id}}" catchtap="onNetFailRetry">
+    <view class="net-fail-icon">
+      <image src="/images/icon/warn-network.png" />
+    </view>
+    <view class="net-fail-text"><text>网络不给力，点击屏幕重试</text></view>
+  </view>
+</template>

@@ -1,216 +1,166 @@
-import { Loading } from '../../templates/loading/loading.js'
-import { Shop } from '../../utils/shop.js'
-import { Product } from '../../utils/products.js'
 import { Category } from '../../utils/categorys.js'
-import '../../utils/db.js'
+import { Product } from '../../utils/products.js'
+import { Loading } from '../../templates/loading/loading.js'
 
-let touch = {}
+let touchPositionX = 0
+let touchPositionY = 0
+let productlongtap = false
+let productDeleteTimer = null
 let app = getApp()
 
 Page({
 
   data: {
-    leftOpen: '',
-    languages: app.phrases['languages'],
+    cate: {},
+    products: [],
+    deleteId: -1,
+    moving: {
+      top: 0,
+      left: 0,
+      product: {},
+      sourceIndex: -1,
+      targetIndex: -1,
+      display: 'none',
+    },
     youImageMode: app.youImageMode,
   },
 
-  onPopupTouchStart: function (e) {
-    touch.x1 = e.touches[0].clientX;
-    touch.y1 = e.touches[0].clientY;
-    touch.t1 = e.timeStamp;
-    touch.x2 = e.touches[0].clientX;
-    touch.y2 = e.touches[0].clientY;
-    touch.t2 = e.timeStamp;
-  },
+  touchstart: function (e) {
+    let x = e.touches[0].clientX;
+    let y = e.touches[0].clientY;
 
-  onPopupTouchMove: function (e) {
-    touch.x2 = e.touches[0].clientX;
-    touch.y2 = e.touches[0].clientY;
-    touch.t2 = e.timeStamp;
-  },
-
-  onPopupTouchEnd: function (e) {
-    touch.t2 = e.timeStamp
-    let dx = touch.x2 - touch.x1
-    let dy = touch.y2 - touch.y1
-    let dt = touch.t2 - touch.t1
-    if ((Math.abs(dy) < Math.abs(dx) / 2 && dt < 250)) {
-      if (dx < -20) this.onPopupSwipeLeft()
-    }
-  },
-
-  onMaskTouchStart: function (e) {
-    touch.x1 = e.touches[0].clientX;
-    touch.y1 = e.touches[0].clientY;
-    touch.t1 = e.timeStamp;
-    touch.x2 = e.touches[0].clientX;
-    touch.y2 = e.touches[0].clientY;
-    touch.t2 = e.timeStamp;
-  },
-
-  onMaskTouchMove: function (e) {
-    touch.x2 = e.touches[0].clientX;
-    touch.y2 = e.touches[0].clientY;
-    touch.t2 = e.timeStamp;
-  },
-
-  onMaskTouchEnd: function (e) {
-    touch.t2 = e.timeStamp
-    let dx = touch.x2 - touch.x1
-    let dy = touch.y2 - touch.y1
-    let dt = touch.t2 - touch.t1
-    this.onMaskTap()
-  },
-
-  onPopupSwipeLeft: function (id) {
-    this.setData({ leftOpen: '' })
-  },
-
-  onMenuTriggerTap: function (e) {
-    let leftOpen = this.data.leftOpen
-    leftOpen = leftOpen ? '' : 'left-open'
-    this.setData({ leftOpen })
-  },
-
-  onMaskTap: function (e) {
-    this.setData({ leftOpen: '' })
-  },
-
-  onLanguageTap: function (e) {
-    let lang = e.currentTarget.dataset.id
-    app.lang = lang
-    wx.setStorageSync('language', lang)
-    this.loadCategorys()
-    wx.setNavigationBarTitle({
-      title: app.phrases['productList'][lang],
-    })
-    this.setData({
-      leftOpen: '',
-      language: lang,
-      categoryEmpty: app.phrases['categoryEmpty'][lang],
-      productEmpty: app.phrases['productEmpty'][lang],
-      networkFail: app.phrases['networkFail'][lang],
-    })
-  },
-
-  onCateTap: function (e) {
     let id = e.currentTarget.dataset.id
-    let pid = e.currentTarget.dataset.pid
+    let index = e.currentTarget.dataset.index
+    let row = Math.floor(index / 3)
+    let col = index % 3
+    let offsetLeft = col * 110
+    let offsetTop = row * 140
+    touchPositionX = x - offsetLeft
+    touchPositionY = y - offsetTop
 
-    let cates = this.data.cates
-    let activeCateId = this.data.activeCateId
-    let activeChildCateId = ''
-    if (pid == 0) {
-      for (let i in cates) {
-        if (cates[i].id == id) {
-          activeCateId = id
-          activeChildCateId = cates[i].activeChildId
-          break
-        }
-      }
-    } else {
-      for (let i in cates) {
-        if (cates[i].id == pid) {
-          for (let j in cates[i].children) {
-            if (cates[i].children[j].id == id) {
-              cates[i].activeChildId = id
-              activeChildCateId = id
-              break
-            }
-          }
-        }
-      }
-    }
+    let products = this.data.products
+    this.data.moving.sourceIndex = index
+    this.data.moving.product = products[index]
     this.setData({
-      cates,
-      activeCateId,
-      activeChildCateId,
+      deleteId: -1
     })
+  },
 
-    let cid = activeChildCateId
-    this.loadProducts(cid)
+  touchmove: function (e) {
+    let x = e.touches[0].clientX;
+    let y = e.touches[0].clientY;
+    let left = x - touchPositionX
+    let top = y - touchPositionY
+
+    let row = Math.round(top / 140)
+    let col = Math.round(left / 110)
+    if (col < 0) col = 0
+    if (col > 2) col = 2
+    let targetIndex = row * 3 + col
+
+    let moving = this.data.moving
+    moving.top = top
+    moving.left = left
+    moving.display = 'block'
+    moving.targetIndex = targetIndex
+    this.setData({
+      moving: moving
+    })
+  },
+
+  touchend: function (e) {
+    let cid = this.data.cate.id
+    let moving = this.data.moving
+    let product = moving.product
+    let sourceIndex = moving.sourceIndex
+    let targetIndex = moving.targetIndex
+    let products = Product.sort(product, sourceIndex, targetIndex)
+    moving.display = 'none'
+    moving.sourceIndex = -1
+    moving.targetIndex = -1
+    this.setData({
+      products: products,
+      moving: moving,
+    })
   },
 
   onProductTap: function (e) {
+    if (productlongtap) {
+      productlongtap = false
+      return
+    }
     let id = e.currentTarget.dataset.id
-    let cid = e.currentTarget.dataset.cid
-    wx.navigateTo({
-      url: '../product/product?id=' + id + '&cid=' + cid
-    })
-  },
-
-  onReloadCategorys: function (e) {
-    this.loadCategorys()
-  },
-
-  onReloadProducts: function (e) {
-    let cates = this.data.cates
-    let activeChildCateId = this.data.activeChildCateId
-    this.loadProducts(activeChildCateId)
-  },
-
-  loadCategorys: function () {
-    this.loading.show()
-    Category.getCategorys()
-      .then(function (cates) {
-        let activeCateId = ''
-        let activeChildCateId = ''
-        // 某种语言下可能还没有类目
-        if (cates.length > 0) activeCateId = cates[0].id
-        for (let i in cates) {
-          // 某种类目下可能还没有子类目
-          if (cates[i].children.length > 0) {
-            cates[i].activeChildId = cates[i].children[0].id
-            if (!activeChildCateId) {
-              activeChildCateId = cates[i].children[0].id
-            }
-          }
-        }
-        this.setData({
-          ready: true,
-          cates: cates,
-          categorysFail: false,
-          activeCateId: activeCateId,
-          activeChildCateId: activeChildCateId,
-        })
-        this.loading.hide()
-        this.loadProducts(activeChildCateId)
-      }.bind(this))
-      .catch(function (res) {
-        this.setData({
-          categorysFail: true
-        })
-        this.loading.hide()
-      }.bind(this))
-  },
-
-  loadProducts: function (cid) {
+    let cid = this.data.cate.id
+    let products = this.data.products
     this.setData({
-      productsFail: false,
+      deleteId: -1
     })
-    this.loading.show()
-    Product.getProducts({ cid })
+    wx.navigateTo({
+      url: '../product/product?id=' + id + '&cid=' + cid,
+    })
+  },
+
+  onProductLongTap: function (e) {
+    productlongtap = true
+    let id = e.currentTarget.dataset.id
+    this.setData({
+      deleteId: id
+    })
+    clearTimeout(productDeleteTimer)
+    productDeleteTimer = setTimeout(function () {
+      this.setData({
+        deleteId: -1
+      })
+    }.bind(this), 5000)
+  },
+
+  onProductDel: function (e) {
+    let id = e.currentTarget.dataset.id
+    let cid = this.data.cate.id
+    let products = Product.del({ id, cid })
+    this.setData({
+      products: products
+    })
+  },
+
+  onProductAdd: function (e) {
+    let cid = this.data.cate.id
+    wx.navigateTo({
+      url: '../product/product?cid=' + cid,
+    })
+  },
+
+  onProductsUpdate: function (products, product) {
+    this.setData({
+      products: products
+    })
+  },
+
+  onNetFailRetry: function () {
+    this.loadProducts()
+  },
+
+  loadProducts: function () {
+    let page = this
+    let cate = this.data.cate
+    page.loading.show()
+    Product.getProducts({ cid: cate.id })
       .then(function (products) {
-        let activeChildCateId = this.data.activeChildCateId
-        if (cid == activeChildCateId) {
-          this.setData({
-            products,
-            productsFail: false,
-          })
-          this.loading.hide()
-        }
-      }.bind(this))
+        page.setData({
+          products,
+          ready: true,
+          'netfail.show': false,
+        })
+        page.loading.hide()
+      })
       .catch(function (res) {
-        let activeChildCateId = this.data.activeChildCateId
-        if (cid == activeChildCateId) {
-          this.setData({
-            products: null,
-            productsFail: true,
-          })
-          this.loading.hide()
-        }
-      }.bind(this))
+        page.setData({
+          ready: false,
+          'netfail.show': true,
+        })
+        page.loading.hide()
+      })
+
   },
 
   /**
@@ -218,23 +168,12 @@ Page({
    */
   onLoad: function (options) {
     this.loading = new Loading(this)
+    app.listener.on('products', this.onProductsUpdate)
 
-    let lang = app.lang
-    wx.setNavigationBarTitle({
-      title: app.phrases['productList'][lang],
-    })
-    this.setData({
-      language: lang,
-      categoryEmpty: app.phrases['categoryEmpty'][lang],
-      productEmpty: app.phrases['productEmpty'][lang],
-      networkFail: app.phrases['networkFail'][lang],
-    })
-
-    this.loadCategorys()
-    Shop.get({ slient: true }).then(function (shop) {
-      this.setData({ shop })
-    }.bind(this))
-
+    let cid = options.cid
+    let cate = Category.getCategory(cid)
+    this.setData({ cate })
+    this.loadProducts()
   },
 
   /**
