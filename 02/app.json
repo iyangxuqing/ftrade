@@ -1,14 +1,14 @@
 {
   "pages": [
-    "pages/shoper/shoper",
-    "pages/categorys/categorys",
     "pages/products/products",
     "pages/product/product",
-    "pages/mobile/mobile"
+    "pages/favorites/favorites",
+    "pages/favorite/favorite"
   ],
   "window": {
     "backgroundTextStyle": "light",
-    "navigationBarBackgroundColor": "#fff",
-    "navigationBarTextStyle": "black"
+    "navigationBarTitleText": "",
+    "navigationBarTextStyle": "black",
+    "navigationBarBackgroundColor": "#eee"
   }
 }

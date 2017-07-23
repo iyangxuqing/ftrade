@@ -1,0 +1,30 @@
+@import '/templates/loading/loading.wxss';
+@import '/templates/netfail/netfail.wxss';
+
+page {
+  padding-left: 40rpx;
+  padding-right: 40rpx;
+  box-sizing: border-box;
+}
+
+view {
+  box-sizing: border-box;
+}
+
+image {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+input {
+  width: 100%;
+  padding-top: 20rpx;
+  padding-bottom: 20rpx;
+}
+
+::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}

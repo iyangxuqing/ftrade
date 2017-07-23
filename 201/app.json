@@ -1,0 +1,14 @@
+{
+  "pages": [
+    "pages/shoper/shoper",
+    "pages/categorys/categorys",
+    "pages/products/products",
+    "pages/product/product",
+    "pages/mobile/mobile"
+  ],
+  "window": {
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#fff",
+    "navigationBarTextStyle": "black"
+  }
+}
