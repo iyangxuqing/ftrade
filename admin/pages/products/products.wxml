@@ -1,0 +1,39 @@
+<import src="/templates/loading/loading.wxml" />
+<template is="loading" data="{{...loading}}" />
+<import src="/templates/netfail/netfail.wxml" />
+<template is="netfail" data="{{...netfail}}" />
+
+<view class="container" wx:if="{{ready}}">
+
+  <view class="cate">
+    <view class="cate-title">{{cate.ptitle}} > {{cate.title}}</view>
+  </view>
+
+  <view class="products">
+    <block wx:for="{{products}}" wx:key="" wx:for-item="product">
+      <view class="product {{moving.sourceIndex==index?'source':''}} {{moving.targetIndex==index?'target':''}}" data-id="{{product.id}}" data-index="{{index}}" catchtap="onProductTap">
+        <view class="product-editor" wx:if="{{product.id==deleteId}}" data-id="{{product.id}}" catchtap="onProductDel">
+          <image src="/images/icon/delete.png" />
+        </view>
+        <view class="product-image" data-id="{{product.id}}" catchlongtap="onProductLongTap">
+          <image src="{{product.images[0] ? product.images[0] + youImageMode : ''}}" />
+        </view>
+        <view class="product-title" data-id="{{product.id}}" data-index="{{index}}" catchtouchstart="touchstart" catchtouchmove="touchmove" catchtouchend="touchend">{{product.title}}</view>
+      </view>
+    </block>
+    <view class="product product-new" catchtap="onProductAdd">
+      <view class="product-image">
+        <image src="/images/icon/plus.png" />
+      </view>
+    </view>
+    <view class="product moving" style="left:{{moving.left}}px;top:{{moving.top}}px;display:{{moving.display}}">
+      <view class="product-image">
+        <image src="{{moving.product.images[0] ? moving.product.images[0] + youImageMode : ''}}" />
+      </view>
+      <view class="product-title">
+        <text>{{moving.product.title}}</text>
+      </view>
+    </view>
+  </view>
+
+</view>
