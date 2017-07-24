@@ -17,6 +17,7 @@ function getProducts(options) {
     let products = transformProducts(Products, cid, lang)
     if (products && cache) {
       resolve(products)
+      getProductsRefresh(cid, products)
     } else {
       getProductsFromServer(options)
         .then(function (products) {
@@ -81,6 +82,29 @@ function getProductsFromServer(options) {
       .catch(function (res) {
         reject(res)
       })
+  })
+}
+
+function getProductsRefresh(cid, products) {
+  let lastModified = 0
+  for (let i in products) {
+    if (lastModified < products[i].modified) lastModified = products[i].modified
+  }
+  http.get({
+    url: '_ftrade/client/product.php?m=refreshProducts',
+    data: {
+      cid,
+      lastModified,
+    }
+  }).then(function (res) {
+    if (res.errno === 0) {
+      let products = res.products
+      if (products) {
+        let Products = wx.getStorageSync('products') || {}
+        Products['c' + cid] = products
+        wx.setStorageSync('products', Products)
+      }
+    }
   })
 }
 

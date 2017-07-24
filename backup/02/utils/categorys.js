@@ -15,6 +15,7 @@ function getCategorys(options = {}) {
     if (cates && cache) {
       cates = transformCategorys(cates, lang)
       resolve(cates)
+      getCategorysRefresh(cates)
     } else {
       getCategorysFromServer(options).then(function (cates) {
         wx.setStorageSync('cates', cates)
@@ -41,6 +42,24 @@ function getCategorysFromServer(options) {
     }).catch(function (res) {
       reject(res)
     })
+  })
+}
+
+function getCategorysRefresh(cates) {
+  let lastModified = 0
+  for (let i in cates) {
+    if (lastModified < cates[i].modified) lastModified = cates[i].modified
+  }
+  http.get({
+    url: '_ftrade/client/category.php?m=refresh',
+    data: {
+      lastModified: lastModified
+    }
+  }).then(function (res) {
+    if (res.errno === 0) {
+      let cates = res.categorys
+      if (cates) wx.setStorageSync('cates', cates)
+    }
   })
 }
 
