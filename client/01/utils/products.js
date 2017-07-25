@@ -131,12 +131,12 @@ function transformProducts(products, cid, lang) {
 
 function transformProduct(product, lang) {
   product.title = product.title || '[]'
-  product.title = product.title.json()
+  product.title = product.title.json() || []
   product.title = product.title[lang] || []
   product.images = JSON.parse(product.images)
 
   let prices = product.prices || '[]'
-  prices = prices.json()
+  prices = prices.json() || []
   prices = prices[lang] || []
   let _prices = []
   for (let n = 0; n < prices.length; n += 2) {
@@ -149,7 +149,7 @@ function transformProduct(product, lang) {
   product.prices = prices
 
   let props = product.props || '[]'
-  props = props.json()
+  props = props.json() || []
   props = props[lang] || []
   let _props = []
   for (let n = 0; n < props.length; n += 2) {

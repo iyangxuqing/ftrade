@@ -207,16 +207,16 @@ Page({
           this.loading.hide()
         }
       }.bind(this))
-      .catch(function (res) {
-        let activeChildCateId = this.data.activeChildCateId
-        if (cid == activeChildCateId) {
-          this.setData({
-            products: null,
-            productsFail: true,
-          })
-          this.loading.hide()
-        }
-      }.bind(this))
+      // .catch(function (res) {
+      //   let activeChildCateId = this.data.activeChildCateId
+      //   if (cid == activeChildCateId) {
+      //     this.setData({
+      //       products: null,
+      //       productsFail: true,
+      //     })
+      //     this.loading.hide()
+      //   }
+      // }.bind(this))
   },
 
   /**

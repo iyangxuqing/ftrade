@@ -25,7 +25,7 @@ let phrases = {
     'zh': '中文',
     'en': 'English',
     'ara': ' عربي ',
-    'kor': '한국어',
+    // 'kor': '한국어',
   },
   'networkFail':{
     'zh': '网络不给力，点击屏幕重试',

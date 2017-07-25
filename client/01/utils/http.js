@@ -4,19 +4,19 @@ import { Utils } from 'utils.js'
 function get(options) {
   return new Promise(function (resolve, reject) {
 
-    let time1 = new Date()
+    let startTime = Date.now()
 
-    wx.request({
+    let requestTask = wx.request({
       url: config.apiUrl + options.url,
       header: {
         'sid': config.sid,
         'version': config.version,
-        'token': wx.getStorageSync('token'),
         'Content-Type': 'application/json',
+        'token': wx.getStorageSync('token'),
       },
       data: options.data,
       success: function (res) {
-        if (res.statusCode == 200 && res.data && res.data.errno === 0) {
+        if (res.data && res.data.errno === 0) {
           resolve(res.data)
         } else {
           reject(res)
@@ -26,28 +26,37 @@ function get(options) {
         reject(res)
       },
       complete: function (res) {
-
-        let time2 = new Date()
-        let dt = time2.getTime() - time1.getTime()
-        let recode = {}
-        recode.startTime = Utils.formatDateTime(time1)
-        recode.dt = dt
-        recode.url = options.url
-        recode.data = options.data
-        recode.statusCode = res.statusCode
-        wx.request({
-          url: config.apiUrl + '_ftrade/client/net.php?m=add',
-          header: {
-            'sid': config.sid,
-            'version': config.version,
-            'token': wx.getStorageSync('token'),
-            'Content-Type': 'application/json',
-          },
-          data: recode,
-        })
-
+        clearTimeout(timer)
+        netlog(startTime, options, res.errMsg)
       }
     })
+
+    let timer = setTimeout(function () {
+      requestTask.abort()
+      netlog(startTime, options, '30s timeout')
+      reject('30s timeout')
+    }, 70000)
+
+  })
+}
+
+function netlog(startTime, options, status) {
+  let endTime = Date.now()
+  let dt = endTime - startTime
+  let log = {
+    startTime: Utils.formatDateTime(startTime),
+    diffTime: endTime - startTime,
+    url: options.url.split('/')[2],
+    data: options.data || '',
+    status: status
+  }
+  wx.request({
+    url: config.apiUrl + '_ftrade/client/netlog.php?m=add',
+    header: {
+      'Content-Type': 'application/json',
+      'token': wx.getStorageSync('token'),
+    },
+    data: log,
   })
 }
 
