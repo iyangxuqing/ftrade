@@ -1,7 +1,7 @@
+import { Loading } from '../../templates/loading/loading.js'
 import { Shop } from '../../utils/shop.js'
 import { Product } from '../../utils/products.js'
 import { Category } from '../../utils/categorys.js'
-import { Loading } from '../../templates/loading/loading.js'
 
 let touch = {}
 let app = getApp()

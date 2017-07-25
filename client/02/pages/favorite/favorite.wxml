@@ -1,15 +1,17 @@
-<swiper class="products {{language}}" wx:if="{{ready}}" current="{{current}}">
-  <block wx:for="{{products}}" wx:key="" wx:for-item="product">
-    <swiper-item>
-      <template is="product" data="{{...product, ...phrases, youImageMode}}" />
-    </swiper-item>
-  </block>
-</swiper>
+<view class="products {{language}}" wx:if="{{ready}}">
+  <swiper class="products-swiper" current="{{current}}">
+    <block wx:for="{{products}}" wx:key="" wx:for-item="product">
+      <swiper-item>
+        <template is="product" data="{{...product, ...phrases, youImageMode}}" />
+      </swiper-item>
+    </block>
+  </swiper>
+</view>
 
 <template name="product">
   <view class="product">
     <view class="product-images">
-      <swiper>
+      <swiper indicator-dots>
         <block wx:for="{{images}}" wx:key="">
           <swiper-item>
             <view class="product-image">

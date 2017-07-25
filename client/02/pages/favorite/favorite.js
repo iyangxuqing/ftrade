@@ -33,46 +33,36 @@ Page({
     wx.setStorageSync('favorites', favorites)
   },
 
-  loadData: function (id, cid) {
-    let page = this
-    page.setData({ id, cid })
-    Product.getProducts({ cid })
-      .then(function (products) {
-        let current = 0
-        let favorites = wx.getStorageSync('favorites')
-        for (let i in products) {
-          if (products[i].id == id) {
-            current = i
-          }
-          if (favorites['i' + products[i].id]) {
-            products[i].favorite = true
-          }
-        }
-        page.setData({
-          ready: true,
-          current: current,
-          products: products,
-        })
-      })
-  },
-
+  /**
+   * 生命周期函数--监听页面加载
+   */
   onLoad: function (options) {
     let id = options.id
     let cid = options.cid
     let lang = app.lang
+    let phrases = {
+      pricesTitle: app.phrases['pricesTitle'][lang],
+      propsTitle: app.phrases['propsTitle'][lang],
+    }
     wx.setNavigationBarTitle({
-      title: app.phrases.productDetail[lang],
+      title: app.phrases['productDetail'][lang],
     })
-    this.setData({
-      language: lang,
-      phrases: {
-        productDetail: app.phrases.productDetail[lang],
-        pricesTitle: app.phrases.pricesTitle[lang],
-        propsTitle: app.phrases.propsTitle[lang],
-        networkFail: app.phrases.networkFail[lang],
+
+    let products = app.favorites
+    let index = 0
+    for (let i in products) {
+      products[i].favorite = true
+      if (products[i].id == id) {
+        index = i
       }
+    }
+    this.setData({
+      phrases,
+      products,
+      ready: true,
+      current: index,
+      language: lang,
     })
-    this.loadData(id, cid)
   },
 
   /**

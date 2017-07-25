@@ -1,3 +1,0 @@
-<template name="toptip">
-  <view class="toptip {{show}}">{{title}}</view>
-</template>

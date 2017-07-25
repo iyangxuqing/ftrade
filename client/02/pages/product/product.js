@@ -1,3 +1,4 @@
+import { Loading } from '../../templates/loading/loading.js'
 import { Product } from '../../utils/products.js'
 
 let app = getApp()
@@ -63,6 +64,7 @@ Page({
     wx.setNavigationBarTitle({
       title: app.phrases.productDetail[lang],
     })
+    this.loading = new Loading(this)
     this.setData({
       language: lang,
       phrases: {

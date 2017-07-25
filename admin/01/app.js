@@ -14,11 +14,7 @@ App({
     this.youImageMode = config.youImage.mode_w300
     let app = this
     app.user = {}
-    User.login().then(function () {
-      User.get().then(function (user) {
-        app.user = user
-      })
-    })
+    User.login()
   },
 
   globalData: {

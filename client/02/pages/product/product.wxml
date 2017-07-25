@@ -1,3 +1,6 @@
+<import src="/templates/loading/loading" />
+<template is="loading" data="{{...loading}}" />
+
 <swiper class="products {{language}}" wx:if="{{ready}}" current="{{current}}">
   <block wx:for="{{products}}" wx:key="" wx:for-item="product">
     <swiper-item>
