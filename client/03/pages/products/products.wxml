@@ -38,7 +38,7 @@
           <text class="line" wx:if="{{index>0&&index%6==0}}"></text>
           <view class="product" data-id="{{item.id}}" data-cid="{{item.cid}}" catchtap="onProductTap">
             <view class="product-image">
-              <image src="{{item.images[0] ? item.images[0] + youImageMode : ''}}" />
+              <image src="{{item.images[0] + youImageMode}}" />
             </view>
             <view class="product-title">{{item.title}}</view>
           </view>

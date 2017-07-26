@@ -66,7 +66,7 @@ function transformProducts(products, lang) {
 function transformProduct(product, lang) {
   product.title = product.title || '[]'
   product.title = product.title.json() || []
-  product.title = product.title[lang] || []
+  product.title = product.title[lang]
   product.images = JSON.parse(product.images)
 
   let prices = product.prices || '[]'

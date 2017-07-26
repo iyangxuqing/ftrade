@@ -11,6 +11,6 @@
     </view>
   </block>
   <view class="favorite-empty" wx:if="{{favorites.length==0}}">
-    {{myFavoriteEmpty}}
+    {{favoriteEmpty}}
   </view>
 </view>
