@@ -187,7 +187,7 @@ function httpGet(options) {
       requestTask.abort()
       netlog(startTime, options, '30s timeout')
       reject('30s timeout')
-    }, 70000)
+    }, 30000)
 
   })
 }

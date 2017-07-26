@@ -11,7 +11,7 @@
 <template name="product">
   <view class="product">
     <view class="product-images">
-      <swiper indicator-dots>
+      <swiper>
         <block wx:for="{{images}}" wx:key="">
           <swiper-item>
             <view class="product-image">
