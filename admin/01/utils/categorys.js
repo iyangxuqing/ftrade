@@ -130,7 +130,7 @@ function add(cate, cb) {
   /* server start */
   if (app.user.role == 'admin') {
     http.get({
-      url: '_ftrade/category.php?m=add',
+      url: '_ftrade/category.php?m=set_v2',
       data: {
         id: cate.id,
         pid: cate.pid,
@@ -171,7 +171,7 @@ function set(cate, cb) {
   /* server start */
   if (app.user.role == 'admin') {
     http.get({
-      url: '_ftrade/category.php?m=set',
+      url: '_ftrade/category.php?m=set_v2',
       data: {
         id: cate.id,
         pid: cate.pid,
@@ -341,7 +341,7 @@ function sort(cate, up = false) {
       if (cates[i].sort != i) {
         cates[i].sort = i
         http.get({
-          url: '_ftrade/category.php?m=set',
+          url: '_ftrade/category.php?m=set_v2',
           data: { id: cates[i].id, sort: i }
         }).then(function (res) {
           if (res.errno === 0) {
@@ -353,7 +353,7 @@ function sort(cate, up = false) {
         if (cates[i].children[j].sort != j) {
           cates[i].children[j].sort = j
           http.get({
-            url: '_ftrade/category.php?m=set',
+            url: '_ftrade/category.php?m=set_v2',
             data: { id: cates[i].children[j].id, sort: j }
           }).then(function (res) {
             if (res.errno === 0) {

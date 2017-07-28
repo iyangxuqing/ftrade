@@ -1,4 +1,5 @@
-import { User, config } from 'utils/mina.js'
+import { User } from 'utils/user.js'
+let config = require('utils/config.js')
 
 App({
   onLaunch: function () {

@@ -1,6 +1,5 @@
 let config = require('utils/config.js')
 import 'utils/util.js'
-import { http } from 'utils/http.js'
 import { User } from 'utils/user.js'
 import { Listener } from 'utils/listener.js'
 
@@ -11,13 +10,10 @@ App({
 
   init: function () {
     this.listener = new Listener()
-    this.youImageMode = config.youImage.mode_w300
+    this.youImageMode = config.youImage.mode
     let app = this
     app.user = {}
     User.login()
-  },
-
-  globalData: {
-    userInfo: null
   }
+  
 })

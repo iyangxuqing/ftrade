@@ -15,7 +15,7 @@
         <block wx:for="{{images}}" wx:key="">
           <swiper-item>
             <view class="product-image">
-              <image src="{{item + youImageMode}}" mode="aspectFit" />
+              <image src="{{item ? item + youImageMode : ''}}" mode="aspectFit" />
             </view>
           </swiper-item>
         </block>

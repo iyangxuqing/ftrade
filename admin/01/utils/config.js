@@ -1,35 +1,11 @@
-var debug = true;
-var versionNumber = "1.0";
-var version = "weApp/" + versionNumber;
-var sid = "725945cd45";
+/**
+ * v1.0.2 更改了数据更新机制 2017.07.28
+ */
+module.exports.version = "v1.0.2"
 
-var apiUrl = 'https://yixing01.applinzi.com/api/';
-var imagesUrl = 'http://yixing01-images.stor.sinaapp.com/';
-var uploadDir = 'upload/ftrade/' + sid + '/';
-
-var youImageHost = 'http://ftrade-1253299728.picsh.myqcloud.com/';
-var array = []
-array.push('?imageMogr2/')
-array.push('thumbnail/300x/')
-array.push('format/jpg/')
-array.push('interlace/1/')
-array.push('quality/50/')
-array.push('gravity/center/')
-array.push('crop/300x300')
-var youImageMode_w300 = array.join('')
-var youImageMode_w300_a = '/w300'
-
-var youImage = {
-  host: youImageHost,
-  mode_w300: youImageMode_w300,
-  mode_w300_a: youImageMode_w300_a,
+module.exports.sid = "725945cd45"
+module.exports.apiUrl = 'https://yixing01.applinzi.com/api/'
+module.exports.youImage = {
+  host: 'http://ftrade-1253299728.picsh.myqcloud.com/',
+  mode: '?imageMogr2/thumbnail/300x/format/jpg/interlace/1/quality/50/gravity/center/crop/300x300',
 }
-
-module.exports.debug = debug;
-module.exports.versionNumber = versionNumber;
-module.exports.version = version;
-module.exports.sid = sid;
-module.exports.apiUrl = apiUrl;
-module.exports.imagesUrl = imagesUrl;
-module.exports.uploadDir = uploadDir;
-module.exports.youImage = youImage;

@@ -1,4 +1,3 @@
-
 String.prototype.json = function () {
   let value = this
   let temp = ''

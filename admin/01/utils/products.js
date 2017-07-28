@@ -194,7 +194,7 @@ function del(product, cb) {
   if (app.user.role == 'admin') {
     http.get({
       url: '_ftrade/product.php?m=del',
-      data: { id: id }
+      data: { id, cid }
     }).then(function (res) {
       if (!res.error) {
         cb && cb(products, product)
@@ -227,6 +227,7 @@ function sort(product, sourceIndex, targetIndex, cb) {
           url: '_ftrade/product.php?m=set',
           data: {
             id: products[i].id,
+            cid: products[i].cid,
             sort: products[i].sort
           }
         }).then(function (res) {
